@@ -1,0 +1,96 @@
+<nav class="navbar navbar-expand-lg fixed-top pc-navbar">
+  <div class="container nav-container">
+
+    <!-- Logo -->
+    <a class="navbar-brand logo-wrapper" [routerLink]="['/']">
+      <img
+        src="assets/images/oso.png"
+        alt="IsaBlue"
+        class="logo-navbar">
+    </a>
+
+    <!-- Botón móvil -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation">
+
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Menú -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+      <!-- Buscador -->
+      <form class="d-flex mx-lg-auto search-box" (ngSubmit)="buscar()">
+
+        <input
+          class="form-control"
+          name="q"
+          [(ngModel)]="q"
+          type="search"
+          placeholder="Buscar juguetes, Montessori, bebés, rompecabezas...">
+
+        <button
+          class="btn btn-warning"
+          type="submit">
+          Buscar
+        </button>
+
+      </form>
+
+      <!-- Opciones -->
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/']">
+            Inicio
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/cart/sumary']">
+            Carrito
+          </a>
+        </li>
+
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" [routerLink]="['/admin/product']">
+            Admin
+          </a>
+        </li>
+
+        <li class="nav-item" *ngIf="!isLogged()">
+          <a
+            class="btn btn-outline-light btn-sm"
+            [routerLink]="['/user/login']">
+            Ingresar
+          </a>
+        </li>
+
+        <li class="nav-item" *ngIf="!isLogged()">
+          <a
+            class="btn btn-light btn-sm"
+            [routerLink]="['/user/register']">
+            Crear cuenta
+          </a>
+        </li>
+
+        <li class="nav-item" *ngIf="isLogged()">
+          <button
+            class="btn btn-outline-light btn-sm"
+            (click)="logout()">
+            Salir
+          </button>
+        </li>
+
+      </ul>
+
+    </div>
+
+  </div>
+</nav>

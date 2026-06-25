@@ -1,0 +1,24 @@
+<app-header-user></app-header-user>
+<section class="auth-page">
+  <div class="auth-card register-card">
+    <div class="auth-copy">
+      <span>Crear cuenta</span>
+      <h1>Compra juguetes educativos en una tienda moderna</h1>
+      <p>Regístrate para guardar tus datos, generar órdenes y pagar tus productos desde el carrito.</p>
+    </div>
+    <form class="auth-form" (ngSubmit)="register()">
+      <h2>Registro de cliente</h2>
+      <div class="alert alert-danger" *ngIf="errorMessage">{{errorMessage}}</div>
+      <div class="row g-3">
+        <div class="col-md-6"><label>Nombre</label><input [(ngModel)]="name" name="name" class="form-control" placeholder="Carlos" required></div>
+        <div class="col-md-6"><label>Apellido</label><input [(ngModel)]="surname" name="surname" class="form-control" placeholder="Flores" required></div>
+        <div class="col-md-12"><label>Correo</label><input [(ngModel)]="email" name="email" type="email" class="form-control" placeholder="correo@ejemplo.com" required></div>
+        <div class="col-md-8"><label>Dirección</label><input [(ngModel)]="address" name="address" class="form-control" placeholder="Av. ejemplo 123"></div>
+        <div class="col-md-4"><label>Teléfono</label><input [(ngModel)]="cellphone" name="cellphone" class="form-control" placeholder="999999999"></div>
+        <div class="col-md-12"><label>Contraseña</label><input [(ngModel)]="password" name="password" type="password" class="form-control" placeholder="Mínimo 6 caracteres" required></div>
+      </div>
+      <button type="submit" class="btn btn-warning w-100" [disabled]="loading">{{loading ? 'Creando...' : 'Crear cuenta'}}</button>
+      <p class="text-center mt-3">¿Ya tienes cuenta? <a [routerLink]="['/user/login']">Inicia sesión</a></p>
+    </form>
+  </div>
+</section>
