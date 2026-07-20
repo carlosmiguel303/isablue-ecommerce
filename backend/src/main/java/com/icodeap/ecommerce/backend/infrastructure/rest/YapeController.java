@@ -25,7 +25,7 @@ public class YapeController {
 
     @Value("${yape.number:985436488}")
     private String yapeNumber;
-    @Value("${yape.name:Isablue Juguetes}")
+    @Value("${yape.name:Haydee Hospinal}")
     private String yapeName;
 
     private final OrderService orderService;

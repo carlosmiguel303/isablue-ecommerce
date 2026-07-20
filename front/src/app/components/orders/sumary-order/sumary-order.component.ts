@@ -22,7 +22,7 @@ export class SumaryOrderComponent implements OnInit {
   method: 'yape' | 'card' = 'yape';
 
   // Yape
-  yape = { number: '985436488', name: 'Isablue Juguetes' };
+  yape = { number: '985436488', name: 'Haydee Hospinal' };
   operationNumber = '';
   private readonly whatsapp = '51920097746';
 
