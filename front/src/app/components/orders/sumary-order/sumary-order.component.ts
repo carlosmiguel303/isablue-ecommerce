@@ -49,7 +49,12 @@ export class SumaryOrderComponent implements OnInit {
     this.userId = this.session.getItem('token')?.id || 0;
     this.userService.getCurrentUser().subscribe({
       next: data => { this.firstName = data.firstName; this.lastName = data.lastName; this.email = data.email; this.address = data.address; },
-      error: () => this.toastr.error('No pudimos cargar tus datos de entrega.')
+      error: () => {
+        // Sesión inválida/vencida: llevamos al login para no dejar al cliente con un error confuso.
+        this.session.clear();
+        this.toastr.info('Vuelve a iniciar sesión para completar tu compra.');
+        this.router.navigate(['/user/login'], { queryParams: { returnUrl: '/cart/sumary' } });
+      }
     });
     this.paymentService.getConfig().subscribe({
       next: c => { this.culqiConfigured = c.culqiConfigured; this.publicKey = c.publicKey || ''; },

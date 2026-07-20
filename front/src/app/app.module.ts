@@ -25,6 +25,7 @@ import { PromoAdminComponent } from './components/promo-admin/promo-admin.compon
 import { AdminPaymentsComponent } from './components/admin-payments/admin-payments.component';
 import { LandingComponent } from './components/landing/landing.component';
 import { WhatsappComponent } from './components/whatsapp/whatsapp.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { authGuard } from './guards/auth.guard';
 
 
@@ -81,7 +82,7 @@ const routes : Routes = [
     
   ],
   providers: [
- 
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })
