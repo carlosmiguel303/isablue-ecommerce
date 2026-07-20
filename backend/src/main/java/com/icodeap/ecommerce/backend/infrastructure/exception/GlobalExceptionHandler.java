@@ -46,7 +46,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, HttpServletRequest request) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error inesperado. Inténtalo nuevamente.", request, List.of(ex.getClass().getSimpleName()));
+        Throwable root = ex;
+        while (root.getCause() != null && root.getCause() != root) { root = root.getCause(); }
+        String rootMsg = root.getClass().getSimpleName() + ": " + root.getMessage();
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error inesperado. Inténtalo nuevamente.", request,
+                List.of(ex.getClass().getSimpleName(), rootMsg));
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest request, List<String> details) {
