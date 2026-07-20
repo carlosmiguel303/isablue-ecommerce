@@ -6,3 +6,19 @@
 .card-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 .mode-badge{background:#fef3e6;color:#b5674c;border:1px dashed #e0a86a;border-radius:10px;padding:.5rem .7rem;font-size:.78rem;font-weight:700;text-align:center;margin-bottom:.6rem}
 .test-card{display:inline-block;margin:.6rem 0;color:#c87a5b;font-weight:700;font-size:.82rem;cursor:pointer;text-decoration:underline}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:1.1rem 0 .9rem}
+.pay-methods button{background:#faf4ec;border:2px solid #ecdfd2;border-radius:12px;padding:.6rem;cursor:pointer;text-align:center;transition:.15s}
+.pay-methods button b{display:block;color:#4a3a30;font-size:1rem}
+.pay-methods button small{color:#a2917f;font-size:.72rem}
+.pay-methods button.sel{border-color:#7b3fb3;background:#f3ebfb}
+.pay-methods button.sel b{color:#7b3fb3}
+.yape-steps{color:#4a3a30;font-size:.9rem;margin:.6rem 0 .4rem}
+.yape-number{display:flex;justify-content:space-between;align-items:center;gap:.6rem;background:linear-gradient(120deg,#6a2fa0,#8f4fc4);color:#fff;border-radius:14px;padding:.9rem 1.1rem}
+.yape-number span{display:block;font-size:.7rem;opacity:.85;text-transform:uppercase;letter-spacing:.05em}
+.yape-number strong{font-size:1.5rem;font-weight:900;letter-spacing:.02em}
+.yape-number .yape-to{text-align:right}
+.yape-number .yape-to b{font-weight:800}
+.yape-panel input{width:100%;border:1px solid #ecdfd2;border-radius:10px;padding:.65rem .8rem;color:#4a3a30;background:#fdf9f4}
+.yape-panel input:focus{outline:0;border-color:#7b3fb3}
+.yape-btn{background:#7b3fb3!important;margin-top:.8rem}
+.yape-btn:hover{background:#6a2fa0!important}

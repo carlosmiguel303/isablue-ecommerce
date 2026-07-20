@@ -25,7 +25,7 @@
           <td>#{{p.orderId}}</td>
           <td class="amount">S/ {{p.amount | number:'1.2-2'}}</td>
           <td><span class="method" [class.sim]="p.method === 'simulado'">{{p.method}}</span></td>
-          <td><span class="badge-paid">Pagado</span></td>
+          <td><span class="badge-paid" [class.pending]="p.status === 'POR_CONFIRMAR'">{{p.status === 'POR_CONFIRMAR' ? 'Por confirmar' : 'Pagado'}}</span></td>
           <td>
             <a *ngIf="p.boletaUrl" [href]="p.boletaUrl" target="_blank" rel="noopener">{{p.boletaSerie}}-{{p.boletaNumber}}</a>
             <span *ngIf="!p.boletaUrl" class="muted">{{p.boletaSerie}}-{{p.boletaNumber}}</span>

@@ -1,23 +1,47 @@
 <app-header-user></app-header-user>
 <main class="success container">
-  <div class="success-card">
-    <div class="check">✓</div>
-    <h1>¡Pago completado!</h1>
-    <p>Gracias por tu compra en Isablue. Tu pedido fue registrado y tu boleta electrónica generada.</p>
+  <!-- YAPE: pedido por confirmar -->
+  <div class="success-card" *ngIf="payment?.method === 'yape'; else pagado">
+    <div class="check yape">🕒</div>
+    <h1>¡Pedido registrado!</h1>
+    <p>Recibimos tu pedido con pago por <b>Yape</b>. Vamos a confirmar tu pago y te contactamos por <b>WhatsApp</b> para coordinar la entrega.</p>
 
     <div class="ticket" *ngIf="payment">
-      <div class="ticket-row"><span>Boleta electrónica</span><b>{{payment.boletaSerie}}-{{payment.boletaNumber}}</b></div>
       <div class="ticket-row"><span>Pedido</span><b>#{{payment.orderId}}</b></div>
       <div class="ticket-row"><span>Cliente</span><b>{{payment.customerName}}</b></div>
-      <div class="ticket-row"><span>Total pagado</span><b>S/ {{payment.amount | number:'1.2-2'}}</b></div>
-      <div class="ticket-row"><span>Referencia</span><b>{{payment.reference}}</b></div>
-      <div class="ticket-row" *ngIf="payment.method === 'simulado'"><span>Modo</span><b class="test">Prueba (sin cobro real)</b></div>
+      <div class="ticket-row"><span>Total</span><b>S/ {{payment.amount | number:'1.2-2'}}</b></div>
+      <div class="ticket-row"><span>N° de operación</span><b>{{payment.reference}}</b></div>
+      <div class="ticket-row"><span>Estado</span><b class="test">Por confirmar</b></div>
     </div>
 
     <div class="actions">
-      <a *ngIf="payment?.boletaUrl" [href]="payment?.boletaUrl" target="_blank" rel="noopener" class="btn-primary-cta">Descargar boleta (PDF)</a>
-      <a routerLink="/" class="btn-ghost-cta">Seguir comprando</a>
+      <a href="https://wa.me/51920097746" target="_blank" rel="noopener" class="btn-wsp-cta">Escríbenos por WhatsApp</a>
+      <a routerLink="/tienda" class="btn-ghost-cta">Seguir comprando</a>
     </div>
-    <p class="note" *ngIf="payment && !payment.boletaUrl">La boleta oficial ante SUNAT se enviará automáticamente cuando se activen las credenciales de facturación.</p>
+    <p class="note">Si no se abrió WhatsApp automáticamente, toca el botón verde para enviarnos tu comprobante.</p>
   </div>
+
+  <!-- TARJETA: pago completado -->
+  <ng-template #pagado>
+    <div class="success-card">
+      <div class="check">✓</div>
+      <h1>¡Pago completado!</h1>
+      <p>Gracias por tu compra en Isablue. Tu pedido fue registrado y tu boleta electrónica generada.</p>
+
+      <div class="ticket" *ngIf="payment">
+        <div class="ticket-row"><span>Boleta electrónica</span><b>{{payment.boletaSerie}}-{{payment.boletaNumber}}</b></div>
+        <div class="ticket-row"><span>Pedido</span><b>#{{payment.orderId}}</b></div>
+        <div class="ticket-row"><span>Cliente</span><b>{{payment.customerName}}</b></div>
+        <div class="ticket-row"><span>Total pagado</span><b>S/ {{payment.amount | number:'1.2-2'}}</b></div>
+        <div class="ticket-row"><span>Referencia</span><b>{{payment.reference}}</b></div>
+        <div class="ticket-row" *ngIf="payment.method === 'simulado'"><span>Modo</span><b class="test">Prueba (sin cobro real)</b></div>
+      </div>
+
+      <div class="actions">
+        <a *ngIf="payment?.boletaUrl" [href]="payment?.boletaUrl" target="_blank" rel="noopener" class="btn-primary-cta">Descargar boleta (PDF)</a>
+        <a routerLink="/tienda" class="btn-ghost-cta">Seguir comprando</a>
+      </div>
+      <p class="note" *ngIf="payment && !payment.boletaUrl">La boleta oficial ante SUNAT se enviará automáticamente cuando se activen las credenciales de facturación.</p>
+    </div>
+  </ng-template>
 </main>

@@ -18,6 +18,15 @@ export class SumaryOrderComponent implements OnInit {
   firstName = ''; lastName = ''; email = ''; address = '';
   userId = 0;
   processing = false;
+
+  method: 'yape' | 'card' = 'yape';
+
+  // Yape
+  yape = { number: '985436488', name: 'Isablue Juguetes' };
+  operationNumber = '';
+  private readonly whatsapp = '51920097746';
+
+  // Tarjeta
   showCard = false;
   culqiConfigured = false;
   publicKey = '';
@@ -46,9 +55,46 @@ export class SumaryOrderComponent implements OnInit {
       next: c => { this.culqiConfigured = c.culqiConfigured; this.publicKey = c.publicKey || ''; },
       error: () => { this.culqiConfigured = false; }
     });
+    this.paymentService.getYapeInfo().subscribe({
+      next: y => { if (y?.number) { this.yape = y; } },
+      error: () => {}
+    });
   }
 
-  /** Botón "Pagar con tarjeta": con Culqi real abre su modal; sin llaves usa el formulario de prueba. */
+  setMethod(m: 'yape' | 'card'): void { this.method = m; this.showCard = false; }
+
+  // ---------- YAPE ----------
+  payYape(): void {
+    if (this.processing) return;
+    if (!this.items.length) { this.toastr.info('Tu carrito está vacío.'); return; }
+    this.processing = true;
+    const itemsText = this.items.map(i => `- ${i.quantity} x ${i.productName}`).join('\n');
+    const total = this.totalCart;
+    this.createOrder(orderId => {
+      this.paymentService.registerYape(orderId, this.operationNumber).subscribe({
+        next: result => {
+          this.cartService.clear();
+          this.session.setItem('lastPayment', result);
+          this.session.setItem('lastMethod', 'yape');
+          this.openWhatsApp(orderId, total, itemsText);
+          this.toastr.success('Pedido registrado. Te esperamos por WhatsApp.', '¡Gracias por tu compra!');
+          this.router.navigate(['/payment/success']);
+        },
+        error: err => this.fail(err?.error?.message || 'No se pudo registrar tu pedido.')
+      });
+    });
+  }
+
+  private openWhatsApp(orderId: number, total: number, itemsText: string): void {
+    const op = this.operationNumber ? `\nN° de operación Yape: ${this.operationNumber}` : '';
+    const msg = `¡Hola Isablue! 🧸 Acabo de yapear mi pedido.\n\n` +
+      `Pedido #${orderId}\nCliente: ${this.firstName} ${this.lastName}\n` +
+      `Total: S/ ${total.toFixed(2)}${op}\n\nProductos:\n${itemsText}\n\n` +
+      `Quedo atento(a) para coordinar la entrega. ¡Gracias!`;
+    window.open(`https://wa.me/${this.whatsapp}?text=` + encodeURIComponent(msg), '_blank');
+  }
+
+  // ---------- TARJETA ----------
   openCard(): void {
     if (!this.items.length) { this.toastr.info('Tu carrito está vacío.'); return; }
     if (this.culqiConfigured && this.publicKey && (window as any).Culqi) {
@@ -63,17 +109,14 @@ export class SumaryOrderComponent implements OnInit {
     this.card = { name: this.card.name || 'Cliente Demo', number: '4111 1111 1111 1111', exp: '09/28', cvv: '123' };
   }
 
-  /** Modo prueba (sin llaves): el backend simula el cargo. */
   pay(): void {
     if (this.processing) return;
     if (!this.items.length) { this.toastr.info('Tu carrito está vacío.'); return; }
     if (!this.card.number || !this.card.exp || !this.card.cvv) { this.toastr.error('Completa los datos de la tarjeta.'); return; }
-
     this.processing = true;
     this.createOrder(orderId => this.doCharge(orderId, null));
   }
 
-  /** Cobro real con Culqi.js: tokeniza la tarjeta en el modal de Culqi. */
   private payWithCulqi(): void {
     if (this.processing) return;
     this.processing = true;
@@ -84,7 +127,7 @@ export class SumaryOrderComponent implements OnInit {
       C.settings({ title: 'Isablue', currency: 'PEN', amount: Math.round(this.totalCart * 100) });
       (window as any).culqi = () => this.zone.run(() => this.onCulqi());
       C.open();
-      this.processing = false; // el modal de Culqi toma el control
+      this.processing = false;
     });
   }
 
@@ -98,24 +141,26 @@ export class SumaryOrderComponent implements OnInit {
     }
   }
 
+  private doCharge(orderId: number, token: string | null): void {
+    this.paymentService.charge(orderId, token).subscribe({
+      next: (result: PaymentResult) => {
+        this.cartService.clear();
+        this.session.setItem('lastPayment', result);
+        this.session.setItem('lastMethod', 'card');
+        this.toastr.success('Pago aprobado y boleta generada.', '¡Gracias por tu compra!');
+        this.router.navigate(['/payment/success']);
+      },
+      error: err => this.fail(err?.error?.message || 'No se pudo procesar el pago.')
+    });
+  }
+
+  // ---------- comunes ----------
   private createOrder(onCreated: (orderId: number) => void): void {
     const products = this.items.map(i => new OrderProduct(null, i.productId, i.quantity, i.price));
     const order = new Order(null, new Date(), products, this.userId, OrderState.CANCELLED);
     this.orderService.createOrder(order).subscribe({
       next: created => onCreated(created.id!),
       error: () => this.fail('No pudimos preparar tu orden. Revisa tus datos.')
-    });
-  }
-
-  private doCharge(orderId: number, token: string | null): void {
-    this.paymentService.charge(orderId, token).subscribe({
-      next: (result: PaymentResult) => {
-        this.cartService.clear();
-        this.session.setItem('lastPayment', result);
-        this.toastr.success('Pago aprobado y boleta generada.', '¡Gracias por tu compra!');
-        this.router.navigate(['/payment/success']);
-      },
-      error: err => this.fail(err?.error?.message || 'No se pudo procesar el pago.')
     });
   }
 
