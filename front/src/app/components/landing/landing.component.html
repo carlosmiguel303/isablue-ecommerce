@@ -1,0 +1,123 @@
+<app-header-user></app-header-user>
+
+<!-- Carrusel de banners (editable por el admin) -->
+<app-promo-carousel></app-promo-carousel>
+
+<main class="landing">
+  <!-- Barra de beneficios -->
+  <section class="lbenefits container">
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 9h4l3 3v5h-7"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg><div><b>Entrega a domicilio</b><small>A todo el Perú</small></div></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg><div><b>Pago 100% seguro</b><small>Tarjeta, Yape y Plin</small></div></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 7 9 18l-5-5"/></svg><div><b>Calidad garantizada</b><small>Productos revisados</small></div></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 11.5a8.4 8.4 0 0 1-12 7.6L3 21l1.9-6A8.4 8.4 0 1 1 21 11.5z"/></svg><div><b>Atención por WhatsApp</b><small>Te asesoramos</small></div></div>
+  </section>
+
+  <!-- Líneas de productos -->
+  <section class="container lines">
+    <div class="lines-head">
+      <div>
+        <span class="eyebrow">NUESTRO CATÁLOGO</span>
+        <h2>Conoce nuestras líneas de productos</h2>
+      </div>
+      <a routerLink="/tienda" class="see-all">Ver toda la tienda →</a>
+    </div>
+    <div class="lines-grid">
+      <a class="line-tile" *ngFor="let c of categories; let i = index" routerLink="/tienda"
+         [style.background]="gradientFor(i)">
+        <span class="line-name">{{c.name}}</span>
+        <span class="line-go">Explorar →</span>
+      </a>
+      <a class="line-tile fallback" *ngIf="!categories.length" routerLink="/tienda" [style.background]="gradientFor(0)">
+        <span class="line-name">Ver catálogo</span><span class="line-go">Explorar →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Destacados -->
+  <section class="container featured" *ngIf="featured.length">
+    <div class="lines-head">
+      <div>
+        <span class="eyebrow">LO MÁS BUSCADO</span>
+        <h2>Destacados de la semana</h2>
+      </div>
+      <a routerLink="/tienda" class="see-all">Ver más →</a>
+    </div>
+    <div class="feat-grid">
+      <a class="feat-card" *ngFor="let p of featured" [routerLink]="['/cart/detailproduct', p.id]">
+        <div class="feat-img"><img [src]="p.urlImage" [alt]="p.name" loading="lazy" (error)="onImageError($event)"></div>
+        <div class="feat-body">
+          <h3>{{p.name}}</h3>
+          <div class="feat-price">S/ {{p.price | number:'1.2-2'}}</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Banner presentación -->
+  <section class="container present">
+    <div class="present-in">
+      <div class="present-copy">
+        <span class="eyebrow light">SOMOS ISABLUE</span>
+        <h2>Una tienda de juguetes en la que puedes confiar</h2>
+        <p>Elegimos cada juguete por su calidad, su seguridad y lo que aporta al desarrollo de los niños. Compra con respaldo y recíbelo en la puerta de tu casa.</p>
+        <a routerLink="/tienda" class="btn-solid">Explorar la tienda</a>
+      </div>
+      <div class="present-art"><img src="assets/images/perfil.jpg" alt="Isablue"></div>
+    </div>
+  </section>
+
+  <!-- Quiénes somos -->
+  <section class="container about" id="nosotros">
+    <div class="about-media"><img src="assets/images/oso.png" alt="Peluche Isablue"></div>
+    <div class="about-copy">
+      <span class="eyebrow">QUIÉNES SOMOS</span>
+      <h2>Una juguetería con criterio, no solo con vitrina</h2>
+      <p>Isablue nació para acercar a las familias peruanas juguetes que valen la pena: los revisamos, los probamos y los elegimos por su calidad, su seguridad y lo que aportan al desarrollo de los niños.</p>
+      <ul class="ticks">
+        <li>Productos seleccionados uno por uno</li>
+        <li>Materiales seguros para cada edad</li>
+        <li>Acompañamiento antes y después de tu compra</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Cómo comprar -->
+  <section class="container steps">
+    <div class="steps-head">
+      <span class="eyebrow">CÓMO COMPRAR</span>
+      <h2>De la tienda a tu casa, en 3 pasos</h2>
+    </div>
+    <div class="steps-grid">
+      <div><span>1</span><b>Elige</b><p>Explora la tienda y agrega tus juguetes favoritos al carrito.</p></div>
+      <div><span>2</span><b>Paga seguro</b><p>Paga con tarjeta, Yape o Plin. Recibes tu boleta electrónica.</p></div>
+      <div><span>3</span><b>Recíbelo en casa</b><p>Coordinamos el envío y lo entregamos en tu puerta.</p></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container cta-in">
+      <div>
+        <h2>¿List@ para encontrar el juguete perfecto?</h2>
+        <p>Descubre toda nuestra selección en la tienda Isablue.</p>
+      </div>
+      <div class="cta-btns">
+        <a routerLink="/tienda" class="btn-solid">Ir a la tienda</a>
+        <a href="https://www.facebook.com/isabluejuguetes" target="_blank" rel="noopener" class="btn-line light">Escríbenos</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="lfooter">
+  <div class="container lfooter-grid">
+    <div>
+      <div class="lf-brand"><img src="assets/images/perfil.jpg" alt="Isablue"><div><strong>Isablue</strong><small>JUGUETES Y ACCESORIOS</small></div></div>
+      <p>Juguetes y accesorios para crecer imaginando. Lima, Perú.</p>
+    </div>
+    <div><strong>Explora</strong><a routerLink="/">Inicio</a><a routerLink="/tienda">Tienda</a><a href="#nosotros">Nosotros</a></div>
+    <div><strong>Compra</strong><a routerLink="/tienda">Catálogo</a><a routerLink="/cart/sumary">Carrito</a><a routerLink="/user/login">Mi cuenta</a></div>
+    <div><strong>Contacto</strong><a href="https://www.facebook.com/isabluejuguetes" target="_blank" rel="noopener">Facebook</a><span>WhatsApp 920097746</span><span>Envíos a todo el Perú</span></div>
+  </div>
+  <div class="container lf-legal">© 2026 Isablue · Juguetes y Accesorios · Lima, Perú · Compra segura</div>
+</footer>

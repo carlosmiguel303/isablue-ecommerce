@@ -20,17 +20,25 @@ import { PaymentSuccessComponent } from './components/payment-success/payment-su
 import { RegistrationComponent } from './components/authetication/registration/registration.component';
 import { LoginComponent } from './components/authetication/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { PromoCarouselComponent } from './components/promo-carousel/promo-carousel.component';
+import { PromoAdminComponent } from './components/promo-admin/promo-admin.component';
+import { AdminPaymentsComponent } from './components/admin-payments/admin-payments.component';
+import { LandingComponent } from './components/landing/landing.component';
+import { WhatsappComponent } from './components/whatsapp/whatsapp.component';
 import { authGuard } from './guards/auth.guard';
 
 
 const routes : Routes = [
-  {path:'', component:HomeComponent},
+  {path:'', component:LandingComponent},
+  {path:'tienda', component:HomeComponent},
   {path:'admin/product', component: ProductListComponent, canActivate: [authGuard], data: {role: 'ADMIN'}},
   {path:'admin/product/addproduct', component: ProductAddComponent, canActivate: [authGuard], data: {role: 'ADMIN'}},
   {path: 'admin/product/update/:id', component:ProductAddComponent, canActivate: [authGuard], data: {role: 'ADMIN'} },
   {path: 'admin/category', component:CategoryListComponent, canActivate: [authGuard], data: {role: 'ADMIN'} },
   {path: 'admin/category/add', component:CategoryAddComponent, canActivate: [authGuard], data: {role: 'ADMIN'}},
   {path: 'admin/category/update/:id', component:CategoryAddComponent, canActivate: [authGuard], data: {role: 'ADMIN'}},
+  {path: 'admin/promociones', component:PromoAdminComponent, canActivate: [authGuard], data: {role: 'ADMIN'}},
+  {path: 'admin/pedidos', component:AdminPaymentsComponent, canActivate: [authGuard], data: {role: 'ADMIN'}},
   {path: 'cart/detailproduct/:id', component:DetailProductComponent},
   {path: 'cart/sumary', component: SumaryOrderComponent, canActivate: [authGuard]},
   {path: 'payment/success', component: PaymentSuccessComponent},
@@ -56,7 +64,12 @@ const routes : Routes = [
     PaymentSuccessComponent,
     RegistrationComponent,
     LoginComponent,
-    LogoutComponent
+    LogoutComponent,
+    PromoCarouselComponent,
+    PromoAdminComponent,
+    AdminPaymentsComponent,
+    LandingComponent,
+    WhatsappComponent
   ],
   imports: [
     BrowserModule,

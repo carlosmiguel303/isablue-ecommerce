@@ -1,0 +1,11 @@
+.admin-nav{background:#4a3a30;box-shadow:0 6px 20px rgba(58,44,36,.25);padding:.5rem 0}
+.admin-nav .navbar-brand{font-weight:700;color:#fff;display:flex;align-items:center;gap:.55rem}
+.admin-nav .navbar-brand b{color:#f0cf8f;font-weight:800}
+.admin-nav .dot{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#c87a5b,#e0a86a);color:#fff;font-weight:900;font-size:.85rem}
+.admin-nav .nav-link{color:#e6d7c8 !important;font-weight:600;border-radius:9px;padding:.5rem .9rem !important;transition:.18s}
+.admin-nav .nav-link:hover{background:rgba(255,255,255,.08);color:#fff !important}
+.admin-nav .nav-link.active{background:#c87a5b;color:#fff !important}
+.admin-nav .ver-tienda{color:#f0cf8f !important}
+.admin-nav .salir{border:1px solid rgba(255,255,255,.25)}
+.admin-nav .salir:hover{background:#c0554a;border-color:#c0554a}
+@media(max-width:991px){.admin-nav .nav-link{margin:.15rem 0}}

@@ -32,15 +32,15 @@ public class OrderController {
     public ResponseEntity<Order> save(@RequestBody Order order, Authentication authentication) {
         User currentUser = userService.findByEmail(authentication.getName());
         order.setUserId(currentUser.getId());
-        order.setOrderState(OrderState.CANCELLED);
+        order.setOrderState(OrderState.PENDING);
 
         if (order.getOrderProducts() == null || order.getOrderProducts().isEmpty()) {
             throw new BusinessException("La orden debe contener al menos un producto");
         }
 
         for (OrderProduct item : order.getOrderProducts()) {
-            if (item.getQuantity() == null || item.getQuantity().compareTo(BigDecimal.ZERO) <= 0) {
-                throw new BusinessException("La cantidad del producto debe ser mayor a cero");
+            if (item.getQuantity() == null || item.getQuantity().compareTo(BigDecimal.ONE) < 0 || item.getQuantity().compareTo(BigDecimal.TEN) > 0) {
+                throw new BusinessException("La cantidad debe estar entre 1 y 10 unidades");
             }
             item.setPrice(productService.findById(item.getProductId()).getPrice());
         }

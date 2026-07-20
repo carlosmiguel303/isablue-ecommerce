@@ -1,0 +1,13 @@
+.idea/
+.vscode/
+.env
+uploads/
+front/node_modules/
+front/dist/
+backend/target/
+backend/data/
+backend/uploads/
+*.mv.db
+*.trace.db
+*.log
+.claude/

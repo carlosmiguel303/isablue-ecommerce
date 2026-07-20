@@ -1,0 +1,16 @@
+.wsp-float{
+  position:fixed;right:20px;bottom:20px;z-index:1050;
+  display:flex;align-items:center;gap:.55rem;
+  background:#25d366;color:#fff;
+  border-radius:999px;padding:.7rem;
+  box-shadow:0 10px 26px rgba(37,211,102,.45);
+  transition:.25s;text-decoration:none;
+}
+.wsp-float:hover{background:#1fb457;padding-right:1.1rem;color:#fff}
+.wsp-float svg{width:30px;height:30px;flex:0 0 auto}
+.wsp-label{max-width:0;overflow:hidden;white-space:nowrap;font-weight:800;font-size:.9rem;transition:max-width .25s}
+.wsp-float:hover .wsp-label{max-width:120px}
+@media(max-width:560px){
+  .wsp-float{right:14px;bottom:14px}
+  .wsp-float:hover .wsp-label{max-width:0}
+}

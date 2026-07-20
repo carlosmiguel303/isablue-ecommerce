@@ -33,8 +33,10 @@ public class DataInitializer {
             @Value("${app.demo.user.password:cliente123}") String userPassword
     ) {
         return args -> {
-            if (users.count() == 0) {
+            if (users.findByEmail(adminEmail).isEmpty()) {
                 users.save(createUser(adminEmail, "Administrador", "IsaBlue", "999999999", adminPassword, UserType.ADMIN, encoder));
+            }
+            if (users.findByEmail(userEmail).isEmpty()) {
                 users.save(createUser(userEmail, "Cliente", "Demo", "988888888", userPassword, UserType.USER, encoder));
             }
 

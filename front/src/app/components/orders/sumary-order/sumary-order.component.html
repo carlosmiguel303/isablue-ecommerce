@@ -1,70 +1,66 @@
-<!-- Header User-->
 <app-header-user></app-header-user>
+<main class="checkout container">
+  <a routerLink="/" class="back">← Seguir comprando</a>
+  <div class="title"><div><span>COMPRA SEGURA</span><h1>Tu carrito</h1></div><p>{{items.length}} producto(s)</p></div>
 
-<!-- Page Content -->
-<div class="container">
+  <div class="checkout-grid" *ngIf="items.length; else emptyCart">
+    <section class="cart-items">
+      <article *ngFor="let item of items">
+        <div class="miniature">IB</div>
+        <div class="item-name"><h2>{{item.productName}}</h2><small>Vendido por Isablue</small></div>
+        <div><small>Cantidad</small><strong>{{item.quantity}}</strong></div>
+        <div><small>Precio</small><strong>S/ {{item.getTotalPriceItem() | number:'1.2-2'}}</strong></div>
+        <button (click)="deleteItemCart(item.productId)" aria-label="Quitar producto">×</button>
+      </article>
+    </section>
 
-  <!-- Page Heading/Breadcrumbs -->
-  <h1 class="mt-4 mb-3">
-    Spring eCommerce <small>Resumen de la orden</small>
-  </h1>
+    <aside>
+      <h2>Resumen</h2>
+      <div class="line"><span>Subtotal</span><b>S/ {{totalCart | number:'1.2-2'}}</b></div>
+      <div class="line"><span>Envío</span><small>Se coordina después de la compra</small></div>
+      <hr>
+      <div class="total"><span>Total</span><b>S/ {{totalCart | number:'1.2-2'}}</b></div>
 
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-    <li class="breadcrumb-item active">Orden</li>
-  </ol>
-
-  <!-- Blog Post -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-lg-9">
-          <div class="card-body">
-            <h5 class="card-title">
-              DATOS ORDEN
-            </h5>
-            <h6><strong> Nombre: </strong> {{firstName}}  {{lastName}}</h6>
-            <h6><strong>Correo: </strong> {{email}}  </h6>
-            <h6><strong> Dirección: </strong> {{address}}</h6>
-
-            <h5 class="card-title">
-              PRODUCTOS
-            </h5>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Producto</th>
-                    <th scope="col">Precio</th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Total</th>
-                    <th>Eliminar</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let item of items">
-                    <td>{{item.productName}}</td>
-                    <td>{{item.price}}</td>
-                    <td>{{item.quantity}}</td>
-                    <td>{{item.getTotalPriceItem()}}</td>
-                    <td><button class="btn btn-danger" (click)="deleteItemCart(item.productId)" >Quitar</button> </td>
-                  </tr>
-                </tbody>
-              </table>
-          </div>
-        </div>
-
-
-        <div class="col-lg-3">
-          <h2 class="card-title">Resumen Orden</h2>
-          <ul class="list-group">
-            <li class="list-group-item">
-              <h5> Total: {{totalCart}}</h5>
-            </li>
-            <a class="btn btn-dark" (click)="generateOrder()">Pagar con Paypal</a>
-          </ul>
-        </div>
+      <div class="buyer">
+        <strong>Datos de entrega</strong>
+        <span>{{firstName}} {{lastName}}</span>
+        <span>{{email}}</span>
+        <span>{{address}}</span>
       </div>
-    </div>
+
+      <!-- Botón inicial -->
+      <button class="pay" *ngIf="!showCard" (click)="openCard()">
+        <span>Pagar con tarjeta</span>
+        <small>Culqi · Visa, Mastercard, Amex</small>
+      </button>
+
+      <!-- Formulario de tarjeta -->
+      <div class="card-form" *ngIf="showCard">
+        <div class="mode-badge" *ngIf="!culqiConfigured">Modo prueba · no se cobra dinero real</div>
+        <label>Nombre en la tarjeta</label>
+        <input [(ngModel)]="card.name" name="cardName" placeholder="Como aparece en la tarjeta">
+        <label>Número de tarjeta</label>
+        <input [(ngModel)]="card.number" name="cardNumber" placeholder="0000 0000 0000 0000" inputmode="numeric" maxlength="19">
+        <div class="card-row">
+          <div><label>Vencimiento</label><input [(ngModel)]="card.exp" name="cardExp" placeholder="MM/AA" maxlength="5"></div>
+          <div><label>CVV</label><input [(ngModel)]="card.cvv" name="cardCvv" placeholder="123" inputmode="numeric" maxlength="4"></div>
+        </div>
+        <a class="test-card" *ngIf="!culqiConfigured" (click)="useTestCard()">Usar tarjeta de prueba</a>
+        <button class="pay" (click)="pay()" [disabled]="processing">
+          <span>{{processing ? 'Procesando pago…' : 'Pagar S/ ' + (totalCart | number:'1.2-2')}}</span>
+          <small>Se emitirá tu boleta electrónica</small>
+        </button>
+      </div>
+
+      <p class="safe">🔒 Isablue nunca almacena los datos de tu tarjeta.</p>
+    </aside>
   </div>
-</div>
-<!-- /.container -->
+
+  <ng-template #emptyCart>
+    <div class="empty">
+      <span>🛒</span><h2>Tu carrito está esperando</h2>
+      <p>Encuentra un juguete especial y vuelve por aquí.</p>
+      <a routerLink="/" class="btn btn-primary">Ver productos</a>
+    </div>
+  </ng-template>
+</main>

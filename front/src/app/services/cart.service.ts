@@ -5,27 +5,36 @@ import { ItemCart } from '../common/item-cart';
   providedIn: 'root'
 })
 export class CartService {
-
+  private readonly storageKey = 'isablue-cart';
   private items: Map<number,ItemCart> = new Map<number, ItemCart>();
 
   itemList : ItemCart [] = [];
 
 
 
-  constructor() { }
+  constructor() { this.restore(); }
 
   addItemCart(itemCart : ItemCart){
+    const current = this.items.get(itemCart.productId);
+    if (current) itemCart.quantity += current.quantity;
+    itemCart.quantity = Math.min(Math.max(itemCart.quantity, 1), 10);
     this.items.set(itemCart.productId, itemCart);
+    this.persist();
   }
 
   deleteItemCart(productId:number){
     this.items.delete(productId);
-    this.items.forEach(
-      (valor, clave)=>{
-        console.log('esta es la clave y su valor: '+clave, valor);
-      }
+    this.persist();
+  }
 
-    );
+  count(): number { return Array.from(this.items.values()).reduce((sum, item) => sum + item.quantity, 0); }
+  clear(): void { this.items.clear(); this.persist(); }
+  private persist(): void { localStorage.setItem(this.storageKey, JSON.stringify(Array.from(this.items.values()))); }
+  private restore(): void {
+    try {
+      const saved = JSON.parse(localStorage.getItem(this.storageKey) || '[]');
+      saved.forEach((i: any) => this.items.set(i.productId, new ItemCart(i.productId, i.productName, Number(i.quantity), Number(i.price))));
+    } catch { localStorage.removeItem(this.storageKey); }
   }
   
   totalCart(){

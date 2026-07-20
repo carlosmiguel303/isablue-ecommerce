@@ -1,96 +1,23 @@
-<nav class="navbar navbar-expand-lg fixed-top pc-navbar">
-  <div class="container nav-container">
-
-    <!-- Logo -->
-    <a class="navbar-brand logo-wrapper" [routerLink]="['/']">
-      <img
-        src="assets/images/oso.png"
-        alt="IsaBlue"
-        class="logo-navbar">
+<div class="announcement">Envíos a todo el Perú · Compra protegida · Atención personalizada</div>
+<nav class="navbar navbar-expand-lg sticky-top store-nav">
+  <div class="container">
+    <a class="brand" routerLink="/" aria-label="Isablue, inicio">
+      <img class="brand-logo" src="assets/images/perfil.jpg" alt="Isablue Juguetes y Accesorios"><span><strong>Isablue</strong><small>JUGUETES Y ACCESORIOS</small></span>
     </a>
-
-    <!-- Botón móvil -->
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation">
-
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Menú -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-      <!-- Buscador -->
-      <form class="d-flex mx-lg-auto search-box" (ngSubmit)="buscar()">
-
-        <input
-          class="form-control"
-          name="q"
-          [(ngModel)]="q"
-          type="search"
-          placeholder="Buscar juguetes, Montessori, bebés, rompecabezas...">
-
-        <button
-          class="btn btn-warning"
-          type="submit">
-          Buscar
-        </button>
-
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#storeMenu" aria-label="Abrir menú"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="storeMenu">
+      <form class="search" (ngSubmit)="buscar()">
+        <span aria-hidden="true">⌕</span><input name="q" [(ngModel)]="q" type="search" placeholder="¿Qué estás buscando?" aria-label="Buscar productos">
+        <button type="submit">Buscar</button>
       </form>
-
-      <!-- Opciones -->
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/']">
-            Inicio
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/cart/sumary']">
-            Carrito
-          </a>
-        </li>
-
-        <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" [routerLink]="['/admin/product']">
-            Admin
-          </a>
-        </li>
-
-        <li class="nav-item" *ngIf="!isLogged()">
-          <a
-            class="btn btn-outline-light btn-sm"
-            [routerLink]="['/user/login']">
-            Ingresar
-          </a>
-        </li>
-
-        <li class="nav-item" *ngIf="!isLogged()">
-          <a
-            class="btn btn-light btn-sm"
-            [routerLink]="['/user/register']">
-            Crear cuenta
-          </a>
-        </li>
-
-        <li class="nav-item" *ngIf="isLogged()">
-          <button
-            class="btn btn-outline-light btn-sm"
-            (click)="logout()">
-            Salir
-          </button>
-        </li>
-
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li><a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Inicio</a></li>
+        <li><a class="nav-link" routerLink="/tienda" routerLinkActive="active">Tienda</a></li>
+        <li *ngIf="isAdmin()"><a class="nav-link" routerLink="/admin/product">Administrar</a></li>
+        <li *ngIf="!isLogged()"><a class="nav-link" routerLink="/user/login">Mi cuenta</a></li>
+        <li><a class="cart-link" routerLink="/cart/sumary" aria-label="Ver carrito">🛒 <span>Carrito</span><b *ngIf="cartCount()">{{cartCount()}}</b></a></li>
+        <li *ngIf="isLogged()"><button class="logout" (click)="logout()">Salir</button></li>
       </ul>
-
     </div>
-
   </div>
 </nav>

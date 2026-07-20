@@ -1,0 +1,19 @@
+.promo-carousel{position:relative;overflow:hidden}
+.slides{display:flex;transition:transform .6s cubic-bezier(.6,.05,.2,1)}
+.slide{min-width:100%}
+.slide-inner{display:flex;align-items:center;justify-content:space-between;gap:2rem;min-height:230px;padding:1.6rem 1rem}
+.slide-copy{max-width:640px}
+.slide-copy h2{font-weight:900;font-size:clamp(1.5rem,3.2vw,2.5rem);letter-spacing:-.02em;margin:0 0 .5rem;line-height:1.05}
+.slide-copy p{font-size:1.02rem;opacity:.92;margin:0 0 1.1rem;line-height:1.5}
+.promo-btn{display:inline-block;background:#fff;font-weight:800;padding:.7rem 1.4rem;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.14)}
+.slide-media{flex:0 0 auto}
+.slide-media img{height:180px;width:180px;object-fit:cover;border-radius:20px;box-shadow:0 14px 34px rgba(0,0,0,.2)}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.85);color:#4a3a30;font-size:1.6rem;line-height:1;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.15);display:grid;place-items:center}
+.nav:hover{background:#fff}
+.nav.prev{left:14px}.nav.next{right:14px}
+.dots{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:.4rem}
+.dots button{width:9px;height:9px;border-radius:50%;border:0;background:rgba(255,255,255,.55);cursor:pointer;padding:0}
+.dots button.active{background:#fff;width:24px;border-radius:6px}
+.edit-promos{position:absolute;top:12px;right:16px;background:rgba(74,58,48,.88);color:#fff;font-size:.75rem;font-weight:700;padding:.4rem .75rem;border-radius:999px}
+.edit-promos:hover{background:#4a3a30;color:#fff}
+@media(max-width:760px){.slide-media{display:none}.slide-inner{min-height:190px;text-align:center;justify-content:center}.slide-copy{max-width:none}}

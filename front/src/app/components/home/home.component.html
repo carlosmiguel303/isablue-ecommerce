@@ -1,176 +1,61 @@
 <app-header-user></app-header-user>
-<main>
-  <!-- Banner principal estilo Coolbox, adaptado a IsaBlue -->
-  <section class="isablue-hero-slider">
-    <div id="isablueBanner" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4300">
-      <div class="carousel-indicators isablue-indicators">
-        <button type="button" data-bs-target="#isablueBanner" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Banner 1"></button>
-        <button type="button" data-bs-target="#isablueBanner" data-bs-slide-to="1" aria-label="Banner 2"></button>
-        <button type="button" data-bs-target="#isablueBanner" data-bs-slide-to="2" aria-label="Banner 3"></button>
+<app-promo-carousel></app-promo-carousel>
+
+<main class="shop container">
+  <div class="shop-top">
+    <div>
+      <span class="crumb"><a routerLink="/">Inicio</a> · Tienda</span>
+      <h1>{{categoryName(selectedCategory)}}</h1>
+    </div>
+    <p class="result">{{filteredProducts.length}} producto(s)<span *ngIf="term"> · “{{term}}”</span></p>
+  </div>
+
+  <div class="shop-layout">
+    <!-- Sidebar de categorías -->
+    <aside class="shop-aside">
+      <h3>Categorías</h3>
+      <ul class="cat-list">
+        <li *ngFor="let c of categories">
+          <button [class.active]="selectedCategory === c.id" (click)="selectCategory(c.id)">
+            <span>{{c.name}}</span><b>{{countByCategory(c.id)}}</b>
+          </button>
+        </li>
+      </ul>
+      <div class="aside-help">
+        <strong>¿Necesitas ayuda?</strong>
+        <p>Escríbenos y te asesoramos por WhatsApp.</p>
+        <a href="https://www.facebook.com/isabluejuguetes" target="_blank" rel="noopener">Contactar →</a>
       </div>
+    </aside>
 
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="banner-slide banner-main">
-            <div class="banner-copy">
-              <span class="banner-tag">IsaBlue Juguetes · Ecommerce real</span>
-              <h1>Juguetes que inspiran imaginación y aprendizaje</h1>
-              <p>Didácticos, Montessori, bebés, rompecabezas y regalos infantiles en una tienda online lista para vender.</p>
-              <div class="banner-actions">
-                <a href="#productos" class="btn btn-warning btn-lg">Comprar juguetes</a>
-                <a [routerLink]="['/user/register']" class="btn btn-light btn-lg">Crear cuenta</a>
-              </div>
-            </div>
-            <div class="banner-product-card">
-              <div class="banner-badge">Oferta</div>
-              <div class="toy-scene">
-                <span class="toy-icon teddy">🧸</span>
-                <span class="toy-icon puzzle">🧩</span>
-                <span class="toy-icon car">🚗</span>
-              </div>
-              <div class="product-offer">
-                <h3>Pack aprender jugando</h3>
-                <p>Juguetes educativos para niños curiosos.</p>
-                <strong>S/ 49.90</strong>
-              </div>
-            </div>
-          </div>
+    <!-- Grilla de productos -->
+    <section class="shop-grid" *ngIf="filteredProducts.length; else vacio">
+      <article class="card" *ngFor="let p of filteredProducts">
+        <a [routerLink]="['/cart/detailproduct', p.id]" class="card-img">
+          <img [src]="p.urlImage" [alt]="p.name" loading="lazy" (error)="onImageError($event)">
+        </a>
+        <div class="card-body">
+          <small class="cat">{{categoryName(p.categoryId)}}</small>
+          <a [routerLink]="['/cart/detailproduct', p.id]" class="card-title">{{p.name}}</a>
+          <div class="rating"><span>★★★★★</span></div>
+          <div class="price">S/ {{p.price | number:'1.2-2'}}</div>
+          <button class="add-cart" (click)="addToCart(p)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.5 12h11l2-8H6"/></svg>
+            Añadir al carrito
+          </button>
         </div>
+      </article>
+    </section>
 
-        <div class="carousel-item">
-          <div class="banner-slide banner-baby">
-            <div class="banner-copy">
-              <span class="banner-tag">Estimulación temprana</span>
-              <h1>Juguetes seguros para bebés y primera infancia</h1>
-              <p>Texturas, colores, sonidos y productos pensados para desarrollar motricidad y creatividad.</p>
-              <div class="banner-actions">
-                <a href="#productos" class="btn btn-warning btn-lg">Ver bebés</a>
-              </div>
-            </div>
-            <div class="banner-product-card light-card">
-              <div class="banner-badge">Nuevo</div>
-              <div class="toy-scene baby-scene">
-                <span class="toy-icon baby">👶</span>
-                <span class="toy-icon blocks">🧱</span>
-                <span class="toy-icon ball">⚽</span>
-              </div>
-              <div class="product-offer">
-                <h3>Pack bebé feliz</h3>
-                <p>Estimulación con juego y seguridad.</p>
-                <strong>S/ 69.90</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="carousel-item">
-          <div class="banner-slide banner-montessori">
-            <div class="banner-copy">
-              <span class="banner-tag">Montessori y creatividad</span>
-              <h1>Rompecabezas, bloques y juguetes didácticos</h1>
-              <p>Opciones ideales para casa, colegio, regalos y aprendizaje divertido.</p>
-              <div class="banner-actions">
-                <a href="#productos" class="btn btn-warning btn-lg">Ver ofertas</a>
-              </div>
-            </div>
-            <div class="banner-product-card">
-              <div class="banner-badge">Top</div>
-              <div class="toy-scene montessori-scene">
-                <span class="toy-icon art">🎨</span>
-                <span class="toy-icon dino">🦖</span>
-                <span class="toy-icon gift">🎁</span>
-              </div>
-              <div class="product-offer">
-                <h3>Combo educativo</h3>
-                <p>Aprendizaje, memoria y concentración.</p>
-                <strong>S/ 89.90</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Franja de categorías como Coolbox -->
-  <section class="quick-categories">
-    <a href="#productos" class="quick-card"><span>🧸</span><strong>Didácticos</strong></a>
-    <a href="#productos" class="quick-card"><span>👶</span><strong>Bebés</strong></a>
-    <a href="#productos" class="quick-card"><span>🧩</span><strong>Rompecabezas</strong></a>
-    <a href="#productos" class="quick-card"><span>🚗</span><strong>Vehículos</strong></a>
-    <a href="#productos" class="quick-card"><span>🎨</span><strong>Creatividad</strong></a>
-    <a href="#productos" class="quick-card"><span>🦖</span><strong>Dinosaurios</strong></a>
-    <a href="#productos" class="quick-card"><span>🎁</span><strong>Ofertas</strong></a>
-  </section>
-
-  <!-- Debajo del banner: cosas que ofrecemos -->
-  <section class="offer-row">
-    <div class="offer-card">
-      <span class="offer-discount">-10%</span>
-      <h3>Continuar viendo</h3>
-      <div class="offer-icon">🧸</div>
-      <p>Juguetes didácticos para niños</p>
-    </div>
-    <div class="offer-card">
-      <span class="offer-discount green">Nuevo</span>
-      <h3>Lo último</h3>
-      <div class="offer-icon">🧩</div>
-      <p>Rompecabezas y juegos educativos</p>
-    </div>
-    <div class="offer-card">
-      <span class="offer-discount">-15%</span>
-      <h3>Ofertas IsaBlue</h3>
-      <div class="offer-icon">🎁</div>
-      <p>Regalos infantiles con descuento</p>
-    </div>
-    <div class="offer-card">
-      <span class="offer-discount green">Top</span>
-      <h3>Lo más vendido</h3>
-      <div class="offer-icon">🚗</div>
-      <p>Carritos, bloques y juguetes favoritos</p>
-    </div>
-  </section>
-
-  <section class="container benefits">
-    <div><strong>🚚 Delivery rápido</strong><span>Lima, Callao y envíos coordinados</span></div>
-    <div><strong>🧸 Juguetes educativos</strong><span>Didácticos, madera y Montessori</span></div>
-    <div><strong>💳 Pago seguro</strong><span>Flujo de compra integrado</span></div>
-    <div><strong>⚙️ Panel admin</strong><span>Gestión de productos y pedidos</span></div>
-  </section>
-
-  <section class="container promo-grid">
-    <div class="promo pink"><span>Estimulación temprana</span><h2>Juguetes para aprender jugando</h2><p>Opciones seguras para bebés y niños pequeños.</p></div>
-    <div class="promo blue"><span>Montessori y madera</span><h2>Productos didácticos para desarrollar habilidades</h2><p>Selección ideal para casa, colegio y regalos.</p></div>
-  </section>
-
-  <section class="container feature-banners">
-    <div class="feature-card"><img src="assets/images/toy-montessori.svg" alt="Montessori"><div><h3>Montessori</h3><p>Coordinación, lógica y motricidad.</p></div></div>
-    <div class="feature-card"><img src="assets/images/toy-car.svg" alt="Carritos"><div><h3>Vehículos</h3><p>Carros, pistas y diversión.</p></div></div>
-    <div class="feature-card"><img src="assets/images/toy-puzzle.svg" alt="Rompecabezas"><div><h3>Rompecabezas</h3><p>Concentración y memoria.</p></div></div>
-  </section>
-
-  <section class="container" id="productos">
-    <div class="section-title">
-      <div><span>Catálogo IsaBlue</span><h2>Juguetes destacados</h2></div>
-      <p>{{filteredProducts.length}} productos disponibles</p>
-    </div>
-
-    <div class="row g-4" *ngIf="filteredProducts.length > 0; else empty">
-      <div *ngFor="let p of filteredProducts" class="col-12 col-sm-6 col-lg-3">
-        <article class="product-card h-100">
-          <div class="discount">Nuevo</div>
-          <div class="img-wrap"><img [src]="p.urlImage" [alt]="p.name" (error)="onImageError($event)"></div>
-          <div class="product-body">
-            <span class="code">{{p.code}}</span>
-            <h3>{{p.name}}</h3>
-            <p>{{p.description}}</p>
-            <div class="price">S/ {{p.price}}</div>
-            <a [routerLink]="['/cart/detailproduct', p.id]" class="btn btn-dark w-100">Ver producto</a>
-          </div>
-        </article>
-      </div>
-    </div>
-    <ng-template #empty><div class="alert alert-info">No hay juguetes para mostrar.</div></ng-template>
-  </section>
+    <ng-template #vacio>
+      <section class="shop-empty">
+        <p>No encontramos productos en esta categoría o búsqueda.</p>
+        <button (click)="selectCategory(0)">Ver todos los productos</button>
+      </section>
+    </ng-template>
+  </div>
 </main>
-<footer class="footer-store"><div class="container"><strong>IsaBlue Juguetes</strong> © 2026 | Ecommerce de juguetes educativos · Angular + Spring Boot</div></footer>
+
+<footer class="shop-foot">
+  <div class="container">© 2026 Isablue · Juguetes y Accesorios · Lima, Perú · Compra segura · <a routerLink="/">Volver al inicio</a></div>
+</footer>

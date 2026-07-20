@@ -1,84 +1,125 @@
-import { Component, OnInit } from '@angular/core';
-import { DataPayment } from 'src/app/common/data-payment';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { ItemCart } from 'src/app/common/item-cart';
 import { Order } from 'src/app/common/order';
 import { OrderProduct } from 'src/app/common/order-product';
 import { OrderState } from 'src/app/common/order-state';
 import { CartService } from 'src/app/services/cart.service';
 import { OrderService } from 'src/app/services/order.service';
-import { PaymentService } from 'src/app/services/payment.service';
+import { PaymentService, PaymentResult } from 'src/app/services/payment.service';
 import { SessionStorageService } from 'src/app/services/session-storage.service';
 import { UserService } from 'src/app/services/user.service';
 
-@Component({
-  selector: 'app-sumary-order',
-  templateUrl: './sumary-order.component.html',
-  styleUrls: ['./sumary-order.component.css']
-})
+@Component({ selector: 'app-sumary-order', templateUrl: './sumary-order.component.html', styleUrls: ['./sumary-order.component.css'] })
 export class SumaryOrderComponent implements OnInit {
+  items: ItemCart[] = [];
+  totalCart = 0;
+  firstName = ''; lastName = ''; email = ''; address = '';
+  userId = 0;
+  processing = false;
+  showCard = false;
+  culqiConfigured = false;
+  publicKey = '';
+  private pendingOrderId = 0;
+  card = { name: '', number: '', exp: '', cvv: '' };
 
-  items : ItemCart [] = [];
-  totalCart : number =0;
-  firstName : string = '';
-  lastName : string = '';
-  email : string = '';
-  address : string ='';
-  orderProducts:OrderProduct [] = [];
-  userId : number =0;
-
-  constructor(private cartService:CartService, 
-    private userService:UserService, 
-    private orderService:OrderService, 
-    private paymentService:PaymentService,
-    private sessionStorage:SessionStorageService
-    ){}
-
+  constructor(
+    private cartService: CartService,
+    private userService: UserService,
+    private orderService: OrderService,
+    private paymentService: PaymentService,
+    private session: SessionStorageService,
+    private toastr: ToastrService,
+    private router: Router,
+    private zone: NgZone
+  ) {}
 
   ngOnInit(): void {
-    console.log('ngOnInit');
-    this.items = this.cartService.convertToListFromMap();
-    this.totalCart = this.cartService.totalCart();
-    this.userId = this.sessionStorage.getItem('token').id;
-    this.getCurrentUser();
-  }
-
-  generateOrder(){
-    this.orderProducts = this.items.map(
-      item => new OrderProduct(null, item.productId, item.quantity, item.price)
-    );
-
-    const order = new Order(null, new Date(), this.orderProducts, this.userId, OrderState.CANCELLED);
-
-    this.orderService.createOrder(order).subscribe({
-      next: createdOrder => {
-        this.sessionStorage.setItem('order', createdOrder);
-        const payment = new DataPayment('paypal', 'USD', 'COMPRA ISABLUE', createdOrder.id!);
-
-        this.paymentService.getUrlPaypalPayment(payment).subscribe({
-          next: response => window.location.href = response.url,
-          error: error => console.error('No se pudo iniciar el pago', error)
-        });
-      },
-      error: error => console.error('No se pudo crear la orden', error)
+    this.refresh();
+    this.userId = this.session.getItem('token')?.id || 0;
+    this.userService.getCurrentUser().subscribe({
+      next: data => { this.firstName = data.firstName; this.lastName = data.lastName; this.email = data.email; this.address = data.address; },
+      error: () => this.toastr.error('No pudimos cargar tus datos de entrega.')
+    });
+    this.paymentService.getConfig().subscribe({
+      next: c => { this.culqiConfigured = c.culqiConfigured; this.publicKey = c.publicKey || ''; },
+      error: () => { this.culqiConfigured = false; }
     });
   }
 
-
-  deleteItemCart(productId:number){
-    this.cartService.deleteItemCart(productId);
-    this.items = this.cartService.convertToListFromMap();
-    this.totalCart = this.cartService.totalCart();
+  /** Botón "Pagar con tarjeta": con Culqi real abre su modal; sin llaves usa el formulario de prueba. */
+  openCard(): void {
+    if (!this.items.length) { this.toastr.info('Tu carrito está vacío.'); return; }
+    if (this.culqiConfigured && this.publicKey && (window as any).Culqi) {
+      this.payWithCulqi();
+    } else {
+      this.card.name = `${this.firstName} ${this.lastName}`.trim();
+      this.showCard = true;
+    }
   }
 
-  getCurrentUser(){
-    this.userService.getCurrentUser().subscribe(
-      data => {
-        this.firstName = data.firstName;
-        this.lastName = data.lastName;
-        this.email = data.email;
-        this.address = data.address;
-      }
-    );
+  useTestCard(): void {
+    this.card = { name: this.card.name || 'Cliente Demo', number: '4111 1111 1111 1111', exp: '09/28', cvv: '123' };
   }
 
+  /** Modo prueba (sin llaves): el backend simula el cargo. */
+  pay(): void {
+    if (this.processing) return;
+    if (!this.items.length) { this.toastr.info('Tu carrito está vacío.'); return; }
+    if (!this.card.number || !this.card.exp || !this.card.cvv) { this.toastr.error('Completa los datos de la tarjeta.'); return; }
+
+    this.processing = true;
+    this.createOrder(orderId => this.doCharge(orderId, null));
+  }
+
+  /** Cobro real con Culqi.js: tokeniza la tarjeta en el modal de Culqi. */
+  private payWithCulqi(): void {
+    if (this.processing) return;
+    this.processing = true;
+    this.createOrder(orderId => {
+      this.pendingOrderId = orderId;
+      const C = (window as any).Culqi;
+      C.publicKey = this.publicKey;
+      C.settings({ title: 'Isablue', currency: 'PEN', amount: Math.round(this.totalCart * 100) });
+      (window as any).culqi = () => this.zone.run(() => this.onCulqi());
+      C.open();
+      this.processing = false; // el modal de Culqi toma el control
+    });
+  }
+
+  private onCulqi(): void {
+    const C = (window as any).Culqi;
+    if (C.token) {
+      this.processing = true;
+      this.doCharge(this.pendingOrderId, C.token.id);
+    } else if (C.error) {
+      this.toastr.error(C.error.user_message || 'El pago no se completó.');
+    }
+  }
+
+  private createOrder(onCreated: (orderId: number) => void): void {
+    const products = this.items.map(i => new OrderProduct(null, i.productId, i.quantity, i.price));
+    const order = new Order(null, new Date(), products, this.userId, OrderState.CANCELLED);
+    this.orderService.createOrder(order).subscribe({
+      next: created => onCreated(created.id!),
+      error: () => this.fail('No pudimos preparar tu orden. Revisa tus datos.')
+    });
+  }
+
+  private doCharge(orderId: number, token: string | null): void {
+    this.paymentService.charge(orderId, token).subscribe({
+      next: (result: PaymentResult) => {
+        this.cartService.clear();
+        this.session.setItem('lastPayment', result);
+        this.toastr.success('Pago aprobado y boleta generada.', '¡Gracias por tu compra!');
+        this.router.navigate(['/payment/success']);
+      },
+      error: err => this.fail(err?.error?.message || 'No se pudo procesar el pago.')
+    });
+  }
+
+  deleteItemCart(id: number): void { this.cartService.deleteItemCart(id); this.refresh(); }
+  private refresh(): void { this.items = [...this.cartService.convertToListFromMap()]; this.totalCart = this.cartService.totalCart(); }
+  private fail(message: string): void { this.processing = false; this.toastr.error(message + ' Inténtalo nuevamente.'); }
 }

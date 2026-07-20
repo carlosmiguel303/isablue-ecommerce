@@ -1,0 +1,25 @@
+<div class="promo-carousel" *ngIf="promos.length" (mouseenter)="stop()" (mouseleave)="start()">
+  <div class="slides" [style.transform]="'translateX(-' + (current * 100) + '%)'">
+    <div class="slide" *ngFor="let p of promos" [style.background]="p.bg" [style.color]="p.text">
+      <div class="slide-inner container">
+        <div class="slide-copy">
+          <h2>{{p.title}}</h2>
+          <p>{{p.subtitle}}</p>
+          <a *ngIf="p.cta" [href]="p.link || '#productos'" class="promo-btn" [style.color]="p.bg">{{p.cta}}</a>
+        </div>
+        <div class="slide-media" *ngIf="p.image">
+          <img [src]="p.image" [alt]="p.title" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="nav prev" *ngIf="promos.length > 1" (click)="prev()" aria-label="Anterior">‹</button>
+  <button class="nav next" *ngIf="promos.length > 1" (click)="next()" aria-label="Siguiente">›</button>
+
+  <div class="dots" *ngIf="promos.length > 1">
+    <button *ngFor="let p of promos; let i = index" [class.active]="i === current" (click)="go(i)" [attr.aria-label]="'Ir a promoción ' + (i+1)"></button>
+  </div>
+
+  <a *ngIf="isAdmin()" class="edit-promos" routerLink="/admin/promociones">✎ Editar promociones</a>
+</div>

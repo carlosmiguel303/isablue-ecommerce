@@ -28,19 +28,22 @@ public class PaypalController {
     private final UserService userService;
     private final String frontendUrl;
     private final String backendBaseUrl;
+    private final String paymentCurrency;
 
     public PaypalController(
             PaypalService paypalService,
             OrderService orderService,
             UserService userService,
             @Value("${app.frontend.url:http://localhost:4200}") String frontendUrl,
-            @Value("${app.backend.base-url:http://localhost:8085}") String backendBaseUrl
+            @Value("${app.backend.base-url:http://localhost:8085}") String backendBaseUrl,
+            @Value("${app.payment.currency:USD}") String paymentCurrency
     ) {
         this.paypalService = paypalService;
         this.orderService = orderService;
         this.userService = userService;
         this.frontendUrl = stripTrailingSlash(frontendUrl);
         this.backendBaseUrl = stripTrailingSlash(backendBaseUrl);
+        this.paymentCurrency = paymentCurrency;
     }
 
     @PostMapping
@@ -54,6 +57,9 @@ public class PaypalController {
         if (!order.getUserId().equals(currentUser.getId())) {
             throw new BusinessException("La orden no pertenece al usuario autenticado");
         }
+        if (order.getOrderState() != OrderState.PENDING) {
+            throw new BusinessException("La orden ya fue procesada o cancelada");
+        }
 
         String successUrl = backendBaseUrl + "/api/v1/payments/success?orderId=" + order.getId();
         String cancelUrl = backendBaseUrl + "/api/v1/payments/cancel?orderId=" + order.getId();
@@ -61,10 +67,10 @@ public class PaypalController {
         try {
             Payment payment = paypalService.createPayment(
                     order.getTotalOrderPrice().doubleValue(),
-                    "USD",
+                    paymentCurrency,
                     "paypal",
                     "sale",
-                    dataPayment.getDescription(),
+                    "Compra segura IsaBlue - orden " + order.getId(),
                     cancelUrl,
                     successUrl
             );

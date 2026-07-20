@@ -1,0 +1,17 @@
+.success{padding:120px 1rem 80px;display:flex;justify-content:center}
+.success-card{background:#fff;border:1px solid #ecdfd2;border-radius:26px;max-width:560px;width:100%;padding:3rem 2.5rem;text-align:center;box-shadow:0 24px 60px rgba(120,80,55,.14)}
+.check{width:74px;height:74px;border-radius:50%;background:#a9c29a;color:#fff;font-size:2.4rem;display:grid;place-items:center;margin:0 auto 1.2rem;box-shadow:0 10px 24px rgba(120,80,55,.18)}
+.success-card h1{font-weight:900;color:#4a3a30;letter-spacing:-.03em;margin:0 0 .5rem}
+.success-card>p{color:#7a6a5d;line-height:1.6;margin:0 auto 1.6rem;max-width:42ch}
+.ticket{text-align:left;background:#faf4ec;border:1px dashed #e2c9b4;border-radius:16px;padding:1.2rem 1.4rem;margin-bottom:1.6rem}
+.ticket-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid #efe2d4;font-size:.92rem}
+.ticket-row:last-child{border-bottom:0}
+.ticket-row span{color:#8f8175}
+.ticket-row b{color:#4a3a30}
+.ticket-row b.test{color:#b5674c}
+.actions{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.btn-primary-cta{background:#c87a5b;color:#fff;font-weight:800;padding:.85rem 1.5rem;border-radius:12px}
+.btn-primary-cta:hover{background:#b5674c}
+.btn-ghost-cta{background:#f7ede2;color:#4a3a30;font-weight:800;padding:.85rem 1.5rem;border-radius:12px}
+.btn-ghost-cta:hover{background:#efe2d4}
+.note{color:#a2917f;font-size:.82rem;margin-top:1.2rem}

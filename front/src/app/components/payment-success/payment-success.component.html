@@ -1,9 +1,23 @@
-<!-- Header User-->
 <app-header-user></app-header-user>
+<main class="success container">
+  <div class="success-card">
+    <div class="check">✓</div>
+    <h1>¡Pago completado!</h1>
+    <p>Gracias por tu compra en Isablue. Tu pedido fue registrado y tu boleta electrónica generada.</p>
 
-<div>
-    <h2>Pago completado </h2>
-    <p>El pago se ha completado con  éxito! </p>
-</div>
+    <div class="ticket" *ngIf="payment">
+      <div class="ticket-row"><span>Boleta electrónica</span><b>{{payment.boletaSerie}}-{{payment.boletaNumber}}</b></div>
+      <div class="ticket-row"><span>Pedido</span><b>#{{payment.orderId}}</b></div>
+      <div class="ticket-row"><span>Cliente</span><b>{{payment.customerName}}</b></div>
+      <div class="ticket-row"><span>Total pagado</span><b>S/ {{payment.amount | number:'1.2-2'}}</b></div>
+      <div class="ticket-row"><span>Referencia</span><b>{{payment.reference}}</b></div>
+      <div class="ticket-row" *ngIf="payment.method === 'simulado'"><span>Modo</span><b class="test">Prueba (sin cobro real)</b></div>
+    </div>
 
-
+    <div class="actions">
+      <a *ngIf="payment?.boletaUrl" [href]="payment?.boletaUrl" target="_blank" rel="noopener" class="btn-primary-cta">Descargar boleta (PDF)</a>
+      <a routerLink="/" class="btn-ghost-cta">Seguir comprando</a>
+    </div>
+    <p class="note" *ngIf="payment && !payment.boletaUrl">La boleta oficial ante SUNAT se enviará automáticamente cuando se activen las credenciales de facturación.</p>
+  </div>
+</main>

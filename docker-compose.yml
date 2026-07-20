@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: isablue
+      MYSQL_USER: isablue
+      MYSQL_PASSWORD: isablue_dev
+      MYSQL_ROOT_PASSWORD: root_dev_change_me
+      TZ: America/Lima
+    ports:
+      - "3306:3306"
+    volumes:
+      - isablue_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uisablue", "-pisablue_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  isablue_mysql:

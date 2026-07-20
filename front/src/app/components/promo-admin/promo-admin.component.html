@@ -1,0 +1,79 @@
+<app-header-admin></app-header-admin>
+<section class="promo-admin container">
+  <div class="pa-head">
+    <div>
+      <span class="eyebrow">PANEL DE ADMINISTRACIÓN</span>
+      <h1>Promociones del banner</h1>
+      <p>Crea y edita las promociones que rotan en la parte superior de la tienda.</p>
+    </div>
+    <div class="pa-actions">
+      <a routerLink="/admin/product" class="ghost">← Productos</a>
+      <button class="ghost" (click)="restore()">Restaurar ejemplo</button>
+    </div>
+  </div>
+
+  <div class="pa-grid">
+    <!-- Lista -->
+    <div class="pa-list">
+      <h3>Promociones activas ({{promos.length}})</h3>
+      <div class="pa-item" *ngFor="let p of promos" [style.background]="p.bg" [style.color]="p.text">
+        <div class="pa-item-body">
+          <strong>{{p.title}}</strong>
+          <small>{{p.subtitle}}</small>
+        </div>
+        <img *ngIf="p.image" [src]="p.image" alt="">
+        <div class="pa-item-btns">
+          <button (click)="startEdit(p)" title="Editar">✎</button>
+          <button (click)="remove(p)" title="Eliminar">🗑</button>
+        </div>
+      </div>
+      <p *ngIf="!promos.length" class="pa-empty">Aún no hay promociones. Crea la primera →</p>
+    </div>
+
+    <!-- Editor -->
+    <div class="pa-form">
+      <h3>{{edit.id ? 'Editar promoción' : 'Nueva promoción'}}</h3>
+
+      <div class="pa-preview" [style.background]="edit.bg" [style.color]="edit.text">
+        <div>
+          <b>{{edit.title || 'Título de la promoción'}}</b>
+          <span>{{edit.subtitle || 'Texto descriptivo de la promoción'}}</span>
+          <em *ngIf="edit.cta">{{edit.cta}}</em>
+        </div>
+        <img *ngIf="edit.image" [src]="edit.image" alt="">
+      </div>
+
+      <label>Título</label>
+      <input [(ngModel)]="edit.title" name="title" placeholder="Ej. Envío gratis desde S/ 150">
+
+      <label>Subtítulo</label>
+      <input [(ngModel)]="edit.subtitle" name="subtitle" placeholder="Detalle corto de la promoción">
+
+      <div class="pa-row">
+        <div>
+          <label>Texto del botón</label>
+          <input [(ngModel)]="edit.cta" name="cta" placeholder="Ver catálogo">
+        </div>
+        <div>
+          <label>Enlace</label>
+          <input [(ngModel)]="edit.link" name="link" placeholder="#productos">
+        </div>
+      </div>
+
+      <label>Imagen (opcional)</label>
+      <input [(ngModel)]="edit.image" name="image" placeholder="URL de la imagen o sube un archivo">
+      <input type="file" accept="image/*" (change)="onFile($event)" class="pa-file">
+
+      <label>Color del banner</label>
+      <div class="pa-palettes">
+        <button *ngFor="let p of palettesList()" [style.background]="p.bg" (click)="selectPalette(p)"
+                [class.sel]="edit.bg === p.bg" type="button"></button>
+      </div>
+
+      <div class="pa-form-btns">
+        <button class="primary" (click)="save()">{{edit.id ? 'Guardar cambios' : 'Agregar promoción'}}</button>
+        <button class="ghost" (click)="startNew()" *ngIf="edit.id">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</section>

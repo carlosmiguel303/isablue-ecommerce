@@ -1,16 +1,1 @@
-<app-header-user></app-header-user>
-<div class="container product-detail">
-  <a [routerLink]="['/']" class="back-link">← Volver al catálogo</a>
-  <div class="detail-card">
-    <div class="detail-img"><img [src]="urlImage" [alt]="name" (error)="$any($event.target).src='assets/images/toy-teddy.svg'"></div>
-    <div class="detail-info">
-      <span class="tag">Producto tecnológico</span>
-      <h1>{{name}}</h1>
-      <p>{{description}}</p>
-      <div class="price">S/ {{price}}</div>
-      <label>Cantidad</label>
-      <input class="form-control qty" type="number" [(ngModel)]="quantity" id="quantity" name="quantity" min="1" max="10">
-      <button (click)="addCart(id)" class="btn btn-warning btn-lg mt-4">Añadir al carrito</button>
-    </div>
-  </div>
-</div>
+<app-header-user></app-header-user><main class="container detail"><a routerLink="/" class="back">← Volver al catálogo</a><div class="detail-card"><div class="gallery"><span>Selección IsaBlue</span><img [src]="urlImage" [alt]="name" (error)="$any($event.target).src='assets/images/toy-montessori.svg'"></div><div class="info"><span class="code">JUGUETE EDUCATIVO</span><h1>{{name}}</h1><div class="rating">★★★★★ <small>Producto seleccionado</small></div><p>{{description}}</p><div class="price">S/ {{price | number:'1.2-2'}}</div><small class="tax">Precio final. El envío se coordina por separado.</small><div class="quantity"><label for="quantity">Cantidad</label><input id="quantity" type="number" [(ngModel)]="quantity" min="1" max="10"></div><button (click)="addCart()" class="add" [disabled]="loading">🛒 Añadir al carrito</button><div class="assurances"><span>✓ Pago protegido</span><span>✓ Atención personalizada</span><span>✓ Envíos a todo el Perú</span></div></div></div></main>

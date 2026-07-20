@@ -18,9 +18,11 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    @Column(nullable = false, unique = true, length = 60)
     private String code;
     private String description;
     private String urlImage;
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
     @CreationTimestamp
     private LocalDateTime dateCreated;

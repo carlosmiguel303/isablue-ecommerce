@@ -1,0 +1,46 @@
+<app-header-admin></app-header-admin>
+<main class="pay-admin container">
+  <div class="pa-top">
+    <div>
+      <span class="eyebrow">ADMINISTRACIÓN</span>
+      <h1>Pedidos pagados</h1>
+      <p>Clientes que ya pagaron, con su monto y boleta electrónica.</p>
+    </div>
+    <div class="cards">
+      <div class="stat"><b>{{payments.length}}</b><span>Pedidos pagados</span></div>
+      <div class="stat"><b>S/ {{totalRecaudado | number:'1.2-2'}}</b><span>Total recaudado</span></div>
+    </div>
+  </div>
+
+  <div class="table-wrap" *ngIf="payments.length; else vacio">
+    <table>
+      <thead>
+        <tr><th>Fecha</th><th>Cliente</th><th>Correo</th><th>Pedido</th><th>Monto</th><th>Método</th><th>Estado</th><th>Boleta</th><th>Comprobante</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of payments">
+          <td>{{p.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+          <td>{{p.customerName}}</td>
+          <td class="muted">{{p.customerEmail}}</td>
+          <td>#{{p.orderId}}</td>
+          <td class="amount">S/ {{p.amount | number:'1.2-2'}}</td>
+          <td><span class="method" [class.sim]="p.method === 'simulado'">{{p.method}}</span></td>
+          <td><span class="badge-paid">Pagado</span></td>
+          <td>
+            <a *ngIf="p.boletaUrl" [href]="p.boletaUrl" target="_blank" rel="noopener">{{p.boletaSerie}}-{{p.boletaNumber}}</a>
+            <span *ngIf="!p.boletaUrl" class="muted">{{p.boletaSerie}}-{{p.boletaNumber}}</span>
+          </td>
+          <td class="acciones">
+            <button class="print-btn" (click)="imprimir(p)" title="Imprimir ticket para la caja">🖨 Imprimir</button>
+            <a *ngIf="p.boletaUrl" [href]="p.boletaUrl" target="_blank" rel="noopener" class="pdf-link">PDF SUNAT</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #vacio>
+    <div class="empty" *ngIf="!loading">Aún no hay pagos registrados. Cuando un cliente pague, aparecerá aquí.</div>
+    <div class="empty" *ngIf="loading">Cargando pagos…</div>
+  </ng-template>
+</main>
