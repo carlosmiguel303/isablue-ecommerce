@@ -28,8 +28,8 @@
         <span>{{address}}</span>
       </div>
 
-      <!-- Selector de método -->
-      <div class="pay-methods">
+      <!-- Selector de método (Tarjeta/Culqi se habilita en la v2) -->
+      <div class="pay-methods" *ngIf="false">
         <button [class.sel]="method === 'yape'" (click)="setMethod('yape')"><b>Yape</b><small>Rápido</small></button>
         <button [class.sel]="method === 'card'" (click)="setMethod('card')"><b>Tarjeta</b><small>Culqi</small></button>
       </div>
