@@ -53,6 +53,12 @@ public class YapeController {
         return mailService.diagnose(to);
     }
 
+    /** Diagnóstico temporal: registros de Brevo. */
+    @GetMapping("/mailevents")
+    public String mailevents() {
+        return mailService.brevoEvents();
+    }
+
     @PostMapping("/register")
     public PaymentEntity register(@RequestBody YapeRequest request, Authentication authentication) {
         Order order = orderService.findById(request.orderId());
