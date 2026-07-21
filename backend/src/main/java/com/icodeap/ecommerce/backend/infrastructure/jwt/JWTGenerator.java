@@ -37,7 +37,11 @@ public class JWTGenerator {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
+        return getToken(username, authorities);
+    }
 
+    /** Genera el token con las autoridades indicadas (para login social, sin contexto de seguridad). */
+    public String getToken(String username, List<String> authorities) {
         String token = Jwts.builder()
                 .setId("isablue-ecommerce")
                 .setSubject(username)

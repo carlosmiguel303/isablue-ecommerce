@@ -27,6 +27,16 @@ export class AuthenticationService {
     );
   }
 
+  /** Llave pública de Google para mostrar el botón. */
+  googleConfig(): Observable<{ clientId: string }> {
+    return this.httpClient.get<{ clientId: string }>(this.apiUrl + '/google/config');
+  }
+
+  /** Inicia sesión con el token de Google (crea la cuenta si es nueva). */
+  googleLogin(credential: string): Observable<Jwtclient> {
+    return this.httpClient.post<Jwtclient>(this.apiUrl + '/google', { credential });
+  }
+
   login(userDto: Userdto): Observable<Jwtclient> {
     return this.httpClient.post<Jwtclient>(this.apiUrl + '/login', userDto).pipe(
       catchError(() => this.localLogin(userDto))
