@@ -47,18 +47,6 @@ public class YapeController {
         return Map.of("number", yapeNumber, "name", yapeName);
     }
 
-    /** Diagnóstico temporal del correo. */
-    @GetMapping("/mailtest")
-    public Map<String, Object> mailtest(@RequestParam(value = "to", required = false) String to) {
-        return mailService.diagnose(to);
-    }
-
-    /** Diagnóstico temporal: registros de Brevo. */
-    @GetMapping("/mailevents")
-    public String mailevents() {
-        return mailService.brevoEvents();
-    }
-
     @PostMapping("/register")
     public PaymentEntity register(@RequestBody YapeRequest request, Authentication authentication) {
         Order order = orderService.findById(request.orderId());

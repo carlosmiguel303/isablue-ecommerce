@@ -119,43 +119,4 @@ public class MailService {
         msg.setText(body);
         mailSender.send(msg);
     }
-
-    /** Diagnóstico: registros de envío de Brevo (estado real de cada correo). */
-    public String brevoEvents() {
-        if (!brevoOn()) { return "SIN_BREVO_API_KEY"; }
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("api-key", brevoApiKey);
-            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-            ResponseEntity<String> resp = rest.exchange(
-                    "https://api.brevo.com/v3/smtp/statistics/events?limit=15&sort=desc",
-                    HttpMethod.GET, new HttpEntity<>(headers), String.class);
-            return resp.getBody();
-        } catch (Exception e) {
-            Throwable root = e;
-            while (root.getCause() != null && root.getCause() != root) { root = root.getCause(); }
-            return "ERROR: " + root.getClass().getSimpleName() + ": " + root.getMessage();
-        }
-    }
-
-    /** Diagnóstico: intenta enviar un correo de prueba y devuelve el estado + el error exacto si falla. */
-    public Map<String, Object> diagnose(String to) {
-        Map<String, Object> r = new LinkedHashMap<>();
-        r.put("brevo", brevoOn());
-        r.put("smtp", smtpOn());
-        r.put("sender", senderEmail());
-        r.put("adminTo", adminTo == null ? "" : adminTo);
-        if (!isConfigured()) { r.put("resultado", "FALLA: no hay ni BREVO_API_KEY ni SMTP configurado."); return r; }
-        String dest = (to == null || to.isBlank()) ? adminTo : to;
-        try {
-            if (brevoOn()) { sendViaBrevo(dest, "Prueba de correo - Isablue", "Si recibes este mensaje, el correo de Isablue funciona. 🧸"); }
-            else { sendViaSmtp(dest, "Prueba de correo - Isablue", "Si recibes este mensaje, el correo de Isablue funciona."); }
-            r.put("resultado", "OK: correo enviado sin errores.");
-        } catch (Exception e) {
-            Throwable root = e;
-            while (root.getCause() != null && root.getCause() != root) { root = root.getCause(); }
-            r.put("resultado", "FALLA: " + root.getClass().getSimpleName() + ": " + root.getMessage());
-        }
-        return r;
-    }
 }
