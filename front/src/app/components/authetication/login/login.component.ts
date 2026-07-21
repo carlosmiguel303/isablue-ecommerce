@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   errorMessage = '';
   googleClientId = '';
+  private googleInited = false;
 
   constructor(private authentication: AuthenticationService,
     private sessionStorage: SessionStorageService,
@@ -57,18 +58,21 @@ export class LoginComponent implements OnInit {
 
   private initGoogle(attempt = 0): void {
     const g = (window as any).google;
-    if (!g?.accounts?.id) {
-      if (attempt < 25) { setTimeout(() => this.initGoogle(attempt + 1), 300); }
+    const el = document.getElementById('googleBtn');
+    // Espera a que la librería de Google Y el espacio del botón estén listos.
+    if (!g?.accounts?.id || !el) {
+      if (attempt < 40) { setTimeout(() => this.initGoogle(attempt + 1), 300); }
       return;
     }
-    g.accounts.id.initialize({
-      client_id: this.googleClientId,
-      callback: (resp: any) => this.zone.run(() => this.onGoogle(resp))
-    });
-    const el = document.getElementById('googleBtn');
-    if (el) {
-      g.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width: '320', text: 'continue_with', shape: 'pill' });
+    if (!this.googleInited) {
+      g.accounts.id.initialize({
+        client_id: this.googleClientId,
+        callback: (resp: any) => this.zone.run(() => this.onGoogle(resp))
+      });
+      this.googleInited = true;
     }
+    el.innerHTML = '';
+    g.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width: '320', text: 'continue_with', shape: 'pill', logo_alignment: 'center' });
   }
 
   private onGoogle(resp: any): void {
