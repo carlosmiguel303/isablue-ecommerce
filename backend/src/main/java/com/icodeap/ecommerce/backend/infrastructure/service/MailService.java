@@ -29,11 +29,15 @@ public class MailService {
         return host != null && !host.isBlank() && mailSender != null;
     }
 
-    /** Avisa al administrador y al comprador de una nueva compra. */
+    /** Avisa al administrador y al comprador de una nueva compra. NO bloquea la venta: envía en segundo plano. */
     public void sendAdminCopy(PaymentEntity p) {
         if (!isConfigured()) {
             return;
         }
+        java.util.concurrent.CompletableFuture.runAsync(() -> doSend(p));
+    }
+
+    private void doSend(PaymentEntity p) {
         String boleta = (p.getBoletaSerie() != null && !p.getBoletaSerie().isBlank())
                 ? p.getBoletaSerie() + "-" + p.getBoletaNumber() : "(pendiente)";
         boolean yape = "yape".equalsIgnoreCase(p.getMethod());
