@@ -29,6 +29,30 @@ public class MailService {
         return host != null && !host.isBlank() && mailSender != null;
     }
 
+    /** Diagnóstico: intenta enviar un correo de prueba y devuelve el estado + el error exacto si falla. */
+    public java.util.Map<String, Object> diagnose(String to) {
+        java.util.Map<String, Object> r = new java.util.LinkedHashMap<>();
+        r.put("hasMailSender", mailSender != null);
+        r.put("host", host == null ? "" : host);
+        r.put("from", from == null ? "" : from);
+        r.put("adminTo", adminTo == null ? "" : adminTo);
+        if (mailSender == null) { r.put("resultado", "FALLA: no hay JavaMailSender (MAIL_HOST no está configurado o vacío)."); return r; }
+        try {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            if (from != null && !from.isBlank()) { msg.setFrom(from); }
+            msg.setTo(to == null || to.isBlank() ? adminTo : to);
+            msg.setSubject("Prueba de correo · Isablue");
+            msg.setText("Si recibes este mensaje, el correo de la tienda Isablue funciona correctamente. 🧸");
+            mailSender.send(msg);
+            r.put("resultado", "OK: correo enviado sin errores.");
+        } catch (Exception e) {
+            Throwable root = e;
+            while (root.getCause() != null && root.getCause() != root) { root = root.getCause(); }
+            r.put("resultado", "FALLA: " + root.getClass().getSimpleName() + ": " + root.getMessage());
+        }
+        return r;
+    }
+
     /** Avisa al administrador y al comprador de una nueva compra. NO bloquea la venta: envía en segundo plano. */
     public void sendAdminCopy(PaymentEntity p) {
         if (!isConfigured()) {
