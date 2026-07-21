@@ -149,3 +149,8 @@
   .lbenefits{grid-template-columns:1fr}
   .lines-grid,.feat-grid{grid-template-columns:1fr}
 }
+
+/* Fix: que la imagen no tape el nombre del producto en destacados */
+.feat-img{overflow:hidden}
+.feat-body{position:relative;z-index:2;background:#fff}
+.feat-body h3{min-height:2.4rem;margin-top:.2rem}

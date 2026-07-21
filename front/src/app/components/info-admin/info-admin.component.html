@@ -1,0 +1,31 @@
+<app-header-admin></app-header-admin>
+<main class="info-admin container">
+  <div class="ia-head">
+    <span class="eyebrow">PANEL DE ADMINISTRACIÓN</span>
+    <h1>Páginas de información</h1>
+    <p>Edita lo que ven tus clientes sobre entregas y devoluciones. Los cambios se publican al instante.</p>
+  </div>
+
+  <div class="ia-grid">
+    <div class="ia-list">
+      <button *ngFor="let p of pages" [class.sel]="edit?.pageKey === p.pageKey" (click)="select(p)">
+        {{p.title}}
+        <small>/pagina/{{p.pageKey}}</small>
+      </button>
+    </div>
+
+    <div class="ia-editor" *ngIf="edit">
+      <label>Título</label>
+      <input [(ngModel)]="edit.title" name="title" placeholder="Título de la página">
+
+      <label>Contenido</label>
+      <textarea [(ngModel)]="edit.content" name="content" rows="16" placeholder="Escribe aquí la información para tus clientes…"></textarea>
+      <small class="hint">Escribe con saltos de línea normales. Deja una línea en blanco para separar párrafos.</small>
+
+      <div class="ia-btns">
+        <button class="primary" (click)="save()" [disabled]="saving">{{saving ? 'Guardando…' : 'Guardar cambios'}}</button>
+        <a [routerLink]="['/pagina', edit.pageKey]" target="_blank" class="ghost">Ver cómo queda ↗</a>
+      </div>
+    </div>
+  </div>
+</main>

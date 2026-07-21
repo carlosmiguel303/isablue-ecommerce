@@ -51,3 +51,9 @@
   .cat-list li{flex:1 1 auto}
   .aside-help{display:none}
 }
+
+/* Más separación entre la imagen y el nombre del producto */
+.card-img{margin-bottom:.2rem}
+.card-body{padding-top:1.2rem}
+.card-body .cat{margin-bottom:.15rem}
+.card-title{margin-top:.45rem}

@@ -25,6 +25,8 @@ import { PromoAdminComponent } from './components/promo-admin/promo-admin.compon
 import { AdminPaymentsComponent } from './components/admin-payments/admin-payments.component';
 import { LandingComponent } from './components/landing/landing.component';
 import { WhatsappComponent } from './components/whatsapp/whatsapp.component';
+import { InfoPageComponent } from './components/info-page/info-page.component';
+import { InfoAdminComponent } from './components/info-admin/info-admin.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { authGuard } from './guards/auth.guard';
 
@@ -45,6 +47,8 @@ const routes : Routes = [
   {path: 'payment/success', component: PaymentSuccessComponent},
   {path: 'user/register', component: RegistrationComponent},
   {path: 'user/login', component: LoginComponent},
+  {path: 'pagina/:key', component: InfoPageComponent},
+  {path: 'admin/info', component: InfoAdminComponent, canActivate: [authGuard], data: {role: 'ADMIN'}},
   {path: 'logout', component: LogoutComponent},
   {path: '**', redirectTo: ''}
 
@@ -70,7 +74,9 @@ const routes : Routes = [
     PromoAdminComponent,
     AdminPaymentsComponent,
     LandingComponent,
-    WhatsappComponent
+    WhatsappComponent,
+    InfoPageComponent,
+    InfoAdminComponent
   ],
   imports: [
     BrowserModule,

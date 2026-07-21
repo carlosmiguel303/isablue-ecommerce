@@ -1,0 +1,15 @@
+<app-header-user></app-header-user>
+<main class="info-page container">
+  <a routerLink="/" class="back">← Volver al inicio</a>
+  <article class="info-card" *ngIf="page">
+    <span class="eyebrow">ISABLUE · JUGUETES Y ACCESORIOS</span>
+    <h1>{{page.title}}</h1>
+    <div class="info-content">{{page.content}}</div>
+    <div class="info-help">
+      ¿Tienes dudas? Escríbenos por
+      <a href="https://wa.me/51920097746" target="_blank" rel="noopener">WhatsApp (920097746)</a>.
+    </div>
+  </article>
+  <p class="loading" *ngIf="loading && !page">Cargando…</p>
+</main>
+<footer class="info-foot"><div class="container">© 2026 ISABLUE · Juguetes y Accesorios · Lima, Perú</div></footer>
