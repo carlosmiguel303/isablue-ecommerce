@@ -1,0 +1,143 @@
+<title>Isablue · Manual de tu tienda online</title>
+<style>
+  :root{
+    --ivory:#FBF6EF;--card:#fff;--ink:#3A2C24;--soft:#6B5A4E;--brand:#C87A5B;--brand-deep:#B5674C;
+    --gold:#E7B96B;--sage:#8AA97B;--line:#ECDFD2;--muted:#8F8175;--yape:#7b3fb3;--wsp:#25d366;
+    --shadow:0 12px 30px rgba(120,80,55,.12);
+  }
+  @media(prefers-color-scheme:dark){:root{--ivory:#211913;--card:#2C221B;--ink:#F3E9DE;--soft:#C9B7A7;--brand:#E29A79;--line:#3E3126;--muted:#A6947F;--shadow:0 12px 30px rgba(0,0,0,.4)}}
+  :root[data-theme="dark"]{--ivory:#211913;--card:#2C221B;--ink:#F3E9DE;--soft:#C9B7A7;--brand:#E29A79;--line:#3E3126;--muted:#A6947F;--shadow:0 12px 30px rgba(0,0,0,.4)}
+  :root[data-theme="light"]{--ivory:#FBF6EF;--card:#fff;--ink:#3A2C24;--soft:#6B5A4E;--brand:#C87A5B;--line:#ECDFD2;--muted:#8F8175}
+  *{box-sizing:border-box}body{margin:0}
+  .wrap{font-family:"Segoe UI",system-ui,sans-serif;background:var(--ivory);color:var(--ink);line-height:1.6;padding:clamp(1.2rem,4vw,2.5rem);max-width:940px;margin:0 auto}
+  h1,h2,h3{letter-spacing:-.02em;margin:0}
+  .top{display:flex;align-items:center;gap:.8rem;border-bottom:2px solid var(--line);padding-bottom:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .logo{width:52px;height:52px;border-radius:15px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;box-shadow:var(--shadow);flex:0 0 auto}
+  .name{font-family:"Segoe Script","Brush Script MT",cursive;font-size:1.6rem;color:var(--brand);font-weight:800;line-height:1}
+  .name small{display:block;font-family:"Segoe UI",sans-serif;font-size:.5rem;letter-spacing:.22em;color:var(--muted);font-weight:700;margin-top:.25rem}
+  .doc{margin-left:auto;text-align:right;font-size:.78rem;color:var(--muted)}
+  h1.page{font-size:1.8rem;font-weight:900;margin:.2rem 0 .3rem}
+  .intro{color:var(--soft);margin-bottom:1.4rem}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.5rem;margin-bottom:1.1rem;box-shadow:var(--shadow)}
+  section h2{font-size:1.08rem;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:.55rem;margin-bottom:.7rem}
+  section h2 .n{width:28px;height:28px;border-radius:9px;background:var(--brand);color:#fff;font-size:.9rem;display:grid;place-items:center;flex:0 0 auto}
+  p{margin:.35rem 0}
+  ol,ul{margin:.4rem 0 .4rem 1.2rem;padding:0}
+  li{margin:.35rem 0}
+  code{font-family:"Consolas",monospace;background:var(--ivory);border:1px solid var(--line);border-radius:6px;padding:.1rem .45rem;font-size:.86em;color:var(--ink)}
+  a{color:var(--brand);font-weight:700;word-break:break-all}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:.6rem 0}
+  .kv{background:var(--ivory);border:1px dashed var(--line);border-radius:12px;padding:.8rem 1rem}
+  .kv .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+  .kv .val{font-size:1.05rem;font-weight:800;color:var(--ink);margin-top:.15rem}
+  .pill{display:inline-block;font-size:.72rem;font-weight:800;padding:.15rem .6rem;border-radius:20px}
+  .pill.yape{background:color-mix(in srgb,var(--yape) 15%,transparent);color:var(--yape)}
+  .pill.wsp{background:color-mix(in srgb,var(--wsp) 18%,transparent);color:#1a8f48}
+  .note{background:color-mix(in srgb,var(--gold) 20%,transparent);border-left:3px solid var(--gold);border-radius:8px;padding:.7rem .95rem;font-size:.9rem;margin:.7rem 0}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:.6rem 0}
+  .flow .step{background:var(--ivory);border:1px solid var(--line);border-radius:10px;padding:.5rem .8rem;font-size:.85rem;font-weight:700;flex:1;min-width:120px;text-align:center}
+  .flow .arr{color:var(--brand);font-weight:900}
+  .check{color:var(--sage);font-weight:900}
+  .v2 li{color:var(--soft)}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:1.5rem}
+  @media print{.wrap{padding:0}section{break-inside:avoid;box-shadow:none}}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}.doc{margin-left:0;text-align:left;width:100%}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="logo">
+      <svg width="34" height="34" viewBox="0 0 40 40"><g fill="#8A5A3B"><circle cx="11" cy="10" r="5"/><circle cx="29" cy="10" r="5"/></g><circle cx="20" cy="22" r="12.5" fill="#8A5A3B"/><circle cx="20" cy="25" r="6.5" fill="#C89B7B"/><g fill="#3A2C24"><circle cx="15.5" cy="19" r="1.6"/><circle cx="24.5" cy="19" r="1.6"/><circle cx="20" cy="23" r="2"/></g></svg>
+    </div>
+    <div class="name">Isablue<small>JUGUETES Y ACCESORIOS</small></div>
+    <div class="doc">Manual de uso · Tienda online<br>Versión 1 · Lista para vender</div>
+  </div>
+
+  <h1 class="page">Tu tienda ya está en línea 🎉</h1>
+  <p class="intro">Guía sencilla para probar la tienda, cargar tus productos y empezar a recibir pedidos con Yape. Sin conocimientos técnicos.</p>
+
+  <section>
+    <h2><span class="n">1</span> Direcciones de tu tienda</h2>
+    <ul>
+      <li><b>Tienda (para tus clientes):</b> <a href="https://glorious-compassion-production-cae6.up.railway.app">glorious-compassion-production-cae6.up.railway.app</a></li>
+      <li><b>Ingreso al panel:</b> la misma dirección + <code>/user/login</code></li>
+    </ul>
+    <div class="note">💡 Comparte solo la dirección de la tienda con tus clientes. El panel de administración es solo para ti.</div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span> Entrar como administrador</h2>
+    <div class="grid">
+      <div class="kv"><div class="lbl">Correo</div><div class="val">isablue.negocios@gmail.com</div></div>
+      <div class="kv"><div class="lbl">Contraseña</div><div class="val">la que configuraste</div></div>
+    </div>
+    <p>Entra a <code>/user/login</code>, ingresa y verás arriba el menú <b>Isablue · Admin</b> con: <b>Productos</b>, <b>Categorías</b>, <b>Pedidos y pagos</b> y <b>Promociones</b>.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span> Prueba una compra (2 minutos)</h2>
+    <ol>
+      <li>Abre la tienda, ve a <b>Tienda</b> y agrega un producto al <b>Carrito</b>.</li>
+      <li>Ve al carrito → <b>inicia sesión</b> o regístrate (correo y celular).</li>
+      <li>Elige <b>Yape</b> → verás el número <b>985436488</b> a nombre de <b>Haydee Hospinal</b>.</li>
+      <li>Escribe cualquier N° de operación y toca <b>"Ya yapeé · Confirmar pedido"</b>.</li>
+      <li>Se abre <b>WhatsApp</b> con el detalle y verás "Pedido registrado".</li>
+      <li>Entra al panel → <b>Pedidos y pagos</b> → ahí aparece tu pedido de prueba. ✅</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span> Cargar tus productos reales</h2>
+    <ol>
+      <li>Menú <b>Isablue · Admin</b> → <b>Productos</b> → <b>Agregar</b>.</li>
+      <li>Completa <b>nombre, precio, categoría</b> y <b>sube la foto</b> (JPG/PNG, hasta 10 MB).</li>
+      <li>Guarda → el producto aparece al instante en la tienda.</li>
+    </ol>
+    <div class="note">📸 Usa fotos cuadradas y con fondo claro (~1000×1000 px) para que se vean parejas.</div>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span> Crear secciones y promociones</h2>
+    <p><b>Secciones (categorías):</b> Menú → <b>Categorías</b> → crea las que quieras (ej. <i>Bebés</i>, <i>Didácticos</i>, <i>Peluches</i>…). Aparecen solas en el menú de la tienda.</p>
+    <p><b>Promociones del banner:</b> Menú → <b>Promociones</b> → agrega las que quieras (título, texto, imagen, color). Rotan arriba de la tienda. <b>No hay límite.</b></p>
+  </section>
+
+  <section>
+    <h2><span class="n">6</span> Recibir y confirmar pedidos</h2>
+    <div class="flow">
+      <span class="step">Cliente yapea</span><span class="arr">→</span>
+      <span class="step">Te llega por WhatsApp</span><span class="arr">→</span>
+      <span class="step">Verificas el Yape</span><span class="arr">→</span>
+      <span class="step">Coordinas la entrega</span>
+    </div>
+    <ul>
+      <li>Cada pedido queda en <b>Pedidos y pagos</b> como <span class="pill yape">Por confirmar</span> con el N° de operación.</li>
+      <li>Te llega el mensaje del cliente por <span class="pill wsp">WhatsApp 920097746</span>.</li>
+      <li><b>Verifica en tu app de Yape</b> que el pago llegó → coordina el envío.</li>
+      <li>Puedes <b>🖨 Imprimir</b> el ticket del pedido para ponerlo en la caja.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">7</span> Tus datos clave</h2>
+    <div class="grid">
+      <div class="kv"><div class="lbl">Yape (cobros)</div><div class="val">985436488</div></div>
+      <div class="kv"><div class="lbl">Titular Yape</div><div class="val">Haydee Hospinal</div></div>
+      <div class="kv"><div class="lbl">WhatsApp</div><div class="val">920097746</div></div>
+      <div class="kv"><div class="lbl">Correo del negocio</div><div class="val">isablue.negocios@gmail.com</div></div>
+    </div>
+  </section>
+
+  <section class="v2">
+    <h2><span class="n">＋</span> Para más adelante (versión 2)</h2>
+    <ul>
+      <li><span class="check">✓</span> Pago con <b>tarjeta</b> (Culqi) — el código ya está, solo faltan las llaves.</li>
+      <li><span class="check">✓</span> <b>Boleta electrónica SUNAT</b> (con RUC y Nubefact).</li>
+      <li><span class="check">✓</span> <b>Correos automáticos</b> de cada pedido (con dominio propio).</li>
+      <li><span class="check">✓</span> <b>Dominio propio</b> (ej. isablue.pe), políticas y Libro de Reclamaciones.</li>
+    </ul>
+    <p style="font-size:.86rem;color:var(--muted)">Todo esto está preparado en el sistema; se activa cuando quieras crecer.</p>
+  </section>
+
+  <footer>Isablue · Juguetes y Accesorios · Lima, Perú — ¡Éxitos con tus ventas! 🧸💜</footer>
+</div>
