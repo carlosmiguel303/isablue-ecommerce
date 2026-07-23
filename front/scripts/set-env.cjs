@@ -4,8 +4,10 @@ const path = require('path');
 // Genera environment.prod.ts a partir de variables de entorno en el build.
 // No contiene secretos: solo URL pública de la API e identidad visible de la tienda.
 const apiUrl = process.env.API_URL || 'https://TU-BACKEND-RAILWAY.up.railway.app/api/v1';
-const storeName = process.env.STORE_NAME || 'Tienda';
-const storeWhatsapp = process.env.STORE_WHATSAPP || '';
+const storeName = process.env.STORE_NAME || 'Isablue';
+// Número de WhatsApp por defecto (contacto público de la tienda). Se puede
+// sobreescribir con la variable STORE_WHATSAPP en el build del frontend.
+const storeWhatsapp = process.env.STORE_WHATSAPP || '51920097746';
 
 const esc = (v) => String(v).replace(/'/g, "\\'");
 const target = path.join(__dirname, '..', 'src', 'environments', 'environment.prod.ts');
