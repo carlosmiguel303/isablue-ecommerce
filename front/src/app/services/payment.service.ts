@@ -37,9 +37,9 @@ export class PaymentService {
     return this.http.get<PaymentResult[]>(environment.apiUrl + '/admin/payments', { headers: this.authHeaders() });
   }
 
-  /** Datos de Yape (número y nombre) para mostrar en el checkout. */
-  getYapeInfo(): Observable<{ number: string; name: string }> {
-    return this.http.get<{ number: string; name: string }>(this.apiUrl + '/yape/info', { headers: this.authHeaders() });
+  /** Datos de Yape (número, nombre) y WhatsApp de la tienda para el checkout. */
+  getYapeInfo(): Observable<{ number: string; name: string; whatsapp?: string }> {
+    return this.http.get<{ number: string; name: string; whatsapp?: string }>(this.apiUrl + '/yape/info', { headers: this.authHeaders() });
   }
 
   /** Registra un pedido pagado por Yape (queda "por confirmar"). */

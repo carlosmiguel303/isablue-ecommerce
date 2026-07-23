@@ -23,10 +23,12 @@ import java.util.Map;
 @RequestMapping("/api/v1/payments/yape")
 public class YapeController {
 
-    @Value("${yape.number:985436488}")
+    @Value("${yape.number:}")
     private String yapeNumber;
-    @Value("${yape.name:Haydee Hospinal}")
+    @Value("${yape.name:}")
     private String yapeName;
+    @Value("${store.whatsapp:}")
+    private String storeWhatsapp;
 
     private final OrderService orderService;
     private final UserService userService;
@@ -41,10 +43,14 @@ public class YapeController {
         this.paymentRepository = paymentRepository;
     }
 
-    /** Datos para mostrar en el checkout: número y nombre de Yape. */
+    /**
+     * Datos para mostrar en el checkout: número y nombre de Yape, y WhatsApp de la
+     * tienda para coordinar la entrega. Vienen de configuración (sin valores quemados).
+     * El campo "whatsapp" es adicional: los frontends antiguos lo ignoran.
+     */
     @GetMapping("/info")
     public Map<String, String> info() {
-        return Map.of("number", yapeNumber, "name", yapeName);
+        return Map.of("number", yapeNumber, "name", yapeName, "whatsapp", storeWhatsapp);
     }
 
     @PostMapping("/register")

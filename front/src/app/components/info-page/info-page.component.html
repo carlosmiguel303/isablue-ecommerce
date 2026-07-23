@@ -5,9 +5,9 @@
     <span class="eyebrow">ISABLUE · JUGUETES Y ACCESORIOS</span>
     <h1>{{page.title}}</h1>
     <div class="info-content">{{page.content}}</div>
-    <div class="info-help">
+    <div class="info-help" *ngIf="whatsappLink">
       ¿Tienes dudas? Escríbenos por
-      <a href="https://wa.me/51920097746" target="_blank" rel="noopener">WhatsApp (920097746)</a>.
+      <a [href]="whatsappLink" target="_blank" rel="noopener">WhatsApp {{whatsapp}}</a>.
     </div>
   </article>
   <p class="loading" *ngIf="loading && !page">Cargando…</p>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SessionStorageService } from 'src/app/services/session-storage.service';
 import { PaymentResult } from 'src/app/services/payment.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-payment-success',
@@ -9,6 +10,10 @@ import { PaymentResult } from 'src/app/services/payment.service';
 })
 export class PaymentSuccessComponent implements OnInit {
   payment: PaymentResult | null = null;
+  readonly whatsapp = environment.store?.whatsapp || '';
+  get whatsappLink(): string {
+    return this.whatsapp ? 'https://wa.me/' + this.whatsapp : '';
+  }
 
   constructor(private sessionStorage: SessionStorageService) {}
 

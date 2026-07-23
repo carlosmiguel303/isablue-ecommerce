@@ -117,7 +117,7 @@
     </div>
     <div><strong>Explora</strong><a routerLink="/">Inicio</a><a routerLink="/tienda">Tienda</a><a href="#nosotros">Nosotros</a></div>
     <div><strong>Ayuda</strong><a routerLink="/pagina/entregas">Formas de entrega</a><a routerLink="/pagina/devoluciones">Cambios y devoluciones</a><a routerLink="/cart/sumary">Carrito</a></div>
-    <div><strong>Contacto</strong><a href="https://www.facebook.com/isabluejuguetes" target="_blank" rel="noopener">Facebook</a><span>WhatsApp 920097746</span><a routerLink="/user/login">Mi cuenta</a></div>
+    <div><strong>Contacto</strong><a href="https://www.facebook.com/isabluejuguetes" target="_blank" rel="noopener">Facebook</a><span *ngIf="whatsapp">WhatsApp {{whatsapp}}</span><a routerLink="/user/login">Mi cuenta</a></div>
   </div>
   <div class="container lf-legal">© 2026 ISABLUE · Juguetes y Accesorios · Lima, Perú · Compra segura</div>
 </footer>

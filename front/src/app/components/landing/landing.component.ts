@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HomeService, Categoria } from 'src/app/services/home.service';
 import { Product } from 'src/app/common/product';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-landing',
@@ -10,6 +11,7 @@ import { Product } from 'src/app/common/product';
 export class LandingComponent implements OnInit {
   categories: Categoria[] = [];
   featured: Product[] = [];
+  readonly whatsapp = environment.store?.whatsapp || '';
 
   // Degradados cálidos alineados con Isablue para las tarjetas de líneas de productos.
   private gradients = [

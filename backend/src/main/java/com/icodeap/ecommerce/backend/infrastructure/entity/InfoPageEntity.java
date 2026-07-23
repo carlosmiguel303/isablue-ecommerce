@@ -31,25 +31,29 @@ public class InfoPageEntity {
         return p;
     }
 
+    /**
+     * Textos por defecto SIN datos personales (teléfonos/direcciones): esas
+     * referencias concretas las escribe el administrador desde el panel
+     * (las páginas ya editadas en la base de datos no se ven afectadas).
+     */
     public static List<InfoPageEntity> defaults() {
         return List.of(
                 of("entregas", "Formas de entrega",
-                        "En Isablue puedes recibir tu pedido de dos formas:\n\n" +
+                        "Puedes recibir tu pedido de dos formas:\n\n" +
                         "ENVÍO A DOMICILIO\n" +
-                        "Llevamos tu pedido hasta la puerta de tu casa, a todo el Perú. " +
-                        "El costo y el tiempo de entrega se coordinan por WhatsApp según tu distrito.\n\n" +
+                        "Llevamos tu pedido hasta la puerta de tu casa. " +
+                        "El costo y el tiempo de entrega se coordinan por WhatsApp según tu zona.\n\n" +
                         "RECOJO EN TIENDA\n" +
-                        "También puedes recoger tu pedido en nuestra tienda.\n" +
-                        "Dirección: José María Barreto.\n" +
-                        "Coordina el día y la hora por WhatsApp (920097746).\n\n" +
-                        "Apenas realices tu pedido y tu Yape, te contactamos por WhatsApp para coordinar la entrega o el recojo."),
+                        "También puedes recoger tu pedido en nuestra tienda. " +
+                        "Coordina el día y la hora por WhatsApp.\n\n" +
+                        "Apenas realices tu pedido, te contactamos por WhatsApp para coordinar la entrega o el recojo."),
                 of("devoluciones", "Cambios y devoluciones",
-                        "En Isablue queremos que quedes feliz con tu compra.\n\n" +
+                        "Queremos que quedes feliz con tu compra.\n\n" +
                         "CAMBIOS\n" +
                         "Si tu producto tiene alguna falla de fábrica, puedes solicitar el cambio dentro de los 7 días " +
                         "de recibido, presentando tu comprobante. El producto debe estar sin uso y en su empaque original.\n\n" +
                         "DEVOLUCIONES\n" +
-                        "Para devoluciones, escríbenos por WhatsApp (920097746) dentro de los 7 días. " +
+                        "Para devoluciones, escríbenos por WhatsApp dentro de los 7 días. " +
                         "Evaluaremos tu caso y te indicaremos los pasos a seguir.\n\n" +
                         "No aplican cambios ni devoluciones por mal uso del producto.\n\n" +
                         "Cualquier duda, escríbenos por WhatsApp — estamos para ayudarte.")

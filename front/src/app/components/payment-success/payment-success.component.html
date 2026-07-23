@@ -15,7 +15,7 @@
     </div>
 
     <div class="actions">
-      <a href="https://wa.me/51920097746" target="_blank" rel="noopener" class="btn-wsp-cta">Escríbenos por WhatsApp</a>
+      <a *ngIf="whatsappLink" [href]="whatsappLink" target="_blank" rel="noopener" class="btn-wsp-cta">Escríbenos por WhatsApp</a>
       <a routerLink="/tienda" class="btn-ghost-cta">Seguir comprando</a>
     </div>
     <p class="note">Si no se abrió WhatsApp automáticamente, toca el botón verde para enviarnos tu comprobante.</p>

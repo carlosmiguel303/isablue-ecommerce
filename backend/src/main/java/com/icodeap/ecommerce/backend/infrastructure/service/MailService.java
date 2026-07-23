@@ -24,6 +24,8 @@ public class MailService {
     private String brevoApiKey;
     @Value("${mail.from.name:Isablue Juguetes}")
     private String fromName;
+    @Value("${store.whatsapp:}")
+    private String storeWhatsapp;
 
     @Value("${spring.mail.host:}")
     private String host;
@@ -84,7 +86,10 @@ public class MailService {
             } else {
                 c.append("Tu pago fue procesado correctamente. Boleta: ").append(boleta).append(".\n");
             }
-            c.append("\nGracias por comprar en Isablue - Juguetes y Accesorios.\nLima, Peru - WhatsApp 920097746");
+            c.append("\nGracias por comprar en ").append(fromName).append(".");
+            if (storeWhatsapp != null && !storeWhatsapp.isBlank()) {
+                c.append("\nWhatsApp ").append(storeWhatsapp);
+            }
             send(p.getCustomerEmail(), "Tu pedido en Isablue - #" + p.getOrderId(), c.toString());
         }
     }
