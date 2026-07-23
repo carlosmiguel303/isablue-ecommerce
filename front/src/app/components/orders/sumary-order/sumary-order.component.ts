@@ -10,6 +10,7 @@ import { OrderService } from 'src/app/services/order.service';
 import { PaymentService, PaymentResult } from 'src/app/services/payment.service';
 import { SessionStorageService } from 'src/app/services/session-storage.service';
 import { UserService } from 'src/app/services/user.service';
+import { environment } from 'src/environments/environment';
 
 @Component({ selector: 'app-sumary-order', templateUrl: './sumary-order.component.html', styleUrls: ['./sumary-order.component.css'] })
 export class SumaryOrderComponent implements OnInit {
@@ -21,10 +22,10 @@ export class SumaryOrderComponent implements OnInit {
 
   method: 'yape' | 'card' = 'yape';
 
-  // Yape
-  yape = { number: '985436488', name: 'Haydee Hospinal' };
+  // Yape (los datos vienen del backend: /payments/yape/info)
+  yape = { number: '', name: '' };
   operationNumber = '';
-  private readonly whatsapp = '51920097746';
+  private whatsapp = environment.store?.whatsapp || '';
 
   // Tarjeta
   showCard = false;
@@ -61,7 +62,10 @@ export class SumaryOrderComponent implements OnInit {
       error: () => { this.culqiConfigured = false; }
     });
     this.paymentService.getYapeInfo().subscribe({
-      next: y => { if (y?.number) { this.yape = y; } },
+      next: y => {
+        if (y?.number) { this.yape = { number: y.number, name: y.name }; }
+        if (y?.whatsapp) { this.whatsapp = y.whatsapp; }
+      },
       error: () => {}
     });
   }
@@ -91,8 +95,9 @@ export class SumaryOrderComponent implements OnInit {
   }
 
   private openWhatsApp(orderId: number, total: number, itemsText: string): void {
+    if (!this.whatsapp) { return; } // Sin número configurado: no se abre WhatsApp.
     const op = this.operationNumber ? `\nN° de operación Yape: ${this.operationNumber}` : '';
-    const msg = `¡Hola Isablue! 🧸 Acabo de yapear mi pedido.\n\n` +
+    const msg = `¡Hola! Acabo de yapear mi pedido.\n\n` +
       `Pedido #${orderId}\nCliente: ${this.firstName} ${this.lastName}\n` +
       `Total: S/ ${total.toFixed(2)}${op}\n\nProductos:\n${itemsText}\n\n` +
       `Quedo atento(a) para coordinar la entrega. ¡Gracias!`;

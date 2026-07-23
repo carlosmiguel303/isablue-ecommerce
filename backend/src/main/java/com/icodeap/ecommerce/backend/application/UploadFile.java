@@ -11,7 +11,9 @@ import java.util.UUID;
 
 public class UploadFile {
     private static final String DEFAULT_IMAGE = "default.jpg";
-    private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp", "image/svg+xml");
+    // SVG excluido: puede contener JavaScript (XSS almacenado) al servirse desde /uploads.
+    // Solo afecta subidas nuevas; las imágenes ya almacenadas no se modifican.
+    private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp");
 
     private final Path uploadDirectory;
     private final String publicBaseUrl;
@@ -28,7 +30,7 @@ public class UploadFile {
 
         String contentType = multipartFile.getContentType();
         if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
-            throw new IllegalArgumentException("Solo se permiten imágenes JPG, PNG, WEBP o SVG");
+            throw new IllegalArgumentException("Solo se permiten imágenes JPG, PNG o WEBP");
         }
 
         Files.createDirectories(uploadDirectory);

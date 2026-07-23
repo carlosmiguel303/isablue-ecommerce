@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PaymentResult, PaymentService } from 'src/app/services/payment.service';
 import { OrderService } from 'src/app/services/order.service';
 import { HomeService } from 'src/app/services/home.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-admin-payments',
@@ -13,6 +14,7 @@ export class AdminPaymentsComponent implements OnInit {
   payments: PaymentResult[] = [];
   loading = true;
   private productNames = new Map<number, string>();
+  private readonly whatsapp = environment.store?.whatsapp || '';
 
   constructor(
     private paymentService: PaymentService,
@@ -71,7 +73,7 @@ export class AdminPaymentsComponent implements OnInit {
 </style></head><body>
   <div class="c brand">ISABLUE</div>
   <div class="c sub">JUGUETES Y ACCESORIOS</div>
-  <div class="c meta">Lima, Perú · WhatsApp 920097746</div>
+  <div class="c meta">${this.whatsapp ? 'WhatsApp ' + this.whatsapp : ''}</div>
   <hr>
   <div class="c b">BOLETA DE VENTA</div>
   <div class="c">${p.boletaSerie}-${p.boletaNumber}</div>

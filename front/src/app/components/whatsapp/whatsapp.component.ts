@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-whatsapp',
@@ -6,7 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./whatsapp.component.css']
 })
 export class WhatsappComponent {
-  // Número de WhatsApp de Isablue (Perú +51)
-  readonly link = 'https://wa.me/51920097746?text=' +
-    encodeURIComponent('¡Hola Isablue! Quiero información sobre sus juguetes 🧸');
+  private readonly phone = environment.store?.whatsapp || '';
+  readonly enabled = !!this.phone;
+  readonly link = this.phone
+    ? 'https://wa.me/' + this.phone + '?text=' +
+      encodeURIComponent('¡Hola! Quiero más información.')
+    : '';
 }

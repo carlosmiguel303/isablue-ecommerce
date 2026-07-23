@@ -29,6 +29,7 @@ public class PaypalController {
     private final String frontendUrl;
     private final String backendBaseUrl;
     private final String paymentCurrency;
+    private final boolean onlinePaymentsEnabled;
 
     public PaypalController(
             PaypalService paypalService,
@@ -36,7 +37,8 @@ public class PaypalController {
             UserService userService,
             @Value("${app.frontend.url:http://localhost:4200}") String frontendUrl,
             @Value("${app.backend.base-url:http://localhost:8085}") String backendBaseUrl,
-            @Value("${app.payment.currency:USD}") String paymentCurrency
+            @Value("${app.payment.currency:USD}") String paymentCurrency,
+            @Value("${payments.online.enabled:false}") boolean onlinePaymentsEnabled
     ) {
         this.paypalService = paypalService;
         this.orderService = orderService;
@@ -44,6 +46,7 @@ public class PaypalController {
         this.frontendUrl = stripTrailingSlash(frontendUrl);
         this.backendBaseUrl = stripTrailingSlash(backendBaseUrl);
         this.paymentCurrency = paymentCurrency;
+        this.onlinePaymentsEnabled = onlinePaymentsEnabled;
     }
 
     @PostMapping
@@ -51,6 +54,9 @@ public class PaypalController {
             @Valid @RequestBody DataPayment dataPayment,
             Authentication authentication
     ) {
+        if (!onlinePaymentsEnabled) {
+            throw new BusinessException("Los pagos en línea están desactivados. Usa Yape/WhatsApp para completar tu compra.");
+        }
         Order order = orderService.findById(dataPayment.getOrderId());
         User currentUser = userService.findByEmail(authentication.getName());
 
@@ -93,6 +99,9 @@ public class PaypalController {
             @RequestParam("paymentId") String paymentId,
             @RequestParam("PayerID") String payerId
     ) {
+        if (!onlinePaymentsEnabled) {
+            return new RedirectView(frontendUrl + "/cart/sumary?payment=disabled");
+        }
         try {
             Payment payment = paypalService.executePayment(paymentId, payerId);
             if ("approved".equalsIgnoreCase(payment.getState())) {
@@ -107,6 +116,10 @@ public class PaypalController {
 
     @GetMapping("/cancel")
     public RedirectView paymentCancel(@RequestParam Integer orderId) {
+        if (!onlinePaymentsEnabled) {
+            // Módulo apagado: no se toca el estado de ninguna orden.
+            return new RedirectView(frontendUrl + "/cart/sumary?payment=disabled");
+        }
         orderService.updateStateById(orderId, OrderState.CANCELLED.name());
         return new RedirectView(frontendUrl + "/cart/sumary?payment=cancelled");
     }

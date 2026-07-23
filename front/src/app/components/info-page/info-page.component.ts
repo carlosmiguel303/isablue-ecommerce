@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { InfoPage, InfoService } from 'src/app/services/info.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-info-page',
@@ -10,6 +11,8 @@ import { InfoPage, InfoService } from 'src/app/services/info.service';
 export class InfoPageComponent implements OnInit {
   page: InfoPage | null = null;
   loading = true;
+  readonly whatsapp = environment.store?.whatsapp || '';
+  get whatsappLink(): string { return this.whatsapp ? 'https://wa.me/' + this.whatsapp : ''; }
 
   constructor(private route: ActivatedRoute, private infoService: InfoService) {}
 

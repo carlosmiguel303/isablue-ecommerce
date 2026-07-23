@@ -32,10 +32,12 @@ public class CheckoutController {
     private final NubefactService nubefactService;
     private final MailService mailService;
     private final IPaymentCrudRepository paymentRepository;
+    private final boolean onlinePaymentsEnabled;
 
     public CheckoutController(OrderService orderService, UserService userService, ProductService productService,
                               CulqiService culqiService, NubefactService nubefactService, MailService mailService,
-                              IPaymentCrudRepository paymentRepository) {
+                              IPaymentCrudRepository paymentRepository,
+                              @org.springframework.beans.factory.annotation.Value("${payments.online.enabled:false}") boolean onlinePaymentsEnabled) {
         this.orderService = orderService;
         this.userService = userService;
         this.productService = productService;
@@ -43,12 +45,14 @@ public class CheckoutController {
         this.nubefactService = nubefactService;
         this.mailService = mailService;
         this.paymentRepository = paymentRepository;
+        this.onlinePaymentsEnabled = onlinePaymentsEnabled;
     }
 
     /** Indica al frontend si hay llaves reales o estamos en modo prueba, y la llave pública de Culqi. */
     @GetMapping("/config")
     public Map<String, Object> config() {
         return Map.of(
+                "onlineEnabled", onlinePaymentsEnabled,
                 "culqiConfigured", culqiService.isConfigured(),
                 "boletaConfigured", nubefactService.isConfigured(),
                 "publicKey", culqiService.getPublicKey()
@@ -57,6 +61,9 @@ public class CheckoutController {
 
     @PostMapping("/charge")
     public PaymentEntity charge(@RequestBody ChargeRequest request, Authentication authentication) {
+        if (!onlinePaymentsEnabled) {
+            throw new BusinessException("Los pagos en línea están desactivados. Usa Yape/WhatsApp para completar tu compra.");
+        }
         Order order = orderService.findById(request.orderId());
         User user = userService.findByEmail(authentication.getName());
 

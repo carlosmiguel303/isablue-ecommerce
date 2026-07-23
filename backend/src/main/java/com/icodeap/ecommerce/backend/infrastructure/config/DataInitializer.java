@@ -33,10 +33,12 @@ public class DataInitializer {
             @Value("${app.demo.user.password:cliente123}") String userPassword
     ) {
         return args -> {
-            if (users.findByEmail(adminEmail).isEmpty()) {
-                users.save(createUser(adminEmail, "Administrador", "IsaBlue", "999999999", adminPassword, UserType.ADMIN, encoder));
+            // Nunca crear usuarios demo con credenciales vacías: exige correo Y contraseña
+            // definidos por configuración (los perfiles local/dev los definen; producción no).
+            if (isDefined(adminEmail, adminPassword) && users.findByEmail(adminEmail).isEmpty()) {
+                users.save(createUser(adminEmail, "Administrador", "Demo", "999999999", adminPassword, UserType.ADMIN, encoder));
             }
-            if (users.findByEmail(userEmail).isEmpty()) {
+            if (isDefined(userEmail, userPassword) && users.findByEmail(userEmail).isEmpty()) {
                 users.save(createUser(userEmail, "Cliente", "Demo", "988888888", userPassword, UserType.USER, encoder));
             }
 
@@ -49,7 +51,8 @@ public class DataInitializer {
                 }
             }
 
-            if (products.count() == 0 && users.count() > 0 && categories.count() >= 5) {
+            if (products.count() == 0 && categories.count() >= 5
+                    && isDefined(adminEmail, adminPassword) && users.findByEmail(adminEmail).isPresent()) {
                 CategoryEntity didacticos = categories.findById(1).orElseThrow();
                 CategoryEntity bebes = categories.findById(2).orElse(didacticos);
                 CategoryEntity creatividad = categories.findById(3).orElse(didacticos);
@@ -66,6 +69,10 @@ public class DataInitializer {
                 add(products, admin, dinosaurios, "Dinosaurio Educativo", "ISA-DINO-006", "Figura infantil para aprender jugando y desarrollar imaginación.", baseUrl + "/images/toy-dino.svg", "55.00");
             }
         };
+    }
+
+    private boolean isDefined(String email, String password) {
+        return email != null && !email.isBlank() && password != null && !password.isBlank();
     }
 
     private UserEntity createUser(

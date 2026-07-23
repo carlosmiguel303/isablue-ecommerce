@@ -11,18 +11,28 @@ import java.util.Map;
 
 /**
  * Cobro con tarjeta vía Culqi (Perú).
- * En modo prueba sin llaves configuradas, simula un cargo exitoso para poder
- * demostrar el flujo completo. Con la llave secreta real, cobra de verdad.
+ * El cargo SIMULADO (sin llaves) solo funciona si payments.simulated-card.enabled=true
+ * (perfiles locales de demostración). En producción ese flag queda en false, de modo
+ * que un cargo sin llaves o sin token es rechazado y NUNCA confirma pedidos.
  */
 @Service
 public class CulqiService {
 
-    @Value("${culqi.secret-key:}")
-    private String secretKey;
-    @Value("${culqi.public-key:}")
-    private String publicKey;
+    private final String secretKey;
+    private final String publicKey;
+    private final boolean simulatedEnabled;
 
     private final RestTemplate rest = new RestTemplate();
+
+    public CulqiService(
+            @Value("${culqi.secret-key:}") String secretKey,
+            @Value("${culqi.public-key:}") String publicKey,
+            @Value("${payments.simulated-card.enabled:false}") boolean simulatedEnabled
+    ) {
+        this.secretKey = secretKey;
+        this.publicKey = publicKey;
+        this.simulatedEnabled = simulatedEnabled;
+    }
 
     public boolean isConfigured() {
         return secretKey != null && !secretKey.isBlank();
@@ -41,6 +51,10 @@ public class CulqiService {
      */
     public String charge(BigDecimal amount, String currency, String email, String token) {
         if (!isConfigured() || token == null || token.isBlank()) {
+            if (!simulatedEnabled) {
+                throw new IllegalStateException(
+                        "El cobro con tarjeta no está disponible: la pasarela no está configurada.");
+            }
             return "SIM-" + System.currentTimeMillis();
         }
         int cents = amount.multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP).intValue();
