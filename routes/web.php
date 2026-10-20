@@ -57,8 +57,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/banners', [AdminController::class, 'banners']);
     Route::get('/banners/nuevo', [AdminController::class, 'bannerForm']);
     Route::post('/banners', [AdminController::class, 'saveBanner']);
+    Route::post('/banners/imagenes', [AdminController::class, 'uploadBanners']);
     Route::get('/banners/{banner}/editar', [AdminController::class, 'bannerForm']);
     Route::put('/banners/{banner}', [AdminController::class, 'saveBanner']);
+    Route::delete('/banners/{banner}', [AdminController::class, 'deleteBanner']);
     Route::get('/pedidos', [AdminController::class, 'orders']);
     Route::get('/pedidos/ultimo', [AdminController::class, 'latestOrder']);
     Route::post('/pedidos/confirmar-yape', [AdminController::class, 'bulkPayment']);

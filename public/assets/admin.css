@@ -193,3 +193,6 @@ tbody tr:hover { background: #FDFBFF; }
 }
 .new-order-alert { position: fixed; right: 20px; bottom: 20px; z-index: 90; background: var(--pink); color: #fff; font-weight: 800; padding: 16px 20px; border-radius: 16px; box-shadow: var(--shadow-lg); max-width: 360px; animation: pop .35s; }
 .new-order-alert:hover { background: var(--pink-600); }
+.banner-previews { display: flex; flex-wrap: wrap; gap: 12px; }
+.banner-previews img { width: min(100%, 360px); max-height: 160px; object-fit: contain; background: #f7f4fc; border: 1px solid var(--line); border-radius: 12px; }
+.banner-thumb { object-fit: contain; background: #f7f4fc; border-radius: 8px; }

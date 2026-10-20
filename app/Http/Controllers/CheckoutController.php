@@ -10,6 +10,7 @@ use App\Models\ShippingMethod;
 use App\Models\User;
 use App\Services\Cart;
 use App\Services\Checkout;
+use App\Services\StoreReadiness;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +31,11 @@ class CheckoutController extends Controller
         $shipping = ShippingMethod::where('active', true)->orderBy('price')->get()
             ->each(fn ($m) => $m->final_price = Checkout::shippingPrice($m, $subtotal) / 100);
 
-        return view('checkout', ['lines' => $cart->lines(), 'subtotal' => $subtotal, 'shipping' => $shipping]);
+        return view('checkout', [
+            'lines' => $cart->lines(), 'subtotal' => $subtotal, 'shipping' => $shipping,
+            'paymentReady' => StoreReadiness::paymentReady(),
+            'demoMode' => Setting::valueOf('demo_mode', '0') === '1',
+        ]);
     }
 
     public function store(Request $r, Checkout $checkout)
@@ -52,6 +57,7 @@ class CheckoutController extends Controller
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
         ]);
         abort_unless(hash_equals((string) $r->session()->get('checkout_key', ''), $d['checkout_key']), 419);
+        StoreReadiness::assertCanOrder();
         $user = $r->user() ?? $this->accountFor($r, $d);
         $order = $checkout->place($r->session()->get('cart', []), $d, $user->id, $d['checkout_key']);
         if ($r->hasFile('voucher') && ! $order->voucher_path) {
@@ -59,7 +65,7 @@ class CheckoutController extends Controller
         }
         $r->session()->forget('cart');
         $r->session()->put('last_order', $order->public_token);
-        if (! $order->confirmation_sent_at) {
+        if (! $order->confirmation_sent_at && ! in_array(config('mail.default'), ['log', 'array'])) {
             try {
                 Mail::to($order->customer_email)->send(new OrderConfirmation($order));
                 $order->update(['confirmation_sent_at' => now()]);

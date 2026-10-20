@@ -1,6 +1,30 @@
 (() => {
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
+  // Previsualiza las imágenes locales sin enviarlas hasta guardar.
+  $$('[data-banner-files]').forEach(input => {
+    let urls = [];
+    input.addEventListener('change', () => {
+      urls.forEach(URL.revokeObjectURL);
+      urls = [];
+      const box = input.closest('form').querySelector('[data-banner-previews]');
+      box.replaceChildren();
+      const files = [...input.files];
+      input.setCustomValidity(files.length > 5 ? 'Elige hasta 5 imágenes por carga.' : '');
+      files.slice(0, 5).forEach(file => {
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+          input.setCustomValidity('Usa imágenes JPG, PNG o WebP de hasta 5 MB.');
+          return;
+        }
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.alt = file.name;
+        urls.push(img.src);
+        box.append(img);
+      });
+    });
+  });
+
   // Menú lateral en móvil
   const sidebar = document.querySelector('[data-sidebar]');
   document.querySelector('[data-sidebar-toggle]')?.addEventListener('click', e => { e.stopPropagation(); sidebar.classList.toggle('open'); });

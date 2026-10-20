@@ -4,6 +4,21 @@
 @php($v = fn ($k, $d = '') => old($k, $settings[$k] ?? $d))
 <div class="page-title"><div><span class="eyebrow">Tu tienda</span><h1>Configuración</h1></div></div>
 
+<section class="admin-card">
+    <h2>Preparar la tienda para vender</h2>
+    @if($launchIssues)
+        <p>Completa estos datos antes de desactivar el modo de prueba:</p>
+        <ul>@foreach($launchIssues as $issue)<li>{{ $issue }}</li>@endforeach</ul>
+        <p><a href="/admin/productos">Revisar productos</a> · <a href="/admin/inventario">Actualizar existencias</a> · <a href="#envios">Revisar entregas</a></p>
+    @else
+        <p>Hay productos con stock, entrega y datos de Yape configurados. Revisa su exactitud y desmarca «Modo de prueba» al final de este formulario para recibir ventas reales.</p>
+    @endif
+    @if(!$mailReady)
+        <p class="notice">El envío de correos aún no está configurado. Revisa los pedidos desde el panel; el cliente puede consultarlos en «Mi cuenta». Configura el correo del servidor para recibir avisos por email.</p>
+    @endif
+    <p>Los banners se administran desde <a href="/admin/banners">Carrusel de promociones</a>.</p>
+</section>
+
 <div class="settings-nav">
     <a href="#yape">Yape</a><a href="#promo">Promociones y anuncios</a><a href="#contacto">Contacto</a><a href="#envios">Envíos</a><a href="#politicas">Políticas</a>
 </div>

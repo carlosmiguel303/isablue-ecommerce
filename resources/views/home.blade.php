@@ -2,10 +2,16 @@
 @section('content')
 
 {{-- Hero --}}
-<section class="wrap hero-zone">
-    <div class="hero" aria-label="Promociones de IsaBlue" data-slider>
+@if($banners->isNotEmpty())
+<section class="hero-zone hero-wide" aria-label="Promociones de IsaBlue">
+    <div class="hero" role="region" aria-roledescription="carrusel" aria-label="Promociones" data-slider tabindex="0">
         @foreach($banners as $banner)
-            <article class="hero-slide theme-{{ $banner->theme }}" @if(!$loop->first) hidden @endif>
+            <article class="hero-slide theme-{{ $banner->theme }}" role="group" aria-roledescription="diapositiva" aria-label="{{ $loop->iteration }} de {{ $banners->count() }}: {{ $banner->title }}" @if(!$loop->first) hidden @endif>
+                @if($banner->theme === 'image')
+                    <a class="hero-image-link" href="{{ $banner->link }}">
+                        <img src="{{ $banner->image }}" alt="{{ $banner->title }}" class="hero-banner-image" fetchpriority="{{ $loop->first?'high':'auto' }}" loading="{{ $loop->first?'eager':'lazy' }}">
+                    </a>
+                @else
                 <div class="hero-copy">
                     @if($banner->eyebrow)<span class="pill">@include('partials.icon',['name'=>'sparkle','size'=>16]) {{ $banner->eyebrow }}</span>@endif
                     @if($loop->first)<h1>{{ $banner->title }}</h1>@else<h2 class="h1">{{ $banner->title }}</h2>@endif
@@ -16,27 +22,20 @@
                     <span class="blob b1"></span><span class="blob b2"></span>
                     <img src="{{ $banner->image ?: '/assets/images/reales/tienda-isablue.webp' }}" alt="{{ $banner->title }}" width="420" height="420" class="hero-photo" fetchpriority="{{ $loop->first?'high':'auto' }}">
                 </div>
+                @endif
             </article>
         @endforeach
         @if($banners->count() > 1)
-            <div class="slider-dots">@foreach($banners as $banner)<button type="button" data-slide="{{ $loop->index }}" aria-label="Ver promoción {{ $loop->iteration }}" aria-pressed="{{ $loop->first?'true':'false' }}"></button>@endforeach</div>
+            <div class="slider-controls">
+                <button type="button" data-slide-prev aria-label="Promoción anterior">‹</button>
+                <div class="slider-dots">@foreach($banners as $banner)<button type="button" data-slide="{{ $loop->index }}" aria-label="Ver promoción {{ $loop->iteration }}: {{ $banner->title }}" aria-pressed="{{ $loop->first?'true':'false' }}"></button>@endforeach</div>
+                <button type="button" data-slide-next aria-label="Siguiente promoción">›</button>
+                <button type="button" data-slide-pause aria-label="Pausar carrusel" aria-pressed="false">Pausar</button>
+            </div>
         @endif
     </div>
-    <div class="hero-side">
-        <a class="side-card sc-pink" href="/catalogo?sale=1">
-            <span class="side-tag">Hasta {{ $maxDiscount ?: 30 }}% OFF</span>
-            <strong>Ofertas que<br>vuelan</strong>
-            <span class="side-link">Ver ofertas @include('partials.icon',['name'=>'arrow','size'=>16])</span>
-            <img src="/assets/images/reales/bloques-madera-abc.webp" alt="" width="130" height="130">
-        </a>
-        <a class="side-card sc-teal" href="/catalogo?q=sensorial">
-            <span class="side-tag">Estimulación</span>
-            <strong>Libros y juguetes<br>sensoriales</strong>
-            <span class="side-link">Descubrir @include('partials.icon',['name'=>'arrow','size'=>16])</span>
-            <img src="/assets/images/reales/mono-sensorial.webp" alt="" width="130" height="130">
-        </a>
-    </div>
 </section>
+@endif
 
 {{-- Accesos rápidos --}}
 <section class="wrap quick-tiles">

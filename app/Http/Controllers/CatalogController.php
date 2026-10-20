@@ -18,7 +18,7 @@ class CatalogController extends Controller
         $featured = $catalog()->where('featured', true)->orderByRaw('stock > 0 desc')->take(8)->get();
 
         return view('home', [
-            'banners' => Banner::where('active', true)->orderBy('sort_order')->get(),
+            'banners' => Banner::where('active', true)->orderBy('sort_order')->orderBy('id')->get(),
             'categories' => Category::where('active', true)->orderBy('sort_order')->get(),
             'featured' => $featured->isNotEmpty() ? $featured : $catalog()->orderByRaw('stock > 0 desc')->take(8)->get(),
             'newProducts' => $catalog()->latest()->take(4)->get(),

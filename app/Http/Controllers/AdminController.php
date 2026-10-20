@@ -10,6 +10,7 @@ use App\Models\Setting;
 use App\Models\ShippingMethod;
 use App\Models\StockMovement;
 use App\Services\Checkout;
+use App\Services\StoreReadiness;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -387,7 +388,7 @@ class AdminController extends Controller
 
     public function banners()
     {
-        return view('admin.banners', ['banners' => Banner::orderBy('sort_order')->get()]);
+        return view('admin.banners', ['banners' => Banner::orderBy('sort_order')->orderBy('id')->get()]);
     }
 
     public function bannerForm(?Banner $banner = null)
@@ -398,7 +399,7 @@ class AdminController extends Controller
     public function saveBanner(Request $r, ?Banner $banner = null)
     {
         $banner ??= new Banner;
-        $d = $r->validate(['title' => 'required|string|max:180', 'subtitle' => 'nullable|string|max:500', 'eyebrow' => 'nullable|string|max:100', 'button' => 'required|string|max:60', 'link' => ['required', 'string', 'max:255', 'regex:~^/(?!/)[a-zA-Z0-9/_?=&%.-]*$~'], 'theme' => 'required|in:main,baby,montessori,sunny,mint', 'sort_order' => 'required|integer|min:0|max:1000', 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120']);
+        $d = $r->validate(['title' => 'required|string|max:180', 'subtitle' => 'nullable|string|max:500', 'eyebrow' => 'nullable|string|max:100', 'button' => 'required|string|max:60', 'link' => ['required', 'string', 'max:255', 'regex:~^/(?!/)[a-zA-Z0-9/_?=&%.-]*$~'], 'theme' => 'required|in:image,main,baby,montessori,sunny,mint', 'sort_order' => 'required|integer|min:0|max:1000', 'photo' => [Rule::requiredIf($r->input('theme') === 'image' && ! $banner->image), 'nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120']]);
         unset($d['photo']);
         $d['active'] = $r->boolean('active');
         if ($r->hasFile('photo')) {
@@ -409,6 +410,45 @@ class AdminController extends Controller
         return redirect('/admin/banners')->with('status', 'Banner guardado.');
     }
 
+    public function uploadBanners(Request $r)
+    {
+        $d = $r->validate([
+            'title' => 'required|string|max:160',
+            'link' => ['required', 'string', 'max:255', 'regex:~^/(?!/)[a-zA-Z0-9/_?=&%.-]*$~'],
+            'photos' => 'required|array|min:1|max:5',
+            'photos.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+        $uploaded = [];
+        try {
+            DB::transaction(function () use ($r, $d, &$uploaded) {
+                $order = min(995, (int) Banner::max('sort_order') + 1);
+                foreach ($r->file('photos') as $index => $photo) {
+                    $uploaded[] = $path = $this->upload($photo);
+                    Banner::create([
+                        'title' => $d['title'].' '.($index + 1), 'image' => $path,
+                        'link' => $d['link'], 'button' => 'Ver promoción', 'theme' => 'image',
+                        'sort_order' => $order + $index, 'active' => true,
+                    ]);
+                }
+            });
+        } catch (\Throwable $e) {
+            foreach ($uploaded as $path) {
+                @unlink(public_path(ltrim($path, '/')));
+            }
+            throw $e;
+        }
+
+        return redirect('/admin/banners')->with('status', 'Imágenes añadidas al carrusel. Puedes editar el título, enlace y orden de cada una.');
+    }
+
+    public function deleteBanner(Banner $banner)
+    {
+        // Keep the uploaded file: another banner may still reference it.
+        $banner->delete();
+
+        return redirect('/admin/banners')->with('status', 'Banner eliminado del carrusel.');
+    }
+
     // ───────────────────────── Configuración ─────────────────────────
 
     public function settings()
@@ -417,6 +457,8 @@ class AdminController extends Controller
             'settings' => Setting::pluck('value', 'key'),
             'shipping' => ShippingMethod::all(),
             'products' => Product::publicCatalog()->orderBy('name')->get(['id', 'name', 'price']),
+            'launchIssues' => StoreReadiness::launchIssues(),
+            'mailReady' => ! in_array(config('mail.default'), ['log', 'array']),
         ]);
     }
 

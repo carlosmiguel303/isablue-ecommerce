@@ -35,17 +35,57 @@
   }
 
   /* Slider del inicio */
-  const slides = $$('.hero-slide');
-  const dots = $$('[data-slide]');
-  let current = 0, autoplay;
-  const show = i => {
-    current = (i + slides.length) % slides.length;
-    slides.forEach((s, n) => (s.hidden = n !== current));
-    dots.forEach((d, n) => d.setAttribute('aria-pressed', String(n === current)));
-  };
-  const play = () => { clearInterval(autoplay); if (slides.length > 1) autoplay = setInterval(() => show(current + 1), 6000); };
-  dots.forEach(d => d.addEventListener('click', () => { show(Number(d.dataset.slide)); play(); }));
-  play();
+  const slider = $('[data-slider]');
+  if (slider) {
+    const slides = $$('.hero-slide', slider), dots = $$('[data-slide]', slider);
+    const pause = $('[data-slide-pause]', slider);
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let current = 0, autoplay, paused = motion.matches, hovering = false;
+    const show = i => {
+      if (!slides.length) return;
+      current = (i + slides.length) % slides.length;
+      slides.forEach((s, n) => (s.hidden = n !== current));
+      dots.forEach((d, n) => d.setAttribute('aria-pressed', String(n === current)));
+    };
+    const play = () => {
+      clearInterval(autoplay);
+      if (pause) {
+        pause.textContent = paused ? 'Reanudar' : 'Pausar';
+        pause.setAttribute('aria-label', paused ? 'Reanudar carrusel' : 'Pausar carrusel');
+        pause.setAttribute('aria-pressed', String(paused));
+      }
+      if (slides.length > 1 && !paused && !hovering && !document.hidden && !slider.contains(document.activeElement)) {
+        autoplay = setInterval(() => show(current + 1), 7000);
+      }
+    };
+    dots.forEach(d => d.addEventListener('click', () => { show(Number(d.dataset.slide)); play(); }));
+    $('[data-slide-prev]', slider)?.addEventListener('click', () => { show(current - 1); play(); });
+    $('[data-slide-next]', slider)?.addEventListener('click', () => { show(current + 1); play(); });
+    pause?.addEventListener('click', () => { paused = !paused; play(); });
+    slider.addEventListener('mouseenter', () => { hovering = true; play(); });
+    slider.addEventListener('mouseleave', () => { hovering = false; play(); });
+    slider.addEventListener('focusin', play);
+    slider.addEventListener('focusout', () => setTimeout(play, 0));
+    slider.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      show(current + (e.key === 'ArrowLeft' ? -1 : 1));
+      play();
+    });
+    let touch;
+    slider.addEventListener('touchstart', e => {
+      touch = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+    }, { passive: true });
+    slider.addEventListener('touchend', e => {
+      if (!touch || !e.changedTouches.length) return;
+      const dx = e.changedTouches[0].clientX - touch.x, dy = e.changedTouches[0].clientY - touch.y;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { show(current + (dx < 0 ? 1 : -1)); play(); }
+      touch = null;
+    }, { passive: true });
+    motion.addEventListener('change', () => { if (motion.matches) paused = true; play(); });
+    document.addEventListener('visibilitychange', play);
+    play();
+  }
 
   /* Menú móvil y desplegables */
   const menuBtn = $('[data-menu-toggle]');

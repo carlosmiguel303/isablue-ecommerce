@@ -34,7 +34,7 @@
     </div>
     @endif
 
-    @if($awaiting)
+    @if($awaiting && !$order->is_demo)
     <section class="panel co-block">
         <h2><b>1</b> Yapea <span class="amount-pill">{{ $money }}{{ number_format($order->total,2) }}</span></h2>
         <div class="yape-box">
@@ -45,7 +45,7 @@
                     <button type="button" class="copy-btn" data-copy="{{ preg_replace('/\s/','',$yape) }}">Copiar número</button>
                     @if($holder)<p class="hint" style="margin-top:6px">A nombre de: <strong>{{ $holder }}</strong></p>@endif
                 @else
-                    <p>Te enviaremos el número de Yape por WhatsApp en unos minutos.</p>
+                    <p>Los datos de pago no están disponibles. Contacta con la tienda antes de realizar un abono.</p>
                 @endif
                 <p class="hint">En el mensaje del Yape escribe tu código <strong>{{ $order->reference }}</strong>.</p>
             </div>

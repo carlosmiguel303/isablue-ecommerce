@@ -13,6 +13,9 @@
     @if(!$lines)
         <div class="empty"><p>Agrega un juguete a tu carrito para continuar.</p><a href="/catalogo" class="btn">Explorar juguetes</a></div>
     @else
+    @if(!$paymentReady && !$demoMode)
+        <div class="notice" role="alert">El pago todavía no está disponible. Contacta con la tienda antes de realizar un abono.</div>
+    @endif
     <div class="checkout-grid">
         <form method="post" action="/checkout" enctype="multipart/form-data" data-once id="checkout-form">
             @csrf
@@ -51,6 +54,7 @@
 
             <section class="panel co-block">
                 <h2><b>3</b> Paga con Yape</h2>
+                @if($paymentReady && !$demoMode)
                 <div class="yape-box">
                     @if($qr)<img class="qr" src="{{ $qr }}" alt="Código QR de Yape de IsaBlue" width="170" height="170">@else<div class="qr-placeholder">yape</div>@endif
                     <div>
@@ -59,16 +63,19 @@
                             <div class="yape-number">{{ $yape }}</div>
                             <button type="button" class="copy-btn" data-copy="{{ preg_replace('/\s/','',$yape) }}">Copiar número</button>
                             @if($holder)<p class="hint" style="margin-top:6px">A nombre de: <strong>{{ $holder }}</strong></p>@endif
-                        @else
-                            <p>Al confirmar te mostraremos los datos para yapear y también te los enviaremos por WhatsApp.</p>
                         @endif
                     </div>
                 </div>
+                @else
+                    <p>{{ $demoMode ? 'Esta es una compra de prueba. No realices un pago.' : 'Datos de pago pendientes de configuración.' }}</p>
+                @endif
+                @if($paymentReady && !$demoMode)
                 <p class="hint" style="margin-top:14px">¿Ya yapeaste? Adjunta tu captura y agilizamos tu pedido. Si aún no, puedes hacerlo luego desde la página de tu pedido.</p>
                 <div class="form-grid">
                     <label class="file-drop span-all">@include('partials.icon',['name'=>'upload','size'=>24])<span data-file-name>Subir captura del Yape (opcional)</span><input type="file" name="voucher" accept="image/jpeg,image/png,image/webp" class="sr-only"></label>
                     <label class="span-all">N.º de operación (opcional)<input name="payment_reference" value="{{ old('payment_reference') }}" maxlength="60" inputmode="numeric" placeholder="Aparece en tu constancia de Yape"></label>
                 </div>
+                @endif
             </section>
         </form>
 
@@ -80,7 +87,7 @@
             <div><span>Subtotal</span><strong>S/ {{ number_format($subtotal/100,2) }}</strong></div>
             <div><span>Envío</span><strong id="shipping-total">Elige una opción</strong></div>
             <div class="total"><span>Total</span><strong id="checkout-total" data-subtotal="{{ $subtotal/100 }}">S/ {{ number_format($subtotal/100,2) }}</strong></div>
-            <button class="btn full big" form="checkout-form" type="submit" @disabled($shipping->isEmpty())>Confirmar pedido @include('partials.icon',['name'=>'check','size'=>20])</button>
+            <button class="btn full big" form="checkout-form" type="submit" @disabled($shipping->isEmpty() || (!$paymentReady && !$demoMode))>Confirmar pedido @include('partials.icon',['name'=>'check','size'=>20])</button>
             <p class="secure">@include('partials.icon',['name'=>'shield','size'=>18]) Tu pedido se separa al confirmar tu Yape</p>
         </aside>
     </div>

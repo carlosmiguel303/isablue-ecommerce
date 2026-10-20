@@ -30,6 +30,8 @@ class StoreTest extends TestCase
         if (config('database.connections.mysql.database') !== 'isablue_2026_test') {
             throw new \RuntimeException('Las pruebas solo pueden usar isablue_2026_test.');
         }
+        Setting::create(['key' => 'yape_number', 'value' => '900000001']);
+        Setting::create(['key' => 'yape_holder', 'value' => 'Titular ficticio de pruebas']);
     }
 
     private function product(array $attrs = []): Product
@@ -162,6 +164,7 @@ class StoreTest extends TestCase
 
     public function test_guest_checkout_prices_are_authoritative_and_replay_is_idempotent(): void
     {
+        config(['mail.default' => 'smtp']);
         Mail::fake();
         $p = $this->product();
         $shipping = $this->delivery();
@@ -241,13 +244,16 @@ class StoreTest extends TestCase
 
     public function test_demo_orders_are_labelled_and_excluded_from_sales(): void
     {
+        Setting::create(['key' => 'demo_mode', 'value' => '1']);
         $p = $this->product(['demo_data' => true]);
         $shipping = $this->delivery();
         $order = app(Checkout::class)->place([$p->id => 1], $this->data($shipping), null, (string) Str::uuid());
         $this->assertTrue($order->is_demo);
         $order->update(['payment_status' => 'paid']);
         $this->get('/pedido/'.$order->public_token)->assertOk()->assertSee('Pedido de prueba');
+        Setting::where('key', 'demo_mode')->update(['value' => '0']);
         $this->actingAs($this->admin())->get('/admin')->assertOk()->assertViewHas('sales', fn ($sales) => (float) $sales === 0.0);
+        Setting::where('key', 'demo_mode')->update(['value' => '1']);
         $p->update(['demo_data' => false]);
         $shipping->update(['demo_data' => true]);
         $second = app(Checkout::class)->place([$p->id => 1], $this->data($shipping), null, (string) Str::uuid());

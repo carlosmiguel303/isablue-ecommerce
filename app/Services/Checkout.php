@@ -50,6 +50,7 @@ class Checkout
             if (! $cart) {
                 throw ValidationException::withMessages(['cart' => 'Tu carrito está vacío.']);
             }
+            StoreReadiness::assertCanOrder();
             $shipping = ShippingMethod::where('active', true)->find($data['shipping_method_id']);
             if (! $shipping) {
                 throw ValidationException::withMessages(['shipping_method_id' => 'Selecciona una opción de entrega disponible.']);
@@ -62,6 +63,10 @@ class Checkout
                     throw ValidationException::withMessages(['cart' => 'Revisa la disponibilidad y cantidades de tu carrito.']);
                 }
                 $subtotal += Cart::cents($p->price) * $qty;
+            }
+            if (Setting::valueOf('demo_mode', '0') !== '1' &&
+                ($shipping->demo_data || $products->contains(fn ($p) => (bool) $p->demo_data))) {
+                throw ValidationException::withMessages(['cart' => 'Uno de los productos o la entrega todavía está pendiente de verificación. Contacta con la tienda.']);
             }
             $shippingCents = self::shippingPrice($shipping, $subtotal);
             $order = Order::create([
@@ -81,7 +86,7 @@ class Checkout
                 'payment_method' => 'yape',
                 'payment_reference' => $data['payment_reference'] ?? null,
                 'stock_reserved' => false,
-                'is_demo' => (bool) $shipping->demo_data || $products->contains(fn ($p) => (bool) $p->demo_data),
+                'is_demo' => Setting::valueOf('demo_mode', '0') === '1' || (bool) $shipping->demo_data || $products->contains(fn ($p) => (bool) $p->demo_data),
             ]);
             foreach ($cart as $id => $qty) {
                 $p = $products[$id];
