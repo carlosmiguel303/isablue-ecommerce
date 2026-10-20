@@ -1,28 +1,30 @@
-# ISABLUE Ecommerce
+# IsaBlue — tienda Laravel
 
-Primera versión de la tienda de juguetes ISABLUE.
+Esta es la versión actual de IsaBlue, desarrollada con Laravel 12, PHP 8.4 y MySQL 8. Reemplaza el proyecto anterior Angular/Java; su historial sigue disponible en Git.
 
-## Tecnología
+## Contenido
 
-- Angular 16 para la tienda y el panel administrativo.
-- Java 17, Spring Boot 3 y Maven para la API.
-- MySQL 8 para productos, clientes y pedidos.
-- JWT para autenticación.
-- Docker Compose para levantar MySQL en desarrollo.
+- `app/`, `resources/`, `routes/`, `public/`: tienda, administración y recursos visuales.
+- `database/schema.sql`: estructura de las 22 tablas, con índices y relaciones, sin datos.
+- `database/seed.sql`: catálogo público inicial y configuración seleccionada. No contiene clientes, usuarios, pedidos, pagos ni contraseñas. Conserva las etiquetas de los datos de demostración.
+- `.env.example`: plantilla sin secretos. El `.env` real nunca se versiona.
+- [Guía de DonWeb](docs/DONWEB.md): base de datos, configuración e instalación.
 
-## Ejecución local
+## Instalación
 
-1. Levantar MySQL con `docker compose up -d`.
-2. Iniciar la API desde `backend` con `mvn spring-boot:run`.
-3. Iniciar Angular desde `front` con `npm start`.
-4. Abrir `http://localhost:4200`.
+1. Usa PHP 8.4 o superior compatible con Composer y MySQL 8.
+2. Ejecuta `composer install --no-dev --optimize-autoloader`.
+3. Copia `.env.example` a `.env` y completa los datos privados del servidor.
+4. Ejecuta `php artisan key:generate` una sola vez en la instalación nueva.
+5. En una base vacía, importa `database/schema.sql` y después `database/seed.sql`.
+6. Ejecuta `php artisan isablue:admin` para crear el administrador de forma interactiva.
+7. Apunta la raíz pública del dominio a `public/` y permite escritura en `storage/` y `bootstrap/cache/`.
+8. Ejecuta `php artisan config:cache` y `php artisan view:cache`.
 
-La tienda puede mostrar productos de demostración aunque la API todavía no esté iniciada.
+No ejecutes `migrate:fresh`, `db:wipe` ni importes el esquema encima de una base existente. El seed incluye el historial de las migraciones ya aplicadas: para futuras versiones usa `php artisan migrate --force`, después de una copia de seguridad.
 
-## Pagos
+Las dependencias de `vendor/` se instalan con Composer y se fijan mediante `composer.lock`. Logs, sesiones, cachés, comprobantes de pago y archivos privados se excluyen del repositorio. Los datos reales y las cuentas existentes de la instalación local no se migran mediante este seed público.
 
-La base heredada conserva PayPal Sandbox únicamente como demostración. Antes de cobrar ventas reales se reemplazará por Culqi o Mercado Pago, con credenciales de ISABLUE y webhooks verificados. La aplicación no debe almacenar números de tarjeta.
+## Pruebas
 
-## Imágenes
-
-Las imágenes actuales son referenciales. Las fotografías oficiales de la fanpage deben incorporarse como archivos optimizados y autorizados, no enlazarse directamente desde Facebook.
+Instala las dependencias de desarrollo con `composer install`. Usa una instancia MySQL de pruebas y una base desechable llamada `isablue_2026_test`; las pruebas recrean sus tablas. Completa sus credenciales en `.env.testing`, genera una clave de prueba y ejecuta `php artisan test`. Nunca apuntes las pruebas a la base de la tienda.

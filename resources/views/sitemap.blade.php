@@ -1,0 +1,1 @@
+{!! '<?xml version="1.0" encoding="UTF-8"?>' !!}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{{ url('/') }}</loc></url><url><loc>{{ url('/catalogo') }}</loc></url>@foreach($products as $p)<url><loc>{{ url('/juguete/'.$p->slug) }}</loc></url>@endforeach @foreach($categories as $c)<url><loc>{{ url('/categoria/'.$c->slug) }}</loc></url>@endforeach</urlset>

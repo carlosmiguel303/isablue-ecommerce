@@ -1,0 +1,1 @@
+<div class="pagination">@if($paginator->previousPageUrl())<a href="{{ $paginator->previousPageUrl() }}">← Anterior</a>@endif<span>{{ $paginator->currentPage() }} / {{ $paginator->lastPage() }}</span>@if($paginator->nextPageUrl())<a href="{{ $paginator->nextPageUrl() }}">Siguiente →</a>@endif</div>
