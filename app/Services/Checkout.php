@@ -7,6 +7,7 @@ use App\Models\OrderEvent;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\ShippingMethod;
+use App\Models\StockHold;
 use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -55,11 +56,14 @@ class Checkout
             if (! $shipping) {
                 throw ValidationException::withMessages(['shipping_method_id' => 'Selecciona una opción de entrega disponible.']);
             }
-            $products = Product::whereIn('id', array_keys($cart))->orderBy('id')->get()->keyBy('id');
+            $products = Product::whereIn('id', array_keys($cart))->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+            if ($existing = Order::where('idempotency_key', $key)->first()) {
+                return $existing;
+            }
             $subtotal = 0;
             foreach ($cart as $id => $qty) {
                 $p = $products->get($id);
-                if (! $p || ! $p->available || ! is_int($qty) || $qty < 1 || $qty > 99 || $p->stock < $qty) {
+                if (! $p || ! $p->available || ! is_int($qty) || $qty < 1 || $qty > 99 || $p->sellable_stock < $qty) {
                     throw ValidationException::withMessages(['cart' => 'Revisa la disponibilidad y cantidades de tu carrito.']);
                 }
                 $subtotal += Cart::cents($p->price) * $qty;
@@ -86,10 +90,12 @@ class Checkout
                 'payment_method' => 'yape',
                 'payment_reference' => $data['payment_reference'] ?? null,
                 'stock_reserved' => false,
+                'reserved_until' => now()->addMinutes(30),
                 'is_demo' => Setting::valueOf('demo_mode', '0') === '1' || (bool) $shipping->demo_data || $products->contains(fn ($p) => (bool) $p->demo_data),
             ]);
             foreach ($cart as $id => $qty) {
                 $p = $products[$id];
+                StockHold::create(['order_id' => $order->id, 'product_id' => $id, 'quantity' => $qty, 'expires_at' => $order->reserved_until]);
                 $order->items()->create(['product_id' => $id, 'name' => $p->name, 'sku' => $p->sku, 'quantity' => $qty, 'unit_price' => $p->price, 'total' => Cart::cents($p->price) * $qty / 100]);
             }
             OrderEvent::create(['order_id' => $order->id, 'user_id' => $userId, 'event' => 'Pedido recibido', 'note' => 'Esperando el pago por Yape.']);
@@ -120,8 +126,8 @@ class Checkout
                 $products = Product::whereIn('id', $items->pluck('product_id')->filter())->orderBy('id')->lockForUpdate()->get()->keyBy('id');
                 foreach ($items as $item) {
                     $p = $products->get($item->product_id);
-                    if ($p && ($p->stock ?? 0) < (int) $item->quantity) {
-                        throw ValidationException::withMessages(['payment' => 'Stock insuficiente de «'.$p->name.'»: quedan '.($p->stock ?? 0).' y el pedido necesita '.(int) $item->quantity.'. Ajusta el inventario o cancela el pedido.']);
+                    if (! $p || ((int) $p->stock - (int) StockHold::active()->where('product_id', $p->id)->where('order_id', '!=', $o->id)->sum('quantity')) < (int) $item->quantity) {
+                        throw ValidationException::withMessages(['payment' => 'Stock insuficiente de «'.($p?->name ?? $item->name).'»: quedan '.($p?->sellable_stock ?? 0).' y el pedido necesita '.(int) $item->quantity.'. Ajusta el inventario o cancela el pedido.']);
                     }
                 }
                 foreach ($items as $item) {
@@ -135,6 +141,7 @@ class Checkout
                 }
                 $o->stock_reserved = true;
             }
+            StockHold::where('order_id', $o->id)->whereNull('released_at')->update(['released_at' => now()]);
             $o->payment_status = 'paid';
             $o->paid_at = now();
             if ($o->status === 'pending') {
@@ -142,6 +149,7 @@ class Checkout
             }
             $o->save();
             OrderEvent::create(['order_id' => $o->id, 'user_id' => $actor, 'event' => $event, 'note' => $note]);
+            MailOutbox::enqueue('payment:'.$o->id, 'payment', $o->customer_email, ['subject' => ($o->is_demo ? '[PRUEBA] ' : '').'Pago confirmado · '.$o->reference, 'name' => $o->customer_name, 'message' => $o->is_demo ? 'Confirmamos el pago simulado. Tu pedido de prueba está en proceso; no habrá un cobro ni una entrega real.' : 'Confirmamos tu Yape. Tu pedido está en proceso y pendiente de preparación. Te avisaremos por los canales de la tienda cuando esté listo para enviar.', 'details' => 'Pedido: '.$o->reference.' · Total: S/ '.number_format($o->total, 2), 'url' => url('/pedido/'.$o->public_token), 'action' => 'Consultar mi pedido']);
 
             return true;
         });
@@ -159,6 +167,9 @@ class Checkout
             }
             if (! in_array($status, self::FLOW[$o->status] ?? [], true)) {
                 throw ValidationException::withMessages(['status' => 'Ese cambio de estado no está permitido.']);
+            }
+            if ($status === 'cancelled') {
+                StockHold::where('order_id', $o->id)->whereNull('released_at')->update(['released_at' => now()]);
             }
             if ($status === 'cancelled' && $o->stock_reserved && ! $o->stock_released) {
                 foreach ($o->items()->orderBy('product_id')->get() as $item) {

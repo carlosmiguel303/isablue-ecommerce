@@ -46,9 +46,9 @@ class CatalogController extends Controller
         }if (isset($d['max'])) {
             $q->where('price', '<=', $d['max']);
         }if (($d['availability'] ?? '') === 'available') {
-            $q->where('stock', '>', 0);
+            $q->withAvailability();
         }if (($d['availability'] ?? '') === 'out') {
-            $q->where('stock', 0);
+            $q->withAvailability(false);
         }if (! empty($d['sale'])) {
             $q->whereColumn('compare_price', '>', 'price');
         }$sort = $d['sort'] ?? 'newest';

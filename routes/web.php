@@ -5,6 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\IntegrationController;
+use App\Http\Controllers\PasswordController;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Setting;
@@ -17,6 +20,12 @@ Route::get('/juguete/{slug}', [CatalogController::class, 'product'])->name('prod
 Route::get('/buscar/sugerencias', [CatalogController::class, 'suggestions'])->middleware('throttle:60,1');
 Route::get('/ingresar', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/ingresar', [AuthController::class, 'login'])->middleware('throttle:20,1');
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->middleware('throttle:15,1');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:15,1');
+Route::get('/olvide-mi-contrasena', [PasswordController::class, 'forgot'])->name('password.request');
+Route::post('/olvide-mi-contrasena', [PasswordController::class, 'email'])->middleware('throttle:5,1');
+Route::get('/restablecer-contrasena/{token}', [PasswordController::class, 'form'])->name('password.reset');
+Route::post('/restablecer-contrasena', [PasswordController::class, 'reset'])->middleware('throttle:5,1');
 Route::get('/registro', [AuthController::class, 'registerForm']);
 Route::post('/registro', [AuthController::class, 'register'])->middleware('throttle:5,1');
 Route::post('/salir', [AuthController::class, 'logout'])->middleware('auth');
@@ -41,6 +50,13 @@ Route::get('/sitemap.xml', function () {
     return response()->view('sitemap', ['products' => Product::publicCatalog()->get(), 'categories' => Category::where('active', true)->get()])->header('Content-Type', 'application/xml');
 });
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/integraciones', [IntegrationController::class, 'index']);
+    Route::post('/integraciones/google', [IntegrationController::class, 'google']);
+    Route::post('/integraciones/smtp', [IntegrationController::class, 'smtp']);
+    Route::post('/integraciones/prueba', [IntegrationController::class, 'test'])->middleware('throttle:3,1');
+    Route::post('/integraciones/reintentar', [IntegrationController::class, 'retry'])->middleware('throttle:3,1');
+    Route::post('/integraciones/respaldo', [IntegrationController::class, 'backup'])->middleware('throttle:2,1');
+    Route::get('/integraciones/respaldo', [IntegrationController::class, 'download']);
     Route::get('/', [AdminController::class, 'dashboard']);
     Route::get('/productos', [AdminController::class, 'products']);
     Route::get('/productos/nuevo', [AdminController::class, 'productForm']);

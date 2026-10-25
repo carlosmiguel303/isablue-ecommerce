@@ -27,7 +27,7 @@ class CartController extends Controller
         $p = Product::publicCatalog()->findOrFail($d['product_id']);
         $items = $r->session()->get('cart', []);
         $qty = ($items[$p->id] ?? 0) + (int) $d['quantity'];
-        if (! $p->available || $qty > $p->stock || $qty > 99) {
+        if (! $p->available || $qty > $p->sellable_stock || $qty > 99) {
             throw ValidationException::withMessages(['quantity' => 'No hay suficientes unidades disponibles.']);
         }
         $items[$p->id] = $qty;
@@ -50,7 +50,7 @@ class CartController extends Controller
             unset($items[$id]);
         } else {
             $p = Product::publicCatalog()->findOrFail($id);
-            if (! $p->available || $d['quantity'] > $p->stock) {
+            if (! $p->available || $d['quantity'] > $p->sellable_stock) {
                 throw ValidationException::withMessages(['quantity' => 'Cantidad superior al stock disponible.']);
             }
             $items[$id] = (int) $d['quantity'];

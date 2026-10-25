@@ -6,6 +6,10 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Services\Integrations;
+use App\Services\MailOutbox;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Integrations::apply();
+        Event::listen(Login::class, function ($event) {
+            MailOutbox::login($event->user);
+        });
         View::composer('layouts.*', function ($view) {
             $view->with('navCategories', Category::where('active', true)->orderBy('sort_order')->take(12)->get());
             $view->with('shopSettings', Setting::pluck('value', 'key'));

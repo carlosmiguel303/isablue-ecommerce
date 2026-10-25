@@ -3,7 +3,7 @@
         <span class="badges">
             @if($p->on_sale)<span class="badge sale">-{{ $p->discount_percent }}%</span>@endif
             @if($p->is_new && $p->source==='admin')<span class="badge new">Nuevo</span>@endif
-            @if($p->low_stock)<span class="badge hot">¡Últimas {{ $p->stock }}!</span>@endif
+            @if($p->low_stock)<span class="badge hot">¡Últimas {{ $p->sellable_stock }}!</span>@endif
         </span>
         <img src="{{ $p->image }}" alt="{{ $p->name }}" width="320" height="320" loading="lazy">
         @if(!$p->available)<span class="soldout">{{ $p->stock===null?'Por confirmar':'Agotado' }}</span>@endif

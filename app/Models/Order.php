@@ -10,7 +10,7 @@ class Order extends Model
 
     protected function casts(): array
     {
-        return ['legacy_data' => 'array', 'stock_reserved' => 'boolean', 'stock_released' => 'boolean', 'is_demo' => 'boolean', 'confirmation_sent_at' => 'datetime', 'paid_at' => 'datetime', 'voucher_uploaded_at' => 'datetime'];
+        return ['legacy_data' => 'array', 'stock_reserved' => 'boolean', 'stock_released' => 'boolean', 'is_demo' => 'boolean', 'confirmation_sent_at' => 'datetime', 'reserved_until' => 'datetime', 'paid_at' => 'datetime', 'voucher_uploaded_at' => 'datetime'];
     }
 
     public function items()

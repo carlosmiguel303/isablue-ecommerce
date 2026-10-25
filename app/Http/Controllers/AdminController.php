@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\ShippingMethod;
+use App\Models\StockHold;
 use App\Models\StockMovement;
 use App\Services\Checkout;
 use App\Services\StoreReadiness;
@@ -235,6 +236,10 @@ class AdminController extends Controller
             $p = Product::lockForUpdate()->findOrFail($product->id);
             $before = $p->stock;
             $after = (int) $d['stock'];
+            $held = (int) StockHold::active()->where('product_id', $p->id)->sum('quantity');
+            if ($after < $held) {
+                throw ValidationException::withMessages(['stock' => 'Hay '.$held.' unidades reservadas. Revisa esos pedidos antes de reducir el conteo.']);
+            }
             StockMovement::create(['product_id' => $p->id, 'user_id' => $r->user()->id, 'before' => $before, 'change' => $after - ($before ?? 0), 'after' => $after, 'reason' => $d['reason']]);
             $p->update(['stock' => $after]);
         });

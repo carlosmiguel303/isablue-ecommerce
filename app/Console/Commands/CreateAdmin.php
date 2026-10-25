@@ -28,7 +28,10 @@ class CreateAdmin extends Command
             'password' => ['required', 'string', 'min:12', 'max:72', 'confirmed'],
         ]);
         if ($validator->fails()) {
-            foreach ($validator->errors()->all() as $error) { $this->error($error); }
+            foreach ($validator->errors()->all() as $error) {
+                $this->error($error);
+            }
+
             return self::FAILURE;
         }
         $user = new User;
@@ -37,6 +40,7 @@ class CreateAdmin extends Command
             'password' => Hash::make($password), 'role' => 'admin',
         ])->save();
         $this->info('Administrador creado. Ingresa desde /ingresar.');
+
         return self::SUCCESS;
     }
 }

@@ -23,7 +23,7 @@
 
             <section class="panel co-block">
                 <h2><b>1</b> Tus datos</h2>
-                @guest<p class="hint">Con tu correo y una contraseña creamos tu cuenta al confirmar, para que veas tus pedidos cuando quieras. <a class="text-link" href="/ingresar?volver=checkout">¿Ya tienes cuenta? Ingresa</a></p>@endguest
+                @guest @if(\App\Services\Integrations::googleReady())<a class="btn ghost" href="/auth/google?volver=checkout">Continuar con Google</a>@endif <p class="hint">Con tu correo y una contraseña creamos tu cuenta al confirmar, para que veas tus pedidos cuando quieras. <a class="text-link" href="/ingresar?volver=checkout">¿Ya tienes cuenta? Ingresa</a></p>@endguest
                 @auth<p class="hint">Comprando como <strong>{{ $u->email }}</strong>. Verás este pedido en <a class="text-link" href="/mi-cuenta">Mi cuenta</a>.</p>@endauth
                 <div class="form-grid">
                     <label>Nombre y apellido<input name="name" value="{{ old('name',$u?->name) }}" required autocomplete="name"></label>
@@ -52,31 +52,7 @@
                 @endforelse
             </section>
 
-            <section class="panel co-block">
-                <h2><b>3</b> Paga con Yape</h2>
-                @if($paymentReady && !$demoMode)
-                <div class="yape-box">
-                    @if($qr)<img class="qr" src="{{ $qr }}" alt="Código QR de Yape de IsaBlue" width="170" height="170">@else<div class="qr-placeholder">yape</div>@endif
-                    <div>
-                        <h3>Yapea <span class="amount-pill" data-pay-amount>S/ {{ number_format($subtotal/100,2) }}</span></h3>
-                        @if($yape)
-                            <div class="yape-number">{{ $yape }}</div>
-                            <button type="button" class="copy-btn" data-copy="{{ preg_replace('/\s/','',$yape) }}">Copiar número</button>
-                            @if($holder)<p class="hint" style="margin-top:6px">A nombre de: <strong>{{ $holder }}</strong></p>@endif
-                        @endif
-                    </div>
-                </div>
-                @else
-                    <p>{{ $demoMode ? 'Esta es una compra de prueba. No realices un pago.' : 'Datos de pago pendientes de configuración.' }}</p>
-                @endif
-                @if($paymentReady && !$demoMode)
-                <p class="hint" style="margin-top:14px">¿Ya yapeaste? Adjunta tu captura y agilizamos tu pedido. Si aún no, puedes hacerlo luego desde la página de tu pedido.</p>
-                <div class="form-grid">
-                    <label class="file-drop span-all">@include('partials.icon',['name'=>'upload','size'=>24])<span data-file-name>Subir captura del Yape (opcional)</span><input type="file" name="voucher" accept="image/jpeg,image/png,image/webp" class="sr-only"></label>
-                    <label class="span-all">N.º de operación (opcional)<input name="payment_reference" value="{{ old('payment_reference') }}" maxlength="60" inputmode="numeric" placeholder="Aparece en tu constancia de Yape"></label>
-                </div>
-                @endif
-            </section>
+            <section class="panel co-block"><h2><b>3</b> Reserva y pago</h2><p>Al confirmar reservaremos tus juguetes durante <strong>30 minutos</strong>. En la siguiente pantalla verás el número y QR de Yape. Envía tu comprobante dentro del plazo para mantener la reserva hasta 24 horas mientras la tienda revisa el pago.</p>@if($demoMode)<p class="notice">Pedido de prueba: no realices un pago.</p>@endif</section>
         </form>
 
         <aside class="summary">

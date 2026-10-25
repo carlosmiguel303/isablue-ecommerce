@@ -29,7 +29,7 @@
                 @if($product->on_sale)<del>S/ {{ number_format($product->compare_price,2) }}</del><span class="save-tag">Ahorras S/ {{ number_format($product->compare_price-$product->price,2) }}</span>@endif
             </div>
             @if($product->available)
-                <p class="stock-line {{ $product->low_stock?'low':'' }}"><span class="dot"></span>{{ $product->low_stock ? '¡Solo quedan '.$product->stock.' unidades!' : 'Disponible · listo para enviar' }}</p>
+                <p class="stock-line {{ $product->low_stock?'low':'' }}"><span class="dot"></span>{{ $product->low_stock ? '¡Solo quedan '.$product->sellable_stock.' unidades!' : 'Disponible · listo para enviar' }}</p>
             @else
                 <p class="stock-line out"><span class="dot"></span>{{ $product->stock===null ? 'Disponibilidad por confirmar' : 'Agotado por ahora' }}</p>
             @endif
@@ -41,7 +41,7 @@
                 <div class="buy-row">
                     <div class="qty" data-qty>
                         <button type="button" data-step="-1" aria-label="Quitar uno">@include('partials.icon',['name'=>'minus','size'=>18])</button>
-                        <input aria-label="Cantidad" type="number" name="quantity" value="1" min="1" max="{{ min(99,$product->stock) }}">
+                        <input aria-label="Cantidad" type="number" name="quantity" value="1" min="1" max="{{ min(99,$product->sellable_stock) }}">
                         <button type="button" data-step="1" aria-label="Agregar uno">@include('partials.icon',['name'=>'plus','size'=>18])</button>
                     </div>
                     <button class="btn purple" type="submit">@include('partials.icon',['name'=>'cart','size'=>20]) Agregar al carrito</button>
@@ -87,4 +87,4 @@
 </div>
 @endif
 @endsection
-@push('head')<script type="application/ld+json">{!! json_encode(['@context'=>'https://schema.org','@type'=>'Product','name'=>$product->name,'description'=>$product->description,'sku'=>$product->sku,'image'=>url($product->image),'offers'=>['@type'=>'Offer','price'=>$product->price,'priceCurrency'=>'PEN','url'=>url('/juguete/'.$product->slug)]+($product->stock!==null?['availability'=>$product->stock>0?'https://schema.org/InStock':'https://schema.org/OutOfStock']:[])],JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>@endpush
+@push('head')<script type="application/ld+json">{!! json_encode(['@context'=>'https://schema.org','@type'=>'Product','name'=>$product->name,'description'=>$product->description,'sku'=>$product->sku,'image'=>url($product->image),'offers'=>['@type'=>'Offer','price'=>$product->price,'priceCurrency'=>'PEN','url'=>url('/juguete/'.$product->slug)]+($product->stock!==null?['availability'=>$product->sellable_stock>0?'https://schema.org/InStock':'https://schema.org/OutOfStock']:[])],JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>@endpush

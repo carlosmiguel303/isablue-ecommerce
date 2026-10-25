@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderEvent;
 use App\Models\Setting;
 use App\Models\ShippingMethod;
+use App\Models\StockHold;
 use App\Models\User;
 use App\Services\Cart;
 use App\Services\Checkout;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -59,6 +61,7 @@ class CheckoutController extends Controller
         abort_unless(hash_equals((string) $r->session()->get('checkout_key', ''), $d['checkout_key']), 419);
         StoreReadiness::assertCanOrder();
         $user = $r->user() ?? $this->accountFor($r, $d);
+        $d['email'] = $user->email;
         $order = $checkout->place($r->session()->get('cart', []), $d, $user->id, $d['checkout_key']);
         if ($r->hasFile('voucher') && ! $order->voucher_path) {
             $this->saveVoucher($order, $r->file('voucher'), $d['payment_reference'] ?? null);
@@ -141,6 +144,15 @@ class CheckoutController extends Controller
         $path = $file->storeAs('vouchers', $order->reference.'-'.Str::lower(Str::random(8)).'.'.$file->extension(), 'local');
         DB::transaction(function () use ($order, $path, $reference) {
             $o = Order::lockForUpdate()->findOrFail($order->id);
+            if ($o->status === 'cancelled' || $o->payment_status === 'paid') {
+                Storage::disk('local')->delete($path);
+
+                return;
+            }
+            if (! $o->voucher_path && $o->reserved_until?->isFuture()) {
+                $o->reserved_until = now()->addDay();
+                StockHold::where('order_id', $o->id)->whereNull('released_at')->update(['expires_at' => $o->reserved_until]);
+            }
             $o->voucher_path = $path;
             $o->voucher_uploaded_at = now();
             if ($reference) {

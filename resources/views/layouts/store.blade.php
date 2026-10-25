@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#E9407A">
-    @if(request()->is('pedido/*','checkout','carrito','mi-cuenta','ingresar','registro'))<meta name="robots" content="noindex,nofollow">@endif
+    @if(request()->is('pedido/*','checkout','carrito','mi-cuenta','ingresar','registro','auth/*','olvide-mi-contrasena','restablecer-contrasena*'))<meta name="robots" content="noindex,nofollow">@endif
     <title>@yield('title','IsaBlue · Juguetes didácticos y de estimulación en Lima')</title>
     <meta name="description" content="@yield('description','Juguetes de estimulación, didácticos y accesorios para bebés y niños. Compra fácil, paga con Yape y recibe en Lima y provincias.')">
     <meta property="og:site_name" content="IsaBlue">
@@ -179,7 +179,7 @@
 </aside>
 
 {{-- Popup de oferta --}}
-@if($popupProduct && !request()->is('checkout','carrito','pedido/*'))
+@if($popupProduct && !request()->is('checkout','carrito','pedido/*','ingresar','registro','mi-cuenta','auth/*','olvide-mi-contrasena','restablecer-contrasena*'))
 @php($pp = $popupProduct)
 <div class="popup" data-popup data-delay="{{ (int)($s['popup_delay'] ?? 4) }}" hidden>
     <div class="popup-card" role="dialog" aria-modal="true" aria-labelledby="popup-title">

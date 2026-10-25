@@ -8,6 +8,7 @@
     $wa = \App\Models\Setting::valueOf('whatsapp');
     $paid = $order->payment_status === 'paid';
     $awaiting = !$paid && $order->status === 'pending';
+    $expired = $awaiting && $order->reserved_until && $order->reserved_until->isPast();
     $money = ($order->currency==='PEN' ? 'S/ ' : '');
     $steps = ['pending'=>'Pedido recibido','confirmed'=>'Yape confirmado','processing'=>'En preparación','shipped'=>'Enviado','completed'=>'Entregado'];
     $keys = array_keys($steps);
@@ -19,7 +20,7 @@
     <div class="order-hero {{ $paid ? 'ok' : 'wait' }}">
         <div class="big-ico">@include('partials.icon',['name'=>$paid?'check':'clock','size'=>42])</div>
         <span class="eyebrow">¡Gracias por comprar en IsaBlue!</span>
-        <h1>{{ $paid ? '¡Pago confirmado!' : ($order->status==='cancelled' ? 'Pedido cancelado' : '¡Pedido recibido! Solo falta tu Yape') }}</h1>
+        <h1>{{ $paid ? '¡Pago confirmado!' : ($order->status==='cancelled' ? 'Pedido cancelado' : ($order->is_demo ? 'Pedido de prueba recibido' : '¡Pedido recibido! Solo falta tu Yape')) }}</h1>
         <span class="order-ref">{{ $order->reference }}</span>
     </div>
 
@@ -34,7 +35,7 @@
     </div>
     @endif
 
-    @if($awaiting && !$order->is_demo)
+    @if($awaiting && !$order->is_demo && !$expired)
     <section class="panel co-block">
         <h2><b>1</b> Yapea <span class="amount-pill">{{ $money }}{{ number_format($order->total,2) }}</span></h2>
         <div class="yape-box">
@@ -70,6 +71,7 @@
     </section>
     @endif
 
+    @if($expired)<div class="notice" role="alert"><strong>La reserva venció.</strong> No realices un pago nuevo. Si ya yapeaste, contacta con la tienda con el código de este pedido para revisar disponibilidad o devolución.</div>@elseif($awaiting && $order->reserved_until)<div class="notice">Reserva hasta {{ $order->reserved_until->format('d/m/Y H:i') }} (hora de Lima). {{ $order->voucher_path?'Comprobante recibido: pendiente de revisión.':'Envía tu comprobante antes de que venza.' }}</div>@endif
     <section class="panel">
         <h2>Detalle del pedido</h2>
         <p><span class="status-chip {{ $order->status }}">{{ __('store.status.'.$order->status) }}</span> <span class="status-chip p-{{ $order->payment_status }}">{{ __('store.payment.'.$order->payment_status) }}</span></p>
@@ -79,7 +81,7 @@
         <div class="summary-line"><span>Envío: {{ $order->shipping_name }}</span><strong>{{ (float)$order->shipping_total > 0 ? $money.number_format($order->shipping_total,2) : 'Gratis' }}</strong></div>
         <div class="summary-line total"><span>Total</span><strong>{{ $money }}{{ number_format($order->total,2) }}</strong></div>
         <p class="hint">Entrega a: {{ $order->customer_name }} · {{ $order->address }}</p>
-        @if($awaiting)<p class="hint">Separamos los juguetes cuando confirmamos tu Yape. ¡Yapea pronto para asegurar tu pedido!</p>@endif
+        @if($awaiting)<p class="hint">El estado del pago cambia cuando la tienda confirma el abono. No repitas el pago.</p>@endif
     </section>
     <a class="btn ghost" href="/catalogo">Seguir comprando</a>
 </div>

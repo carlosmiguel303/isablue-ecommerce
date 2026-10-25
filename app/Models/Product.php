@@ -33,9 +33,21 @@ class Product extends Model
         return $this->images->first()?->path ?: '/assets/images/oso-logo.png';
     }
 
+    public function getSellableStockAttribute(): int
+    {
+        return max(0, (int) $this->stock - (int) StockHold::active()->where('product_id', $this->id)->sum('quantity'));
+    }
+
+    public function scopeWithAvailability($query, bool $available = true)
+    {
+        $holds = StockHold::active()->whereColumn('stock_holds.product_id', 'products.id')->selectRaw('COALESCE(SUM(quantity),0)');
+
+        return $query->whereRaw('COALESCE(products.stock,0) - ('.$holds->toSql().') '.($available ? '>' : '<=').' 0', $holds->getBindings());
+    }
+
     public function getAvailableAttribute(): bool
     {
-        return $this->active && $this->catalog_visible && $this->stock !== null && $this->stock > 0;
+        return $this->active && $this->catalog_visible && $this->stock !== null && $this->sellable_stock > 0;
     }
 
     public function getAgeLabelAttribute(): string
@@ -60,7 +72,7 @@ class Product extends Model
     /** Pocas unidades: se muestra como urgencia en la tienda. */
     public function getLowStockAttribute(): bool
     {
-        return $this->available && $this->stock <= 5;
+        return $this->available && $this->sellable_stock <= 5;
     }
 
     public function getIsNewAttribute(): bool

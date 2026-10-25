@@ -1,4 +1,6 @@
 @extends('layouts.store') @section('title','Mi cuenta · IsaBlue') @section('content')
+@if(!auth()->user()->isAdmin() && !auth()->user()->google_id && \App\Services\Integrations::googleReady())<div class="wrap notice"><a href="/auth/google">Vincular mi cuenta de Google para ingresar más rápido</a></div>@endif
+
 <div class="wrap section narrow">
     <div class="section-head"><div><span class="eyebrow">Mi cuenta</span><h1>Hola, {{ auth()->user()->name }}</h1></div><form method="post" action="/salir">@csrf<button class="btn ghost small">Cerrar sesión</button></form></div>
     <h2>Mis pedidos</h2>

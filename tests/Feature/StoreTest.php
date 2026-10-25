@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\ShippingMethod;
+use App\Models\StockHold;
 use App\Models\StockMovement;
 use App\Models\User;
 use App\Services\Checkout;
@@ -16,6 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -177,7 +179,7 @@ class StoreTest extends TestCase
         $this->assertEquals('pending', $o->payment_status);
         $this->assertNotNull($o->user_id, 'El comprador nuevo obtiene una cuenta.');
         $this->assertAuthenticated();
-        $this->assertTrue(password_verify('secreto123', \App\Models\User::find($o->user_id)->password));
+        $this->assertTrue(password_verify('secreto123', User::find($o->user_id)->password));
         $this->post('/checkout', $payload)->assertRedirect('/pedido/'.$o->public_token);
         $this->assertEquals(1, Order::count());
         $this->assertEquals(0, StockMovement::count());
@@ -304,11 +306,13 @@ class StoreTest extends TestCase
 
     public function test_bulk_yape_confirmation_and_shortage(): void
     {
-        $p = $this->product(['stock' => 3]);
+        $p = $this->product(['stock' => 4]);
         $s = $this->delivery();
         $c = app(Checkout::class);
         $a = $c->place([$p->id => 2], $this->data($s), null, (string) Str::uuid());
         $b = $c->place([$p->id => 2], $this->data($s), null, (string) Str::uuid());
+        StockHold::whereIn('order_id', [$a->id, $b->id])->update(['released_at' => now()]);
+        $p->update(['stock' => 3]); // Dos pedidos antiguos sin reserva, con un conteo físico posterior inferior.
         $this->actingAs($this->admin())->post('/admin/pedidos/confirmar-yape', ['ids' => [$a->id, $b->id]])->assertSessionHasErrors();
         $this->assertEquals('paid', $a->fresh()->payment_status);
         $this->assertEquals('pending', $b->fresh()->payment_status, 'Sin stock suficiente el segundo queda en espera.');
@@ -329,7 +333,7 @@ class StoreTest extends TestCase
         $this->assertNotNull($o->voucher_path);
         $this->get('/admin/pedidos/'.$o->id.'/comprobante')->assertRedirect('/ingresar');
         $this->actingAs($this->admin())->get('/admin/pedidos/'.$o->id.'/comprobante')->assertOk();
-        \Illuminate\Support\Facades\Storage::disk('local')->delete($o->voucher_path);
+        Storage::disk('local')->delete($o->voucher_path);
     }
 
     public function test_store_pages_and_mini_cart(): void
@@ -351,6 +355,7 @@ class StoreTest extends TestCase
         $o = app(Checkout::class)->place([$p->id => 2], $this->data($this->delivery()), null, (string) Str::uuid());
         $this->assertEquals(0, (float) $o->shipping_total, 'Envío gratis sobre el mínimo configurado.');
     }
+
     public function test_checkout_requires_password_of_existing_account(): void
     {
         $p = $this->product();
@@ -364,6 +369,7 @@ class StoreTest extends TestCase
         $this->post('/checkout', $this->data($shipping) + ['checkout_key' => $key, 'password' => 'correcta123'])->assertRedirect();
         $this->assertEquals($u->id, Order::firstOrFail()->user_id);
         $this->get('/mi-cuenta')->assertOk()->assertSee(Order::firstOrFail()->reference);
+        $this->flushSession();
         $this->actingAs($this->admin())->getJson('/admin/pedidos/ultimo')->assertOk()->assertJsonPath('awaiting', 1);
     }
 }

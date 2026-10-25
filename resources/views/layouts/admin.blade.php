@@ -9,6 +9,7 @@
         ['/admin/categorias', 'Categorías', 'menu'],
         ['/admin/banners', 'Banners', 'image'],
         ['/admin/configuracion', 'Configuración', 'settings'],
+        ['/admin/integraciones', 'Google, correos y respaldo', 'shield'],
     ];
 @endphp
 <!doctype html>

@@ -18,13 +18,13 @@
                         <form method="post" action="/carrito/{{ $p->id }}" class="inline-form">@csrf @method('PATCH')
                             <div class="qty" data-qty>
                                 <button type="button" data-step="-1" aria-label="Quitar uno">@include('partials.icon',['name'=>'minus','size'=>16])</button>
-                                <input aria-label="Cantidad" type="number" min="1" max="{{ max(1,min(99,(int)$p->stock)) }}" name="quantity" value="{{ $line['quantity'] }}">
+                                <input aria-label="Cantidad" type="number" min="1" max="{{ max(1,min(99,(int)$p->sellable_stock)) }}" name="quantity" value="{{ $line['quantity'] }}">
                                 <button type="button" data-step="1" aria-label="Agregar uno">@include('partials.icon',['name'=>'plus','size'=>16])</button>
                             </div>
                             <button class="btn ghost small">Actualizar</button>
                             <button class="link-button" name="quantity" value="0">Quitar</button>
                         </form>
-                        @if(!$p->available || $line['quantity']>$p->stock)<p class="error">Revisa el stock de este juguete antes de continuar.</p>@endif
+                        @if(!$p->available || $line['quantity']>$p->sellable_stock)<p class="error">Revisa el stock de este juguete antes de continuar.</p>@endif
                     </div>
                     <strong>S/ {{ number_format($line['total']/100,2) }}</strong>
                 </article>

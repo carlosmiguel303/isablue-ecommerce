@@ -14,7 +14,7 @@
         <p>Hay productos con stock, entrega y datos de Yape configurados. Revisa su exactitud y desmarca «Modo de prueba» al final de este formulario para recibir ventas reales.</p>
     @endif
     @if(!$mailReady)
-        <p class="notice">El envío de correos aún no está configurado. Revisa los pedidos desde el panel; el cliente puede consultarlos en «Mi cuenta». Configura el correo del servidor para recibir avisos por email.</p>
+        <p class="notice">El envío de correos aún no está configurado. Revisa los pedidos desde el panel; el cliente puede consultarlos en «Mi cuenta». Conecta el buzón en <a href="/admin/integraciones">Acceso, correos y respaldo</a> para recibir avisos por email.</p>
     @endif
     <p>Los banners se administran desde <a href="/admin/banners">Carrusel de promociones</a>.</p>
 </section>

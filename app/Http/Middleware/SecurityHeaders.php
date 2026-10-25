@@ -12,7 +12,7 @@ class SecurityHeaders
         $r->headers->set('X-Content-Type-Options', 'nosniff');
         $r->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $r->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        if ($request->is('admin*', 'carrito*', 'checkout*', 'pedido*', 'mi-cuenta*')) {
+        if ($request->is('admin*', 'carrito*', 'checkout*', 'pedido*', 'mi-cuenta*', 'ingresar', 'registro', 'auth/*', 'olvide-mi-contrasena', 'restablecer-contrasena*')) {
             $r->headers->set('Cache-Control', 'no-store, private');
         }
 
