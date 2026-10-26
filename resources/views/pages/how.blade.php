@@ -1,10 +1,10 @@
 @extends('layouts.store')
-@section('title','Cómo comprar con Yape · IsaBlue')
+@section('title','Cómo comprar con Yape · Isablue')
 @section('content')
 <div class="wrap">
     <section class="page-hero" style="background:linear-gradient(135deg,#742284,var(--pink))">
         <span class="pill"><span class="yape-badge" style="padding:0 8px">yape</span> Pago fácil y seguro</span>
-        <h1>Cómo comprar en IsaBlue</h1>
+        <h1>Cómo comprar en Isablue</h1>
         <p>Elige tus juguetes, confirma el pedido y paga con Yape. Tu cuenta te permite consultar el estado de la compra.</p>
     </section>
     <section class="section">

@@ -1,5 +1,5 @@
 @extends('layouts.store')
-@section('title',$product->name.' · IsaBlue')
+@section('title',$product->name.' · Isablue')
 @section('description',Str::limit($product->description,155))
 @section('og_image',$product->image)
 @section('content')

@@ -1,4 +1,4 @@
-@extends('layouts.store') @section('title','Mi cuenta · IsaBlue') @section('content')
+@extends('layouts.store') @section('title','Mi cuenta · Isablue') @section('content')
 @if(!auth()->user()->isAdmin() && !auth()->user()->google_id && \App\Services\Integrations::googleReady())<div class="wrap notice"><a href="/auth/google">Vincular mi cuenta de Google para ingresar más rápido</a></div>@endif
 
 <div class="wrap section narrow">

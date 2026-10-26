@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
@@ -17,6 +18,8 @@ Route::get('/', [CatalogController::class, 'home'])->name('home');
 Route::get('/catalogo', [CatalogController::class, 'catalog'])->name('catalog');
 Route::get('/categoria/{slug}', [CatalogController::class, 'catalog']);
 Route::get('/juguete/{slug}', [CatalogController::class, 'product'])->name('product');
+Route::get('/blog', [BlogController::class, 'index']);
+Route::get('/blog/{slug}', [BlogController::class, 'show']);
 Route::get('/buscar/sugerencias', [CatalogController::class, 'suggestions'])->middleware('throttle:60,1');
 Route::get('/ingresar', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/ingresar', [AuthController::class, 'login'])->middleware('throttle:20,1');
@@ -70,6 +73,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/categorias', [AdminController::class, 'saveCategory']);
     Route::get('/categorias/{category}/editar', [AdminController::class, 'categoryForm']);
     Route::put('/categorias/{category}', [AdminController::class, 'saveCategory']);
+    Route::get('/blog', [AdminController::class, 'posts']);
+    Route::get('/blog/nuevo', [AdminController::class, 'postForm']);
+    Route::post('/blog', [AdminController::class, 'savePost']);
+    Route::get('/blog/{post}/editar', [AdminController::class, 'postForm']);
+    Route::put('/blog/{post}', [AdminController::class, 'savePost']);
+    Route::delete('/blog/{post}', [AdminController::class, 'deletePost']);
     Route::get('/banners', [AdminController::class, 'banners']);
     Route::get('/banners/nuevo', [AdminController::class, 'bannerForm']);
     Route::post('/banners', [AdminController::class, 'saveBanner']);

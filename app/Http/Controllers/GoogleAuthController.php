@@ -52,7 +52,7 @@ class GoogleAuthController extends Controller
             } else {
                 try {
                     $user = DB::transaction(function () use ($g, $email) {
-                        $u = new User(['name' => Str::limit($g->getName() ?: 'Cliente IsaBlue', 120, ''), 'email' => $email]);
+                        $u = new User(['name' => Str::limit($g->getName() ?: 'Cliente Isablue', 120, ''), 'email' => $email]);
                         $u->forceFill(['password' => null, 'google_id' => $g->getId(), 'auth_provider' => 'google', 'email_verified_at' => now(), 'role' => 'customer'])->save();
 
                         return $u;

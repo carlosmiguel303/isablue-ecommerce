@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Order;
+use App\Models\Post;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\ShippingMethod;
@@ -394,6 +395,41 @@ class AdminController extends Controller
         $category->fill($d)->save();
 
         return redirect('/admin/categorias')->with('status', 'Categoría guardada.');
+    }
+
+    public function posts()
+    {
+        return view('admin.posts', ['posts' => Post::latest()->paginate(20)]);
+    }
+
+    public function postForm(?Post $post = null)
+    {
+        return view('admin.post-form', ['post' => $post ?? new Post]);
+    }
+
+    public function savePost(Request $r, ?Post $post = null)
+    {
+        $post ??= new Post;
+        $d = $r->validate(['title' => 'required|string|max:200', 'slug' => ['nullable', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'max:220', Rule::unique('posts')->ignore($post->id)], 'excerpt' => 'nullable|string|max:300', 'body' => 'required|string|max:60000', 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120']);
+        unset($d['photo']);
+        $d['slug'] = ($d['slug'] ?? null) ?: Str::slug($d['title']).($post->exists ? '' : '-'.Str::lower(Str::random(4)));
+        $d['published'] = $r->boolean('published');
+        if ($d['published'] && ! $post->published_at) {
+            $d['published_at'] = now();
+        }
+        if ($r->hasFile('photo')) {
+            $d['image'] = $this->upload($r->file('photo'));
+        }
+        $post->fill($d)->save();
+
+        return redirect('/admin/blog')->with('status', $d['published'] ? 'Artículo publicado en el blog.' : 'Artículo guardado como borrador.');
+    }
+
+    public function deletePost(Post $post)
+    {
+        $post->delete();
+
+        return redirect('/admin/blog')->with('status', 'Artículo eliminado.');
     }
 
     public function banners()

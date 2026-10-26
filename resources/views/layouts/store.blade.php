@@ -13,10 +13,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#E9407A">
     @if(request()->is('pedido/*','checkout','carrito','mi-cuenta','ingresar','registro','auth/*','olvide-mi-contrasena','restablecer-contrasena*'))<meta name="robots" content="noindex,nofollow">@endif
-    <title>@yield('title','IsaBlue · Juguetes didácticos y de estimulación en Lima')</title>
+    <title>@yield('title','Isablue · Juguetes didácticos y de estimulación en Lima')</title>
     <meta name="description" content="@yield('description','Juguetes de estimulación, didácticos y accesorios para bebés y niños. Compra fácil, paga con Yape y recibe en Lima y provincias.')">
-    <meta property="og:site_name" content="IsaBlue">
-    <meta property="og:title" content="@yield('title','IsaBlue · Jugar, aprender y crecer')">
+    <meta property="og:site_name" content="Isablue">
+    <meta property="og:title" content="@yield('title','Isablue · Jugar, aprender y crecer')">
     <meta property="og:image" content="{{ url(trim($__env->yieldContent('og_image')) ?: '/assets/images/tienda-isablue.webp') }}">
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="icon" href="/assets/images/oso-logo.png">
@@ -54,8 +54,8 @@
 <header class="header" data-header>
     <div class="wrap header-main">
         <button class="icon-btn menu-btn" type="button" data-menu-toggle aria-label="Abrir menú" aria-expanded="false">@include('partials.icon',['name'=>'menu'])</button>
-        <a class="brand" href="/" aria-label="IsaBlue, inicio">
-            <img class="brand-logo" src="/assets/images/reales/logo-isablue.png" alt="IsaBlue · Juguetes y accesorios" width="387" height="172">
+        <a class="brand" href="/" aria-label="Isablue, inicio">
+            <img class="brand-logo" src="/assets/images/reales/logo-isablue.png" alt="Isablue · Juguetes y accesorios" width="387" height="172">
         </a>
         <form action="/catalogo" class="search" role="search">
             <label class="sr-only" for="search">Buscar juguetes</label>
@@ -101,6 +101,7 @@
             <a class="nav-link hot" href="/catalogo?sale=1">@include('partials.icon',['name'=>'fire','size'=>16]) Ofertas</a>
             <a class="nav-link" href="/catalogo?sort=newest">Novedades</a>
             <a class="nav-link" href="/como-comprar">Cómo comprar</a>
+            <a class="nav-link" href="/blog">Blog</a>
             <a class="nav-link" href="/nosotros">Nosotros</a>
             <a class="nav-link" href="/contacto">Contacto</a>
         </div>
@@ -126,7 +127,7 @@
 <footer class="footer">
     <div class="wrap footer-grid">
         <div class="footer-brand">
-            <a class="brand footer-logo" href="/"><img src="/assets/images/reales/logo-isablue.png" alt="IsaBlue · Juguetes y accesorios" width="387" height="172"></a>
+            <a class="brand footer-logo" href="/"><img src="/assets/images/reales/logo-isablue.png" alt="Isablue · Juguetes y accesorios" width="387" height="172"></a>
             <p>Tu espacio para encontrar los mejores juguetes de estimulación, didácticos y accesorios para bebés y niños.</p>
             <div class="socials">
                 @foreach(['facebook'=>'Facebook','instagram'=>'Instagram','tiktok'=>'TikTok'] as $key=>$label)
@@ -149,8 +150,9 @@
             <a href="/politicas/privacy">Privacidad</a>
         </div>
         <div>
-            <strong>IsaBlue</strong>
+            <strong>Isablue</strong>
             <a href="/nosotros">Quiénes somos</a>
+            <a href="/blog">Blog</a>
             <a href="/contacto">Contáctanos</a>
             @if(!empty($s['address']))<p>@include('partials.icon',['name'=>'pin','size'=>16]) {{ $s['address'] }}</p>@endif
             @if(!empty($s['phone']))<p>@include('partials.icon',['name'=>'phone','size'=>16]) {{ $s['phone'] }}</p>@endif
@@ -158,7 +160,7 @@
         </div>
     </div>
     <div class="wrap footer-bottom">
-        <span>© {{ date('Y') }} IsaBlue · Lima, Perú · Precios en soles (S/)</span>
+        <span>© {{ date('Y') }} Isablue · Lima, Perú · Precios en soles (S/)</span>
         <span class="pay-badges"><span class="yape-badge">yape</span><span>Pago seguro</span></span>
     </div>
 </footer>
@@ -202,7 +204,7 @@
 </div>
 @endif
 
-@if($whatsapp)<a class="whatsapp-float" href="https://wa.me/{{ $whatsapp }}?text={{ urlencode('Hola IsaBlue, quisiera información sobre un juguete') }}" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">@include('partials.icon',['name'=>'whatsapp','size'=>30,'stroke'=>1.8])</a>@endif
+@if($whatsapp)<a class="whatsapp-float" href="https://wa.me/{{ $whatsapp }}?text={{ urlencode('Hola Isablue, quisiera información sobre un juguete') }}" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">@include('partials.icon',['name'=>'whatsapp','size'=>30,'stroke'=>1.8])</a>@endif
 <div class="toast" id="toast" role="status" hidden></div>
 </body>
 </html>

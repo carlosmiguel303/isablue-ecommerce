@@ -1,6 +1,6 @@
-@extends('layouts.store') @section('title','Crear cuenta · IsaBlue') @section('content')
+@extends('layouts.store') @section('title','Crear cuenta · Isablue') @section('content')
 <div class="wrap"><div class="auth-wrap">
-    <div class="auth-art" style="background:linear-gradient(135deg,var(--teal),var(--purple))"><img src="/assets/images/oso-logo.png" alt="" width="160" height="160"><h2>Únete a IsaBlue</h2><p>Guarda tus datos y sigue tus pedidos.</p></div>
+    <div class="auth-art" style="background:linear-gradient(135deg,var(--teal),var(--purple))"><img src="/assets/images/oso-logo.png" alt="" width="160" height="160"><h2>Únete a Isablue</h2><p>Guarda tus datos y sigue tus pedidos.</p></div>
     <form class="auth-form" method="post" action="/registro">@csrf
         <h1 style="font-size:2rem">Crea tu cuenta</h1>
         <label>Nombre completo<input name="name" value="{{ old('name') }}" required autocomplete="name"></label>

@@ -8,6 +8,24 @@ class Order extends Model
 {
     protected $guarded = ['id'];
 
+    /** Formas de pago que ofrece la tienda; Yape es la principal. */
+    const PAYMENT_METHODS = [
+        'yape' => 'Yape',
+        'transferencia' => 'Transferencia bancaria',
+        'contraentrega' => 'Contraentrega',
+        'efectivo' => 'Efectivo (monto exacto)',
+    ];
+
+    public function getPaymentLabelAttribute(): string
+    {
+        return self::PAYMENT_METHODS[$this->payment_method] ?? 'Yape';
+    }
+
+    public function getPaysWithYapeAttribute(): bool
+    {
+        return ! array_key_exists($this->payment_method, self::PAYMENT_METHODS) || $this->payment_method === 'yape';
+    }
+
     protected function casts(): array
     {
         return ['legacy_data' => 'array', 'stock_reserved' => 'boolean', 'stock_released' => 'boolean', 'is_demo' => 'boolean', 'confirmation_sent_at' => 'datetime', 'reserved_until' => 'datetime', 'paid_at' => 'datetime', 'voucher_uploaded_at' => 'datetime'];

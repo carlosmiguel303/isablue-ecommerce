@@ -50,7 +50,7 @@ class IntegrationController extends Controller
         if (! Integrations::mailReady()) {
             return back()->withErrors(['smtp' => 'Activa y guarda primero el servidor SMTP.']);
         }
-        MailOutbox::enqueue('test:'.Str::uuid(), 'test', config('mail.from.address'), ['subject' => 'Prueba de correo de IsaBlue', 'name' => 'Administrador', 'message' => 'La configuración de correo de IsaBlue pudo enviar este mensaje.']);
+        MailOutbox::enqueue('test:'.Str::uuid(), 'test', config('mail.from.address'), ['subject' => 'Prueba de correo de Isablue', 'name' => 'Administrador', 'message' => 'La configuración de correo de Isablue pudo enviar este mensaje.']);
         MailOutbox::process(3);
 
         return back()->with('status', 'Prueba registrada para el correo remitente. Revisa su bandeja y el estado de los envíos.');

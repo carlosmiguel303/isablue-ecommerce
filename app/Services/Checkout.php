@@ -73,6 +73,7 @@ class Checkout
                 throw ValidationException::withMessages(['cart' => 'Uno de los productos o la entrega todavía está pendiente de verificación. Contacta con la tienda.']);
             }
             $shippingCents = self::shippingPrice($shipping, $subtotal);
+            $method = array_key_exists($data['payment_method'] ?? '', Order::PAYMENT_METHODS) ? $data['payment_method'] : 'yape';
             $order = Order::create([
                 'reference' => 'ISA-'.strtoupper(Str::random(6)),
                 'public_token' => Str::uuid(),
@@ -87,10 +88,11 @@ class Checkout
                 'subtotal' => $subtotal / 100,
                 'shipping_total' => $shippingCents / 100,
                 'total' => ($subtotal + $shippingCents) / 100,
-                'payment_method' => 'yape',
+                'payment_method' => $method,
                 'payment_reference' => $data['payment_reference'] ?? null,
                 'stock_reserved' => false,
-                'reserved_until' => now()->addMinutes(30),
+                // Yape se paga al momento; las demás formas se coordinan y reservan por 24 horas.
+                'reserved_until' => $method === 'yape' ? now()->addMinutes(30) : now()->addDay(),
                 'is_demo' => Setting::valueOf('demo_mode', '0') === '1' || (bool) $shipping->demo_data || $products->contains(fn ($p) => (bool) $p->demo_data),
             ]);
             foreach ($cart as $id => $qty) {
@@ -98,7 +100,7 @@ class Checkout
                 StockHold::create(['order_id' => $order->id, 'product_id' => $id, 'quantity' => $qty, 'expires_at' => $order->reserved_until]);
                 $order->items()->create(['product_id' => $id, 'name' => $p->name, 'sku' => $p->sku, 'quantity' => $qty, 'unit_price' => $p->price, 'total' => Cart::cents($p->price) * $qty / 100]);
             }
-            OrderEvent::create(['order_id' => $order->id, 'user_id' => $userId, 'event' => 'Pedido recibido', 'note' => 'Esperando el pago por Yape.']);
+            OrderEvent::create(['order_id' => $order->id, 'user_id' => $userId, 'event' => 'Pedido recibido', 'note' => $method === 'yape' ? 'Esperando el pago por Yape.' : 'Pago por '.Order::PAYMENT_METHODS[$method].': coordinar con el cliente.']);
 
             return $order;
         }, 3);

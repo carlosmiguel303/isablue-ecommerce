@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
@@ -49,6 +50,7 @@ class CheckoutController extends Controller
             'address' => 'required|string|max:500',
             'note' => 'nullable|string|max:500',
             'shipping_method_id' => 'required|integer',
+            'payment_method' => ['nullable', Rule::in(array_keys(Order::PAYMENT_METHODS))],
             'payment_reference' => 'nullable|string|max:60',
             'voucher' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:6144',
             'checkout_key' => 'required|uuid',
@@ -94,7 +96,7 @@ class CheckoutController extends Controller
                 throw ValidationException::withMessages(['password' => 'Esta cuenta utiliza Google para iniciar sesión. Selecciona «Continuar con Google» para comprar con ella.']);
             }
             if (! password_verify($d['password'], $user->password)) {
-                throw ValidationException::withMessages(['password' => 'Este correo ya tiene una cuenta en IsaBlue. Escribe tu contraseña o usa otro correo.']);
+                throw ValidationException::withMessages(['password' => 'Este correo ya tiene una cuenta en Isablue. Escribe tu contraseña o usa otro correo.']);
             }
         } else {
             $user = User::create(['name' => $d['name'], 'email' => $d['email'], 'password' => Hash::make($d['password']), 'phone' => $d['phone'], 'address' => $d['address']]);

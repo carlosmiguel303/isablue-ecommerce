@@ -55,15 +55,13 @@
         pause.setAttribute('aria-pressed', String(paused));
       }
       if (slides.length > 1 && !paused && !hovering && !document.hidden && !slider.contains(document.activeElement)) {
-        autoplay = setInterval(() => show(current + 1), 7000);
+        autoplay = setInterval(() => show(current + 1), 4000);
       }
     };
     dots.forEach(d => d.addEventListener('click', () => { show(Number(d.dataset.slide)); play(); }));
     $('[data-slide-prev]', slider)?.addEventListener('click', () => { show(current - 1); play(); });
     $('[data-slide-next]', slider)?.addEventListener('click', () => { show(current + 1); play(); });
     pause?.addEventListener('click', () => { paused = !paused; play(); });
-    slider.addEventListener('mouseenter', () => { hovering = true; play(); });
-    slider.addEventListener('mouseleave', () => { hovering = false; play(); });
     slider.addEventListener('focusin', play);
     slider.addEventListener('focusout', () => setTimeout(play, 0));
     slider.addEventListener('keydown', e => {

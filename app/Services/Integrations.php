@@ -24,7 +24,7 @@ class Integrations
             config(['mail.default' => 'log']);
         }
         if (($m['enabled'] ?? false) && ! empty($m['host']) && ! empty($m['password'])) {
-            config(['mail.default' => 'smtp', 'mail.mailers.smtp.host' => $m['host'], 'mail.mailers.smtp.port' => (int) $m['port'], 'mail.mailers.smtp.scheme' => (int) $m['port'] === 465 ? 'smtps' : 'smtp', 'mail.mailers.smtp.username' => $m['username'], 'mail.mailers.smtp.password' => $m['password'], 'mail.mailers.smtp.timeout' => 10, 'mail.mailers.smtp.require_tls' => true, 'mail.from.address' => $m['from'], 'mail.from.name' => 'IsaBlue']);
+            config(['mail.default' => 'smtp', 'mail.mailers.smtp.host' => $m['host'], 'mail.mailers.smtp.port' => (int) $m['port'], 'mail.mailers.smtp.scheme' => (int) $m['port'] === 465 ? 'smtps' : 'smtp', 'mail.mailers.smtp.username' => $m['username'], 'mail.mailers.smtp.password' => $m['password'], 'mail.mailers.smtp.timeout' => 10, 'mail.mailers.smtp.require_tls' => true, 'mail.from.address' => $m['from'], 'mail.from.name' => 'Isablue']);
         }
     }
 

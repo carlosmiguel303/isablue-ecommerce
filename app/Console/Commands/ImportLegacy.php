@@ -85,7 +85,7 @@ class ImportLegacy extends Command
                 $p->categories()->sync(array_map(fn ($n) => $cats[$n], $categories));
             }
             foreach ([
-                ['Juguetes que inspiran imaginación y aprendizaje', 'Pequeños descubrimientos. Grandes momentos juntos.', 'El mundo de IsaBlue', 'main', 'toy-montessori.svg'],
+                ['Juguetes que inspiran imaginación y aprendizaje', 'Pequeños descubrimientos. Grandes momentos juntos.', 'El mundo de Isablue', 'main', 'toy-montessori.svg'],
                 ['Un mundo por descubrir', 'Explora nuestros juguetes sensoriales y encuentra su próximo compañero de juegos.', 'Estimulación temprana', 'baby', 'toy-teddy.svg'],
                 ['La imaginación empieza jugando', 'Rompecabezas, bloques y juguetes didácticos para cada nueva aventura.', 'Montessori y creatividad', 'montessori', 'toy-puzzle.svg'],
             ] as $i => [$title,$subtitle,$eyebrow,$theme,$image]) {

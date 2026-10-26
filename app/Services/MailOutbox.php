@@ -21,7 +21,7 @@ class MailOutbox
         if (app()->runningInConsole() && ! app()->runningUnitTests()) {
             return;
         }
-        self::enqueue('login:'.Str::uuid(), 'login', $user->email, ['subject' => 'Nuevo inicio de sesión en IsaBlue', 'name' => $user->name, 'message' => 'Se inició sesión correctamente en tu cuenta.', 'details' => 'Fecha y hora: '.now()->format('d/m/Y H:i').' (Lima).', 'url' => url('/mi-cuenta'), 'action' => 'Revisar mi cuenta'], now()->addDay());
+        self::enqueue('login:'.Str::uuid(), 'login', $user->email, ['subject' => 'Nuevo inicio de sesión en Isablue', 'name' => $user->name, 'message' => 'Se inició sesión correctamente en tu cuenta.', 'details' => 'Fecha y hora: '.now()->format('d/m/Y H:i').' (Lima).', 'url' => url('/mi-cuenta'), 'action' => 'Revisar mi cuenta'], now()->addDay());
     }
 
     public static function process(int $limit = 3): int

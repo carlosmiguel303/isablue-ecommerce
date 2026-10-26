@@ -1,9 +1,9 @@
 @extends('layouts.store')
-@section('title','Catálogo de juguetes · IsaBlue')
+@section('title','Catálogo de juguetes · Isablue')
 @section('content')
 @php
     $sorts = ['newest'=>'Novedades','price_asc'=>'Menor precio','price_desc'=>'Mayor precio','name'=>'Nombre A–Z'];
-    $title = !empty($filters['sale']) ? 'Ofertas IsaBlue' : (!empty($filters['q']) ? 'Resultados para “'.$filters['q'].'”' : 'Todos los juguetes');
+    $title = !empty($filters['sale']) ? 'Ofertas Isablue' : (!empty($filters['q']) ? 'Resultados para “'.$filters['q'].'”' : 'Todos los juguetes');
 @endphp
 <div class="wrap section">
     <div class="breadcrumb"><a href="/">Inicio</a> / Catálogo</div>

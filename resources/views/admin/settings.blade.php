@@ -64,7 +64,7 @@
             <label>Producto a destacar<select name="popup_product_id"><option value="">— Elegir —</option>@foreach($products as $p)<option value="{{ $p->id }}" @selected($v('popup_product_id')==$p->id)>{{ $p->name }} · S/ {{ number_format($p->price,2) }}</option>@endforeach</select></label>
             <label>Aparece a los (segundos)<input type="number" name="popup_delay" min="0" max="120" value="{{ $v('popup_delay','4') }}"></label>
             <label>Título pequeño<input name="popup_title" value="{{ $v('popup_title') }}" maxlength="120" placeholder="ÚLTIMO GRAN DESCUENTO DEL AÑO"></label>
-            <label>Título grande<input name="popup_headline" value="{{ $v('popup_headline') }}" maxlength="120" placeholder="¡Cyber IsaBlue! Hasta 40%"></label>
+            <label>Título grande<input name="popup_headline" value="{{ $v('popup_headline') }}" maxlength="120" placeholder="¡Cyber Isablue! Hasta 40%"></label>
         </div>
         <p class="hint">El popup usa la misma cuenta regresiva de la barra superior.</p>
     </section>

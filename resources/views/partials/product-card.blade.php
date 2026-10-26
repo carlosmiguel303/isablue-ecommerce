@@ -9,7 +9,7 @@
         @if(!$p->available)<span class="soldout">{{ $p->stock===null?'Por confirmar':'Agotado' }}</span>@endif
     </a>
     <div class="product-copy">
-        <span class="card-cat">{{ $p->categories->where('active',true)->first()?->name ?? 'IsaBlue' }}</span>
+        <span class="card-cat">{{ $p->categories->where('active',true)->first()?->name ?? 'Isablue' }}</span>
         <h3><a href="{{ route('product',$p->slug) }}">{{ $p->name }}</a></h3>
         @if($p->age_min_months !== null)<p class="age-chip">{{ $p->demo_data?'Edad de prueba: ':'' }}{{ $p->age_label }}</p>@endif
         <div class="price-row">

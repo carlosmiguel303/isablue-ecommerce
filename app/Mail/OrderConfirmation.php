@@ -11,6 +11,6 @@ class OrderConfirmation extends Mailable
 
     public function build()
     {
-        return $this->subject('IsaBlue · Pedido '.$this->order->reference)->view('emails.order');
+        return $this->subject('Isablue · Pedido '.$this->order->reference)->view('emails.order');
     }
 }

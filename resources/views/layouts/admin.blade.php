@@ -8,6 +8,7 @@
         ['/admin/productos', 'Productos', 'gift'],
         ['/admin/categorias', 'Categorías', 'menu'],
         ['/admin/banners', 'Banners', 'image'],
+        ['/admin/blog', 'Blog', 'menu'],
         ['/admin/configuracion', 'Configuración', 'settings'],
         ['/admin/integraciones', 'Google, correos y respaldo', 'shield'],
     ];
@@ -18,7 +19,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    <title>@yield('title','Panel') · IsaBlue Admin</title>
+    <title>@yield('title','Panel') · Isablue Admin</title>
     <link rel="icon" href="/assets/images/oso-logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

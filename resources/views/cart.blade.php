@@ -1,5 +1,5 @@
 @extends('layouts.store')
-@section('title','Tu carrito · IsaBlue')
+@section('title','Tu carrito · Isablue')
 @section('content')
 @php($free = (float) \App\Models\Setting::valueOf('free_shipping_from','0'))
 <div class="wrap section">

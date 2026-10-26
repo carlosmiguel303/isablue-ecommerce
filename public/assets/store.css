@@ -1,5 +1,5 @@
 /* ==========================================================
-   IsaBlue · Tienda
+   Isablue · Tienda
    Paleta tomada del logo: rosa, morado, turquesa, naranja, verde
    ========================================================== */
 :root {
@@ -605,7 +605,7 @@ details.info summary { padding: 14px 0; font-weight: 800; cursor: pointer; }
 
 /* ---------- Fotos reales y logo ---------- */
 .brand-logo { width: auto !important; height: 64px !important; }
-.footer-logo { background: #fff; border-radius: 18px; padding: 6px 12px; display: inline-flex !important; }
+.footer-logo { background: #fff; border-radius: 0; padding: 6px 12px; display: inline-flex !important; }
 .footer-logo img { width: auto; height: 70px; }
 .product-image img { width: 100%; height: 100%; object-fit: cover; }
 .detail-image img { width: 100%; height: 100%; object-fit: cover; }
@@ -656,3 +656,19 @@ details.info summary { padding: 14px 0; font-weight: 800; cursor: pointer; }
 .btn-google:hover { background: #f8f9fa; box-shadow: 0 1px 3px rgba(60,64,67,.25); }
 .btn-google:focus-visible { outline: 3px solid #4285f4; outline-offset: 2px; }
 @media (max-width: 560px) { .auth-form { padding: 28px 20px; } }
+
+/* ---------- Blog ---------- */
+.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.blog-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; transition: transform .2s; }
+.blog-card:hover { transform: translateY(-3px); }
+.blog-card a { color: inherit; text-decoration: none; display: block; }
+.blog-card img, .blog-ph { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.blog-ph { display: grid; place-items: center; background: linear-gradient(135deg, var(--teal), var(--purple)); color: #fff; font-family: var(--font-head); font-size: 1.6rem; }
+.blog-card-body { padding: 16px 18px 20px; display: grid; gap: 6px; }
+.blog-card-body h2 { font-size: 1.15rem; margin: 0; }
+.blog-card-body p { margin: 0; color: var(--muted); }
+.blog-post h1 { margin: 6px 0 16px; }
+.blog-cover { width: 100%; border-radius: var(--radius); margin-bottom: 18px; }
+.blog-body { white-space: pre-line; line-height: 1.75; font-size: 1.05rem; }
+@media (max-width: 900px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .blog-grid { grid-template-columns: 1fr; } }

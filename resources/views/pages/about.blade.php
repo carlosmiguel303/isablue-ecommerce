@@ -1,11 +1,11 @@
 @extends('layouts.store')
-@section('title','Quiénes somos · IsaBlue')
-@section('description','IsaBlue es una tienda en Lima de juguetes de estimulación, didácticos y accesorios para bebés y niños.')
+@section('title','Quiénes somos · Isablue')
+@section('description','Isablue es una tienda en Lima de juguetes de estimulación, didácticos y accesorios para bebés y niños.')
 @section('content')
 <div class="wrap">
     <section class="page-hero">
         <span class="pill">@include('partials.icon',['name'=>'heart','size'=>16]) Jugar, aprender y crecer</span>
-        <h1>Somos IsaBlue</h1>
+        <h1>Somos Isablue</h1>
         <p>Tu espacio para encontrar los mejores juguetes de estimulación, didácticos y accesorios para bebés y niños, aquí en Lima.</p>
     </section>
 
@@ -13,11 +13,11 @@
         <div>
             <span class="eyebrow">Nuestra historia</span>
             <h2>Juguetes que acompañan cada etapa</h2>
-            <p>En IsaBlue creemos que el juego es la forma más natural de aprender. Por eso elegimos juguetes que estimulan los sentidos, la motricidad y la imaginación de los más pequeños.</p>
+            <p>En Isablue creemos que el juego es la forma más natural de aprender. Por eso elegimos juguetes que estimulan los sentidos, la motricidad y la imaginación de los más pequeños.</p>
             <p>Revisamos cada pedido antes de enviarlo y te acompañamos por WhatsApp para ayudarte a elegir el juguete ideal según la edad.</p>
             <a class="btn" href="/catalogo">Ver juguetes @include('partials.icon',['name'=>'arrow','size'=>18])</a>
         </div>
-        <img src="/assets/images/reales/tienda-isablue.webp" alt="Estantes de la tienda IsaBlue" width="1280" height="449" loading="lazy">
+        <img src="/assets/images/reales/tienda-isablue.webp" alt="Estantes de la tienda Isablue" width="1280" height="449" loading="lazy">
     </section>
 
     <section class="section">

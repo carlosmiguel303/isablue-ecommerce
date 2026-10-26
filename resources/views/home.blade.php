@@ -3,7 +3,7 @@
 
 {{-- Hero --}}
 @if($banners->isNotEmpty())
-<section class="hero-zone hero-wide" aria-label="Promociones de IsaBlue">
+<section class="hero-zone hero-wide" aria-label="Promociones de Isablue">
     <div class="hero" role="region" aria-roledescription="carrusel" aria-label="Promociones" data-slider tabindex="0">
         @foreach($banners as $banner)
             <article class="hero-slide theme-{{ $banner->theme }}" role="group" aria-roledescription="diapositiva" aria-label="{{ $loop->iteration }} de {{ $banners->count() }}: {{ $banner->title }}" @if(!$loop->first) hidden @endif>
@@ -101,7 +101,7 @@
         </ul>
         <a class="btn" href="/catalogo?q=sensorial">Ver juguetes sensoriales @include('partials.icon',['name'=>'arrow','size'=>18])</a>
     </div>
-    <img src="/assets/images/libros-sensoriales.webp" alt="Infografía de IsaBlue sobre los beneficios de los libros sensoriales" width="560" height="560" loading="lazy">
+    <img src="/assets/images/libros-sensoriales.webp" alt="Infografía de Isablue sobre los beneficios de los libros sensoriales" width="560" height="560" loading="lazy">
 </section>
 
 {{-- Categorías --}}
@@ -123,7 +123,7 @@
 @if($newProducts->isNotEmpty())
 <section class="wrap section">
     <div class="section-head">
-        <div><span class="eyebrow">Recién llegados</span><h2>Novedades en IsaBlue</h2></div>
+        <div><span class="eyebrow">Recién llegados</span><h2>Novedades en Isablue</h2></div>
         <a class="text-link" href="/catalogo?sort=newest">Ver novedades @include('partials.icon',['name'=>'arrow','size'=>16])</a>
     </div>
     <div class="product-grid">@foreach($newProducts as $p)@include('partials.product-card')@endforeach</div>
@@ -142,9 +142,9 @@
 
 {{-- Tienda --}}
 <section class="wrap section store-strip">
-    <img src="/assets/images/reales/tienda-isablue.webp" alt="Estantes de la tienda IsaBlue llenos de juguetes" width="1280" height="449" loading="lazy">
+    <img src="/assets/images/reales/tienda-isablue.webp" alt="Estantes de la tienda Isablue llenos de juguetes" width="1280" height="449" loading="lazy">
     <div class="store-strip-copy">
-        <span class="eyebrow on-dark">Somos IsaBlue</span>
+        <span class="eyebrow on-dark">Somos Isablue</span>
         <h2>Juguetes reales, gente real</h2>
         <p>Cada juguete pasa por nuestras manos antes de llegar a las tuyas.</p>
         <a class="btn yellow small" href="/nosotros">Conócenos</a>

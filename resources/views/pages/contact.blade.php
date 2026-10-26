@@ -1,5 +1,5 @@
 @extends('layouts.store')
-@section('title','Contáctanos · IsaBlue')
+@section('title','Contáctanos · Isablue')
 @section('content')
 @php
     $wa = \App\Models\Setting::valueOf('whatsapp');

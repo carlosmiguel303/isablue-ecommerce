@@ -1,5 +1,5 @@
 @extends('layouts.store')
-@section('title','Finalizar compra · IsaBlue')
+@section('title','Finalizar compra · Isablue')
 @section('content')
 @php
     $yape = \App\Models\Setting::valueOf('yape_number');
@@ -53,7 +53,18 @@
                 @endforelse
             </section>
 
-            <section class="panel co-block"><h2><b>3</b> Reserva y pago</h2><p>Al confirmar reservaremos tus juguetes durante <strong>30 minutos</strong>. En la siguiente pantalla verás el número y QR de Yape. Envía tu comprobante dentro del plazo para mantener la reserva hasta 24 horas mientras la tienda revisa el pago.</p>@if($demoMode)<p class="notice">Pedido de prueba: no realices un pago.</p>@endif</section>
+            <section class="panel co-block"><h2><b>3</b> Forma de pago</h2>
+                @php($payNotes = ['yape' => 'Recomendado. Pagas al instante desde la web con el número o QR de Yape.', 'transferencia' => 'Te enviamos los datos de la cuenta por WhatsApp o correo.', 'contraentrega' => 'Pagas al recibir tu pedido.', 'efectivo' => 'Pagas en efectivo al recibir. Ten el monto exacto, por favor.'])
+                @foreach(\App\Models\Order::PAYMENT_METHODS as $key => $label)
+                    <label class="shipping-choice pay-choice">
+                        <input type="radio" name="payment_method" value="{{ $key }}" required @checked(old('payment_method','yape')===$key)>
+                        <span><strong>{{ $label }}</strong><small>{{ $payNotes[$key] }}</small></span>
+                        @if($key==='yape')<em>Recomendado</em>@endif
+                    </label>
+                @endforeach
+                <p class="hint">Con Yape reservamos tus juguetes <strong>30 minutos</strong> y luego verás el número y QR para pagar. Con las otras formas los reservamos <strong>24 horas</strong> mientras coordinamos contigo.</p>
+                @if($demoMode)<p class="notice">Pedido de prueba: no realices un pago.</p>@endif
+            </section>
         </form>
 
         <aside class="summary">

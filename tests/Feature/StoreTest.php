@@ -350,8 +350,8 @@ class StoreTest extends TestCase
     public function test_promo_bar_and_popup_settings(): void
     {
         $p = $this->product(['compare_price' => 60]);
-        $this->actingAs($this->admin())->post('/admin/configuracion', ['demo_mode' => 1, 'promo_enabled_present' => 1, 'promo_enabled' => 1, 'promo_text' => 'Cyber IsaBlue', 'promo_ends_at' => now()->addDay()->format('Y-m-d\TH:i'), 'popup_enabled_present' => 1, 'popup_enabled' => 1, 'popup_product_id' => $p->id, 'free_shipping_from' => 50])->assertSessionHasNoErrors();
-        $this->get('/')->assertOk()->assertSee('Cyber IsaBlue')->assertSee('data-countdown', false)->assertSee('data-popup', false)->assertSee('-25%');
+        $this->actingAs($this->admin())->post('/admin/configuracion', ['demo_mode' => 1, 'promo_enabled_present' => 1, 'promo_enabled' => 1, 'promo_text' => 'Cyber Isablue', 'promo_ends_at' => now()->addDay()->format('Y-m-d\TH:i'), 'popup_enabled_present' => 1, 'popup_enabled' => 1, 'popup_product_id' => $p->id, 'free_shipping_from' => 50])->assertSessionHasNoErrors();
+        $this->get('/')->assertOk()->assertSee('Cyber Isablue')->assertSee('data-countdown', false)->assertSee('data-popup', false)->assertSee('-25%');
         $o = app(Checkout::class)->place([$p->id => 2], $this->data($this->delivery()), null, (string) Str::uuid());
         $this->assertEquals(0, (float) $o->shipping_total, 'Envío gratis sobre el mínimo configurado.');
     }
@@ -398,5 +398,39 @@ Medidas: 12 cm", 'price' => 30, 'stock' => 3, 'active' => '1', 'catalog_visible'
         $linked = User::factory()->create(['email' => 'mixto@example.test', 'password' => Hash::make('clave-local-1')]);
         $linked->forceFill(['google_id' => 'g-456'])->save();
         $this->post('/ingresar', ['email' => 'mixto@example.test', 'password' => 'clave-local-1'])->assertRedirect('/mi-cuenta');
+    }
+
+    public function test_customer_can_choose_cash_on_delivery_and_sees_instructions(): void
+    {
+        $p = $this->product();
+        $shipping = $this->delivery();
+        $key = (string) Str::uuid();
+        $payload = $this->data($shipping) + ['checkout_key' => $key, 'password' => 'secreto123', 'payment_method' => 'contraentrega'];
+        $this->withSession(['cart' => [$p->id => 1], 'checkout_key' => $key])->post('/checkout', $payload)->assertRedirect();
+        $o = Order::firstOrFail();
+        $this->assertSame('contraentrega', $o->payment_method);
+        $this->assertTrue($o->reserved_until->greaterThan(now()->addHours(23)));
+        $this->get('/pedido/'.$o->public_token)->assertOk()->assertSee('Contraentrega')->assertDontSee('Solo falta tu Yape');
+        $this->post('/checkout', $this->data($shipping) + ['checkout_key' => (string) Str::uuid(), 'password' => 'secreto123', 'payment_method' => 'bitcoin'])->assertSessionHasErrors('payment_method');
+    }
+
+    public function test_checkout_lists_all_payment_methods_with_yape_first(): void
+    {
+        $p = $this->product();
+        $this->delivery();
+        $html = $this->withSession(['cart' => [$p->id => 1]])->get('/checkout')->assertOk()->assertSee('Transferencia bancaria')->assertSee('Contraentrega')->assertSee('Efectivo (monto exacto)')->getContent();
+        $this->assertLessThan(strpos($html, 'value="transferencia"'), strpos($html, 'value="yape"'));
+    }
+
+    public function test_blog_shows_only_published_posts_and_admin_can_publish(): void
+    {
+        $this->actingAs($this->admin())->post('/admin/blog', ['title' => 'Juegos para 1 año', 'excerpt' => 'Ideas simples', 'body' => "Primer párrafo.\n\nSegundo párrafo.", 'published' => '1'])->assertRedirect('/admin/blog');
+        $this->post('/admin/blog', ['title' => 'Borrador secreto', 'body' => 'Aún no'])->assertRedirect('/admin/blog');
+        $post = \App\Models\Post::where('title', 'Juegos para 1 año')->firstOrFail();
+        $this->get('/blog')->assertOk()->assertSee('Juegos para 1 año')->assertDontSee('Borrador secreto');
+        $this->get('/blog/'.$post->slug)->assertOk()->assertSee('Segundo párrafo.');
+        $draft = \App\Models\Post::where('title', 'Borrador secreto')->firstOrFail();
+        $this->get('/blog/'.$draft->slug)->assertNotFound();
+        $this->get('/')->assertSee('href="/blog"', false);
     }
 }

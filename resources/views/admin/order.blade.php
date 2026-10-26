@@ -5,7 +5,7 @@
     $money = $order->currency==='PEN' ? 'S/ ' : '';
     $canPay = $order->status==='pending' && $order->payment_status!=='paid' && $order->currency==='PEN';
     $labels = ['processing'=>['Pasar a «En preparación»','teal'],'shipped'=>['Marcar como enviado','purple'],'completed'=>['Marcar como entregado','']];
-    $waMsg = 'Hola '.$order->customer_name.' 👋, te escribimos de IsaBlue por tu pedido '.$order->reference.' ('.$money.number_format($order->total,2).').';
+    $waMsg = 'Hola '.$order->customer_name.' 👋, te escribimos de Isablue por tu pedido '.$order->reference.' ('.$money.number_format($order->total,2).').';
 @endphp
 <a class="back" href="/admin/pedidos">← Volver a pedidos</a>
 <div class="page-title">
@@ -18,7 +18,8 @@
     <div>
         @if($canPay)
         <section class="admin-card pay-card">
-            <h2>¿Ya llegó el Yape de {{ $money }}{{ number_format($order->total,2) }}?</h2>
+            <h2>¿Ya llegó el pago de {{ $money }}{{ number_format($order->total,2) }}?</h2>
+            <p><strong>Forma de pago elegida:</strong> {{ $order->payment_label }}</p>
             <p class="muted">Verifica en tu app de Yape. Al confirmar se descuenta el stock y el pedido pasa a «Por preparar». Si no ha pagado, el pedido queda en espera.</p>
             @if($shortages)<div class="flash bad" style="margin-bottom:12px">⚠️ Stock insuficiente: {{ implode(', ', $shortages) }}. Ajusta el inventario antes de confirmar o cancela el pedido.</div>@endif
             <div class="pay-grid">

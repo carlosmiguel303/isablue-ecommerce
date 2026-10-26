@@ -1,5 +1,5 @@
 @extends('layouts.store')
-@section('title','Pedido '.$order->reference.' · IsaBlue')
+@section('title','Pedido '.$order->reference.' · Isablue')
 @section('content')
 @php
     $yape = \App\Models\Setting::valueOf('yape_number');
@@ -10,17 +10,17 @@
     $awaiting = !$paid && $order->status === 'pending';
     $expired = $awaiting && $order->reserved_until && $order->reserved_until->isPast();
     $money = ($order->currency==='PEN' ? 'S/ ' : '');
-    $steps = ['pending'=>'Pedido recibido','confirmed'=>'Yape confirmado','processing'=>'En preparación','shipped'=>'Enviado','completed'=>'Entregado'];
+    $steps = ['pending'=>'Pedido recibido','confirmed'=>'Pago confirmado','processing'=>'En preparación','shipped'=>'Enviado','completed'=>'Entregado'];
     $keys = array_keys($steps);
     $pos = array_search($order->status, $keys);
-    $waText = 'Hola IsaBlue 👋 Hice el pedido '.$order->reference.' por '.$money.number_format($order->total,2).'. Te envío la captura de mi Yape.';
+    $waText = 'Hola Isablue 👋 Hice el pedido '.$order->reference.' por '.$money.number_format($order->total,2).'. Te envío la captura de mi Yape.';
 @endphp
 @if($order->is_demo)<div class="wrap"><div class="notice" style="margin-top:16px"><strong>Pedido de prueba</strong> · Sin cobro ni entrega reales.</div></div>@endif
 <div class="wrap section narrow">
     <div class="order-hero {{ $paid ? 'ok' : 'wait' }}">
         <div class="big-ico">@include('partials.icon',['name'=>$paid?'check':'clock','size'=>42])</div>
-        <span class="eyebrow">¡Gracias por comprar en IsaBlue!</span>
-        <h1>{{ $paid ? '¡Pago confirmado!' : ($order->status==='cancelled' ? 'Pedido cancelado' : ($order->is_demo ? 'Pedido de prueba recibido' : '¡Pedido recibido! Solo falta tu Yape')) }}</h1>
+        <span class="eyebrow">¡Gracias por comprar en Isablue!</span>
+        <h1>{{ $paid ? '¡Pago confirmado!' : ($order->status==='cancelled' ? 'Pedido cancelado' : ($order->is_demo ? 'Pedido de prueba recibido' : ($order->pays_with_yape ? '¡Pedido recibido! Solo falta tu Yape' : '¡Pedido recibido!'))) }}</h1>
         <span class="order-ref">{{ $order->reference }}</span>
     </div>
 
@@ -35,11 +35,20 @@
     </div>
     @endif
 
-    @if($awaiting && !$order->is_demo && !$expired)
+    @if($awaiting && !$order->is_demo && !$expired && !$order->pays_with_yape)
+    <section class="panel co-block">
+        <h2>Pago: {{ $order->payment_label }} <span class="amount-pill">{{ $money }}{{ number_format($order->total,2) }}</span></h2>
+        <p>{{ ['transferencia' => 'Te enviaremos los datos de la cuenta para la transferencia. Al recibirla confirmamos tu pedido.', 'contraentrega' => 'Pagarás al recibir tu pedido. Te contactaremos para coordinar la entrega.', 'efectivo' => 'Pagarás en efectivo al recibir tu pedido. Ten el monto exacto, por favor.'][$order->payment_method] ?? '' }}</p>
+        <p class="hint">Tu código de pedido es <strong>{{ $order->reference }}</strong>. Reservamos tus juguetes por 24 horas.</p>
+        @if($wa)<a class="btn green full" href="https://wa.me/{{ $wa }}?text={{ urlencode('Hola Isablue 👋 Hice el pedido '.$order->reference.' por '.$money.number_format($order->total,2).' y elegí pagar con '.$order->payment_label.'.') }}" target="_blank" rel="noopener">@include('partials.icon',['name'=>'whatsapp','size'=>20]) Coordinar por WhatsApp</a>@endif
+    </section>
+    @endif
+
+    @if($awaiting && !$order->is_demo && !$expired && $order->pays_with_yape)
     <section class="panel co-block">
         <h2><b>1</b> Yapea <span class="amount-pill">{{ $money }}{{ number_format($order->total,2) }}</span></h2>
         <div class="yape-box">
-            @if($qr)<img class="qr" src="{{ $qr }}" alt="Código QR de Yape de IsaBlue" width="170" height="170">@else<div class="qr-placeholder">yape</div>@endif
+            @if($qr)<img class="qr" src="{{ $qr }}" alt="Código QR de Yape de Isablue" width="170" height="170">@else<div class="qr-placeholder">yape</div>@endif
             <div>
                 @if($yape)
                     <div class="yape-number">{{ $yape }}</div>
@@ -79,6 +88,7 @@
             <div class="summary-line"><span>{{ (float)$item->quantity }} × {{ $item->name }}</span><strong>S/ {{ number_format($item->total,2) }}</strong></div>
         @endforeach
         <div class="summary-line"><span>Envío: {{ $order->shipping_name }}</span><strong>{{ (float)$order->shipping_total > 0 ? $money.number_format($order->shipping_total,2) : 'Por coordinar' }}</strong></div>
+        <div class="summary-line"><span>Forma de pago</span><strong>{{ $order->payment_label }}</strong></div>
         <div class="summary-line total"><span>Total</span><strong>{{ $money }}{{ number_format($order->total,2) }}</strong></div>
         <p class="hint">Entrega a: {{ $order->customer_name }} · {{ $order->address }}</p>
         @if($awaiting)<p class="hint">El estado del pago cambia cuando la tienda confirma el abono. No repitas el pago.</p>@endif
