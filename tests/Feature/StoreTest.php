@@ -433,4 +433,14 @@ Medidas: 12 cm", 'price' => 30, 'stock' => 3, 'active' => '1', 'catalog_visible'
         $this->get('/blog/'.$draft->slug)->assertNotFound();
         $this->get('/')->assertSee('href="/blog"', false);
     }
+
+    public function test_admin_sets_season_theme_and_rotating_announcements(): void
+    {
+        Setting::updateOrCreate(['key' => 'season_theme'], ['value' => 'navidad']);
+        Setting::updateOrCreate(['key' => 'shipping_bar_text'], ['value' => "Envíos a todo Lima\nPaga con Yape"]);
+        $this->get('/')->assertOk()->assertSee('theme-navidad')->assertSee('Envíos a todo Lima')->assertSee('Paga con Yape')->assertSee('🎄');
+        Setting::updateOrCreate(['key' => 'season_theme'], ['value' => 'inventado']);
+        $this->get('/')->assertOk()->assertSee('theme-normal');
+        $this->actingAs($this->admin())->get('/admin/configuracion')->assertOk()->assertSee('Tema de temporada');
+    }
 }

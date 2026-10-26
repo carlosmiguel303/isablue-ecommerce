@@ -31,7 +31,7 @@ class CheckoutController extends Controller
             $r->session()->put('checkout_key', (string) Str::uuid());
         }
         $subtotal = $cart->subtotal();
-        $shipping = ShippingMethod::where('active', true)->orderBy('price')->get()
+        $shipping = ShippingMethod::where('active', true)->orderBy('id')->get()
             ->each(fn ($m) => $m->final_price = Checkout::shippingPrice($m, $subtotal) / 100);
 
         return view('checkout', [

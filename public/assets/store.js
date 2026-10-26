@@ -196,6 +196,19 @@
     }));
   });
 
+  /* Barra superior: anuncios que rotan cada 4 segundos */
+  $$('[data-announcements]').forEach(bar => {
+    const items = $$('.announce', bar);
+    if (items.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let i = 0;
+    setInterval(() => {
+      if (document.hidden) return;
+      items[i].hidden = true;
+      i = (i + 1) % items.length;
+      items[i].hidden = false;
+    }, 4000);
+  });
+
   /* Galería de producto */
   $$('[data-photo]').forEach(button => button.addEventListener('click', () => {
     const img = $('#detail-photo');

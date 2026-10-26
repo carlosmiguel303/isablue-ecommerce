@@ -51,9 +51,10 @@
             <label class="span-all">Enlace del botón<input name="promo_cta_link" value="{{ $v('promo_cta_link','/catalogo?sale=1') }}" placeholder="/catalogo?sale=1"><small class="muted">Ejemplos: /catalogo?sale=1 · /categoria/peluches · /catalogo?age=0-2</small></label>
         </div>
 
-        <h3>Barra de envíos</h3>
+        <h3>Barra de anuncios y tema de temporada</h3>
         <div class="form-grid">
-            <label class="span-all">Texto<input name="shipping_bar_text" value="{{ $v('shipping_bar_text') }}" maxlength="200" placeholder="Envíos a todo Lima y provincias · Paga fácil y seguro con Yape"></label>
+            <label>Tema de temporada<select name="season_theme">@foreach(\App\Models\Setting::SEASON_THEMES as $key => [$label])<option value="{{ $key }}" @selected($v('season_theme','normal')===$key)>{{ $label }}</option>@endforeach</select><small class="muted">Cambia el color de la barra superior y los botones de toda la tienda.</small></label>
+            <label class="span-all">Anuncios (uno por línea; van cambiando cada 4 segundos)<textarea name="shipping_bar_text" rows="4" maxlength="1000" placeholder="Envíos a todo Lima y provincias&#10;Paga fácil y seguro con Yape&#10;Entregas en estaciones del Metropolitano por S/ 5">{{ $v('shipping_bar_text') }}</textarea></label>
             <label>Envío gratis desde (S/) · 0 = desactivado<input type="number" name="free_shipping_from" min="0" step="1" value="{{ $v('free_shipping_from','0') }}"></label>
         </div>
 

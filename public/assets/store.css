@@ -672,3 +672,24 @@ details.info summary { padding: 14px 0; font-weight: 800; cursor: pointer; }
 .blog-body { white-space: pre-line; line-height: 1.75; font-size: 1.05rem; }
 @media (max-width: 900px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .blog-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Temas de temporada (Admin → Configuración) ---------- */
+.ship-bar .announce { animation: announce-in .45s ease; }
+.ship-bar .season-icon { font-size: 1.05rem; line-height: 1; }
+@keyframes announce-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ship-bar .announce { animation: none; } }
+body.theme-navidad { --pink: #C8102E; --pink-600: #A00D25; --pink-50: #FDECEF; --teal: #16794A; }
+body.theme-navidad .ship-bar { background: repeating-linear-gradient(135deg, #16794A 0 22px, #136B41 22px 44px); }
+body.theme-halloween { --pink: #E8630A; --pink-600: #C55208; --pink-50: #FFF1E6; --purple: #5B2A86; }
+body.theme-halloween .ship-bar { background: linear-gradient(90deg, #2B1A3D, #5B2A86 50%, #E8630A); }
+body.theme-dia-del-nino { --pink: #F2407A; --teal: #1FA4E0; }
+body.theme-dia-del-nino .ship-bar { background: linear-gradient(90deg, #1FA4E0, #7B4FD6, #F2407A, #F7931E, #5DB43A); }
+body.theme-ofertas { --pink: #E3123E; --pink-600: #BE0E33; }
+body.theme-ofertas .ship-bar { background: linear-gradient(90deg, #111 0%, #E3123E 60%, #F7931E 100%); }
+body.theme-san-valentin { --pink: #D6336C; --pink-50: #FFEAF1; }
+body.theme-san-valentin .ship-bar { background: linear-gradient(90deg, #D6336C, #F06595); }
+body.theme-fiestas-patrias { --pink: #D91023; --pink-600: #B00D1C; }
+body.theme-fiestas-patrias .ship-bar { background: linear-gradient(90deg, #D91023 0 33%, #fff 33% 67%, #D91023 67%); color: #2A2346; }
+body.theme-fiestas-patrias .ship-bar .announce { background: rgba(255,255,255,.85); padding: 0 8px; border-radius: 6px; }
+body.theme-verano { --teal: #0FB5BA; --pink: #FF6B4A; }
+body.theme-verano .ship-bar { background: linear-gradient(90deg, #0FB5BA, #FFC93C); color: #2A2346; }
