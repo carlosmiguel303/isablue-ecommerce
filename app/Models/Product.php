@@ -94,6 +94,9 @@ class Product extends Model
         if ($max < 12) {
             return $min.' a '.$max.' meses';
         }
+        if ($min === 0) {
+            return '0 a '.$years($max);
+        }
         if ($min < 12) {
             return $min.' meses a '.$years($max);
         }
