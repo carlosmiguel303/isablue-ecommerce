@@ -43,9 +43,9 @@
                 <h2><b>2</b> Entrega</h2>
                 @forelse($shipping as $method)
                     <label class="shipping-choice">
-                        <input type="radio" name="shipping_method_id" value="{{ $method->id }}" data-shipping="{{ $method->final_price }}" required @checked(old('shipping_method_id', $shipping->count()===1 ? $method->id : null)==$method->id)>
+                        <input type="radio" name="shipping_method_id" value="{{ $method->id }}" data-shipping="{{ $method->final_price }}" data-shipping-label="{{ $method->final_price > 0 ? 'S/ '.number_format($method->final_price,2) : ((float) $method->price > 0 ? 'Gratis' : 'Por coordinar') }}" required @checked(old('shipping_method_id', $shipping->count()===1 ? $method->id : null)==$method->id)>
                         <span><strong>{{ $method->name }}</strong>@if($method->description)<small>{{ $method->description }}</small>@endif</span>
-                        <em>{{ $method->final_price > 0 ? 'S/ '.number_format($method->final_price,2) : 'Gratis' }}</em>
+                        <em>{{ $method->final_price > 0 ? 'S/ '.number_format($method->final_price,2) : ((float) $method->price > 0 ? 'Gratis' : 'Por coordinar') }}</em>
                     </label>
                 @empty
                     <div class="notice">Estamos configurando las opciones de entrega. Escríbenos por WhatsApp para completar tu compra.</div>

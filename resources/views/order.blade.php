@@ -78,7 +78,7 @@
         @foreach($order->items as $item)
             <div class="summary-line"><span>{{ (float)$item->quantity }} × {{ $item->name }}</span><strong>S/ {{ number_format($item->total,2) }}</strong></div>
         @endforeach
-        <div class="summary-line"><span>Envío: {{ $order->shipping_name }}</span><strong>{{ (float)$order->shipping_total > 0 ? $money.number_format($order->shipping_total,2) : 'Gratis' }}</strong></div>
+        <div class="summary-line"><span>Envío: {{ $order->shipping_name }}</span><strong>{{ (float)$order->shipping_total > 0 ? $money.number_format($order->shipping_total,2) : 'Por coordinar' }}</strong></div>
         <div class="summary-line total"><span>Total</span><strong>{{ $money }}{{ number_format($order->total,2) }}</strong></div>
         <p class="hint">Entrega a: {{ $order->customer_name }} · {{ $order->address }}</p>
         @if($awaiting)<p class="hint">El estado del pago cambia cuando la tienda confirma el abono. No repitas el pago.</p>@endif

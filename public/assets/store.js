@@ -209,7 +209,7 @@
   $$('[data-shipping]').forEach(radio => radio.addEventListener('change', () => {
     const total = $('#checkout-total');
     const shipping = Number(radio.dataset.shipping);
-    $('#shipping-total').textContent = shipping ? money(shipping) : 'Gratis';
+    $('#shipping-total').textContent = radio.dataset.shippingLabel || (shipping ? money(shipping) : 'Gratis');
     total.textContent = money(Number(total.dataset.subtotal) + shipping);
     $$('[data-pay-amount]').forEach(e => (e.textContent = money(Number(total.dataset.subtotal) + shipping)));
   }));
