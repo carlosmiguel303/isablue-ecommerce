@@ -118,7 +118,7 @@ class AccessOperationsTest extends TestCase
     public function test_unconfigured_google_is_honest_and_does_not_redirect_to_google()
     {
         config(['services.google.enabled' => false]);
-        $this->get('/ingresar')->assertSee('Próximamente: acceso con Google');
+        $this->get('/ingresar')->assertDontSee('href="/auth/google"', false)->assertDontSee('Próximamente');
         $this->get('/auth/google')->assertRedirect('/ingresar')->assertSessionHasErrors('google');
     }
 

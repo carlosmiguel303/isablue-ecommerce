@@ -8,6 +8,32 @@ class Product extends Model
 {
     protected $guarded = ['id'];
 
+    /** Clasificación por edad de la tienda: clave => [etiqueta, mes mínimo, mes máximo]. */
+    const AGE_STAGES = [
+        '0-3m' => ['0 a 3 meses', 0, 2],
+        '3-11m' => ['3 a 11 meses', 3, 11],
+        '1' => ['1 año', 12, 23],
+        '2' => ['2 años', 24, 35],
+        '3' => ['3 años', 36, 47],
+        '4' => ['4 años', 48, 59],
+        '5' => ['5 años a más', 60, 216],
+    ];
+
+    /** Etapa que contiene un mes de edad, para preseleccionar el formulario. */
+    public static function stageFor(?int $months): ?string
+    {
+        if ($months === null) {
+            return null;
+        }
+        foreach (self::AGE_STAGES as $key => [, $min, $max]) {
+            if ($months >= $min && $months <= $max) {
+                return $key;
+            }
+        }
+
+        return '5';
+    }
+
     protected function casts(): array
     {
         return ['active' => 'boolean', 'featured' => 'boolean', 'catalog_visible' => 'boolean', 'price' => 'decimal:2', 'compare_price' => 'decimal:2', 'legacy_data' => 'array'];
@@ -55,8 +81,24 @@ class Product extends Model
         if ($this->age_min_months === null) {
             return 'Edad por confirmar';
         }
+        [$min, $max] = [(int) $this->age_min_months, (int) $this->age_max_months];
+        foreach (self::AGE_STAGES as [$label, $from, $to]) {
+            if ($min === $from && $max === $to) {
+                return $label;
+            }
+        }
+        $years = fn (int $m) => intdiv($m, 12).(intdiv($m, 12) === 1 ? ' año' : ' años');
+        if ($max >= 216) {
+            return 'Desde '.($min < 12 ? $min.' meses' : $years($min));
+        }
+        if ($max < 12) {
+            return $min.' a '.$max.' meses';
+        }
+        if ($min < 12) {
+            return $min.' meses a '.$years($max);
+        }
 
-        return $this->age_min_months.'–'.$this->age_max_months.' meses';
+        return intdiv($min, 12) === intdiv($max, 12) ? $years($min) : intdiv($min, 12).' a '.$years($max);
     }
 
     public function getOnSaleAttribute(): bool

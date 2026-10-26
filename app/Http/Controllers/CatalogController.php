@@ -9,7 +9,13 @@ use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
-    const AGES = ['0-2' => [0, 35], '3-4' => [36, 59], '5' => [60, 71]];
+    /** Enlaces antiguos por rango de años, se mantienen para no romper marcadores. */
+    const LEGACY_AGES = ['0-2' => [0, 35], '3-4' => [36, 59]];
+
+    public static function ageRange(string $key): array
+    {
+        return self::LEGACY_AGES[$key] ?? array_slice(Product::AGE_STAGES[$key], 1);
+    }
 
     public function home()
     {
@@ -32,12 +38,12 @@ class CatalogController extends Controller
         if ($slug) {
             $category = Category::where('slug', $slug)->where('active', true)->firstOrFail();
             $r->merge(['category' => [$category->id]]);
-        } $d = $r->validate(['q' => 'nullable|string|max:100', 'age' => 'nullable|in:0-2,3-4,5', 'category' => 'nullable|array', 'category.*' => 'integer|exists:categories,id', 'min' => 'nullable|numeric|min:0|max:99999999', 'max' => 'nullable|numeric|min:0|max:99999999', 'availability' => 'nullable|in:available,out', 'sale' => 'nullable|in:1', 'sort' => 'nullable|in:newest,price_asc,price_desc,name']);
+        } $d = $r->validate(['q' => 'nullable|string|max:100', 'age' => 'nullable|in:'.implode(',', array_merge(array_keys(Product::AGE_STAGES), array_keys(self::LEGACY_AGES))), 'category' => 'nullable|array', 'category.*' => 'integer|exists:categories,id', 'min' => 'nullable|numeric|min:0|max:99999999', 'max' => 'nullable|numeric|min:0|max:99999999', 'availability' => 'nullable|in:available,out', 'sale' => 'nullable|in:1', 'sort' => 'nullable|in:newest,price_asc,price_desc,name']);
         $q = Product::publicCatalog()->with('images', 'categories');
         if ($term = trim($d['q'] ?? '')) {
             $q->where(fn ($b) => $b->where('name', 'like', '%'.$term.'%')->orWhere('description', 'like', '%'.$term.'%')->orWhere('sku', 'like', '%'.$term.'%'));
         }if (! empty($d['age'])) {
-            [$min,$max] = self::AGES[$d['age']];
+            [$min,$max] = self::ageRange($d['age']);
             $q->whereNotNull('age_min_months')->whereNotNull('age_max_months')->where('age_min_months', '<=', $max)->where('age_max_months', '>=', $min);
         }if (! empty($d['category'])) {
             $q->whereHas('categories', fn ($b) => $b->where('active', true)->whereIn('categories.id', $d['category']));

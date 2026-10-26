@@ -65,6 +65,7 @@
             </div>
 
             <details class="info" open><summary>Descripción</summary><p style="white-space:pre-line">{{ $product->description }}</p></details>
+            @if(filled($product->specifications))<details class="info" open><summary>Especificaciones</summary><dl class="specs">@foreach(preg_split('/\R/', trim($product->specifications)) as $line)@continue(trim($line)==='')@php([$k,$v] = str_contains($line, ':') ? array_map('trim', explode(':', $line, 2)) : ['', trim($line)])<div>@if($k!=='')<dt>{{ $k }}</dt>@endif<dd>{{ $v }}</dd></div>@endforeach</dl></details>@endif
             @if($product->safety)<details class="info"><summary>Información de seguridad</summary><p>{{ $product->safety }}</p></details>@endif
             <details class="info"><summary>Envío y entrega</summary><p>{{ \App\Models\Setting::valueOf('delivery_info') ?: 'Coordinamos la entrega contigo apenas confirmemos tu Yape.' }}</p></details>
             <details class="info"><summary>¿Cómo pago?</summary><p>Al finalizar tu pedido verás nuestro QR y número de Yape. Yapea el total, sube la captura y nosotros validamos tu pago para preparar tu envío.</p></details>

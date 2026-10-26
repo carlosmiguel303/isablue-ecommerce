@@ -26,6 +26,9 @@ class AuthController extends Controller
         }$user = User::where('email', $data['email'])->first();
         if (! $user || ! password_verify($data['password'], $user->password)) {
             RateLimiter::hit($key, 60);
+            if ($user?->google_id && ! $user->isAdmin()) {
+                throw ValidationException::withMessages(['email' => 'Esta cuenta se creó con Google. Entra con «Continuar con Google» o usa «¿Olvidaste tu contraseña?» para crear una contraseña.']);
+            }
             throw ValidationException::withMessages(['email' => 'El correo o la contraseña no son correctos.']);
         }RateLimiter::clear($key);
         if (password_needs_rehash($user->password, PASSWORD_BCRYPT, ['cost' => 12])) {
@@ -48,7 +51,7 @@ class AuthController extends Controller
 
     public function register(Request $r)
     {
-        $d = $r->validate(['name' => 'required|string|max:120', 'email' => 'required|email|max:255|unique:users', 'password' => 'required|string|min:8|max:72|confirmed']);
+        $d = $r->validate(['name' => 'required|string|max:120', 'email' => 'required|email|max:255|unique:users', 'password' => 'required|string|min:8|max:72|confirmed'], ['email.unique' => User::where('email', $r->input('email'))->whereNotNull('google_id')->exists() ? 'Ese correo ya tiene una cuenta creada con Google. Entra con «Continuar con Google».' : 'Ese correo ya tiene una cuenta. Ingresa con tu contraseña o usa «¿Olvidaste tu contraseña?».']);
         $d['password'] = Hash::make($d['password']);
         $u = User::create($d);
         Auth::login($u);

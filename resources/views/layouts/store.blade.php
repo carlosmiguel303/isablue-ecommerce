@@ -87,9 +87,7 @@
             <div class="nav-drop">
                 <button type="button" class="nav-link" aria-expanded="false">Por edad @include('partials.icon',['name'=>'chevron','size'=>16])</button>
                 <div class="drop-panel">
-                    <a href="/catalogo?age=0-2">👶 0 a 2 años</a>
-                    <a href="/catalogo?age=3-4">🧸 3 a 4 años</a>
-                    <a href="/catalogo?age=5">🚀 5 años a más</a>
+                    @foreach(\App\Models\Product::AGE_STAGES as $age=>[$ageLabel])<a href="/catalogo?age={{ $age }}">{{ ['0-3m'=>'👶','3-11m'=>'🍼','1'=>'🧸','2'=>'🎈','3'=>'🧩','4'=>'🎨','5'=>'🚀'][$age] }} {{ $ageLabel }}</a>@endforeach
                 </div>
             </div>
             <div class="nav-drop">
@@ -140,7 +138,7 @@
             <strong>Compra</strong>
             <a href="/catalogo">Todos los juguetes</a>
             <a href="/catalogo?sale=1">Ofertas</a>
-            <a href="/catalogo?age=0-2">Para bebés (0–2)</a>
+            <a href="/catalogo?age=0-2">Para bebés (0–2 años)</a>
             <a href="/catalogo?sort=newest">Novedades</a>
         </div>
         <div>

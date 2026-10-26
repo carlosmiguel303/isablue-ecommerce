@@ -14,7 +14,7 @@
 
     <div class="chip-row">
         <a href="/catalogo" class="{{ empty($filters['category']) && empty($filters['age']) && empty($filters['sale']) ? 'on':'' }}">Todos</a>
-        @foreach(['0-2'=>'0 a 2 años','3-4'=>'3 a 4 años','5'=>'5 años a más'] as $v=>$label)<a href="/catalogo?age={{ $v }}" class="{{ ($filters['age']??'')===$v?'on':'' }}">{{ $label }}</a>@endforeach
+        @foreach(\App\Models\Product::AGE_STAGES as $v=>[$label])<a href="/catalogo?age={{ $v }}" class="{{ (string)($filters['age']??'')===(string)$v?'on':'' }}">{{ $label }}</a>@endforeach
         @foreach($categories->take(8) as $c)<a href="/categoria/{{ $c->slug }}" class="{{ in_array($c->id,$filters['category']??[])?'on':'' }}">{{ $c->name }}</a>@endforeach
     </div>
 
@@ -26,7 +26,7 @@
                     <label>Buscar<input name="q" value="{{ $filters['q']??'' }}" placeholder="Nombre o código"></label>
                     <fieldset><legend>Edad</legend>
                         <label><input type="radio" name="age" value="" @checked(empty($filters['age']))> Todas las edades</label>
-                        @foreach(['0-2'=>'0 a 2 años','3-4'=>'3 a 4 años','5'=>'5 años'] as $value=>$label)<label><input type="radio" name="age" value="{{ $value }}" @checked(($filters['age']??'')===$value)> {{ $label }}</label>@endforeach
+                        @foreach(\App\Models\Product::AGE_STAGES as $value=>[$label])<label><input type="radio" name="age" value="{{ $value }}" @checked((string)($filters['age']??'')===(string)$value)> {{ $label }}</label>@endforeach
                     </fieldset>
                     <fieldset><legend>Categorías</legend>
                         @foreach($categories as $c)<label><input type="checkbox" name="category[]" value="{{ $c->id }}" @checked(in_array($c->id,$filters['category']??[]))> {{ $c->name }}</label>@endforeach
@@ -45,7 +45,7 @@
         <div>
             <div class="toolbar">
                 <div class="active-filters">
-                    @if(!empty($filters['age']))<span>Edad: {{ $filters['age'] }} años</span>@endif
+                    @if(!empty($filters['age']))<span>Edad: {{ \App\Models\Product::AGE_STAGES[$filters['age']][0] ?? ['0-2'=>'0 a 2 años','3-4'=>'3 a 4 años'][$filters['age']] ?? $filters['age'] }}</span>@endif
                     @foreach($categories->whereIn('id',$filters['category']??[]) as $c)<span>{{ $c->name }}</span>@endforeach
                     @if(isset($filters['min'])||isset($filters['max']))<span>S/ {{ $filters['min']??0 }} – {{ $filters['max']??'sin límite' }}</span>@endif
                     @if(!empty($filters['availability']))<span>{{ $filters['availability']==='available'?'En stock':'Agotados' }}</span>@endif

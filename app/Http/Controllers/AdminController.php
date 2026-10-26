@@ -340,9 +340,14 @@ class AdminController extends Controller
     public function saveProduct(Request $r, ?Product $product = null)
     {
         $product ??= new Product;
-        $d = $r->validate(['name' => 'required|string|max:200', 'sku' => 'required|string|max:100', 'description' => 'required|string|max:10000', 'price' => 'required|numeric|min:0.01|max:99999999', 'compare_price' => 'nullable|numeric|gt:price|max:99999999', 'age_min_months' => 'nullable|integer|min:0|max:216|required_with:age_max_months', 'age_max_months' => 'nullable|integer|min:0|max:216|gte:age_min_months|required_with:age_min_months', 'age_source' => 'nullable|string|max:255|required_with:age_min_months', 'material' => 'nullable|string|max:255', 'brand' => 'nullable|string|max:255', 'safety' => 'nullable|string|max:2000', 'categories' => 'required|array|min:1', 'categories.*' => 'integer|exists:categories,id', 'photos' => 'nullable|array|max:10', 'photos.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120', 'image_order' => 'nullable|array', 'image_order.*' => 'integer|min:0|max:1000', 'delete_images' => 'nullable|array', 'delete_images.*' => 'integer']);
+        $d = $r->validate(['name' => 'required|string|max:200', 'sku' => 'required|string|max:100', 'description' => 'required|string|max:10000', 'price' => 'required|numeric|min:0.01|max:99999999', 'compare_price' => 'nullable|numeric|gt:price|max:99999999', 'age_from' => ['nullable', Rule::in(array_map('strval', array_keys(Product::AGE_STAGES)))], 'age_to' => ['nullable', Rule::in(array_map('strval', array_keys(Product::AGE_STAGES)))], 'age_source' => 'nullable|string|max:255', 'specifications' => 'nullable|string|max:5000', 'material' => 'nullable|string|max:255', 'brand' => 'nullable|string|max:255', 'safety' => 'nullable|string|max:2000', 'categories' => 'required|array|min:1', 'categories.*' => 'integer|exists:categories,id', 'photos' => 'nullable|array|max:10', 'photos.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120', 'image_order' => 'nullable|array', 'image_order.*' => 'integer|min:0|max:1000', 'delete_images' => 'nullable|array', 'delete_images.*' => 'integer']);
         DB::transaction(function () use ($r, $d, $product) {
             $fields = collect($d)->except(['categories', 'photos', 'image_order', 'delete_images'])->all();
+            $from = Product::AGE_STAGES[$d['age_from'] ?? ''] ?? null;
+            $to = Product::AGE_STAGES[$d['age_to'] ?? ''] ?? $from;
+            unset($fields['age_from'], $fields['age_to']);
+            $fields['age_min_months'] = $from ? min($from[1], $to[1]) : null;
+            $fields['age_max_months'] = $from ? max($from[2], $to[2]) : null;
             foreach (['active', 'featured', 'catalog_visible', 'demo_data'] as $b) {
                 $fields[$b] = $r->boolean($b);
             }

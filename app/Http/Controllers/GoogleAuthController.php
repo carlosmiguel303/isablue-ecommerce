@@ -43,7 +43,7 @@ class GoogleAuthController extends Controller
             $existing = User::where('email', $email)->first();
             if ($existing) {
                 if (! $r->user() || $r->user()->id !== $existing->id || $existing->isAdmin() || $existing->google_id) {
-                    return redirect('/ingresar')->withErrors(['google' => 'Este correo ya tiene una cuenta. Ingresa con tu contraseña y vincula Google desde Mi cuenta. El administrador utiliza su acceso habitual.']);
+                    return redirect('/ingresar')->withErrors(['google' => 'Este correo ya tiene una cuenta creada con contraseña. Ingresa con tu correo y contraseña. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».']);
                 }
                 $existing->forceFill(['google_id' => $g->getId(), 'email_verified_at' => now()])->save();
                 $user = $existing;

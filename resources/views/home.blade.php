@@ -69,9 +69,10 @@
         <h2>Compra por edad</h2>
     </div>
     <div class="age-circles">
-        <a href="/catalogo?age=0-2" class="age-circle a1"><span><img src="/assets/images/reales/kit-sensorial-bebe.webp" alt="" width="150" height="150" loading="lazy"></span><strong>0 a 2 años</strong><small>Estimulación temprana</small></a>
-        <a href="/catalogo?age=3-4" class="age-circle a2"><span><img src="/assets/images/reales/torre-rana.webp" alt="" width="150" height="150" loading="lazy"></span><strong>3 a 4 años</strong><small>Imaginación y motricidad</small></a>
-        <a href="/catalogo?age=5" class="age-circle a3"><span><img src="/assets/images/reales/pesca-dinosaurio.webp" alt="" width="150" height="150" loading="lazy"></span><strong>5 años a más</strong><small>Retos y aprendizaje</small></a>
+        @php($ageCards = ['0-3m'=>['mono-sensorial','Primeros sentidos'],'3-11m'=>['kit-sensorial-bebe','Estimulación temprana'],'1'=>['torre-rana','Primeros pasos'],'2'=>['bloques-madera-abc','Explorar y encajar'],'3'=>['pesca-dinosaurio','Imaginación y motricidad'],'4'=>['bloques-madera-abc','Crear y construir'],'5'=>['pesca-dinosaurio','Retos y aprendizaje']])
+        @foreach(\App\Models\Product::AGE_STAGES as $age=>[$ageLabel])
+        <a href="/catalogo?age={{ $age }}" class="age-circle a{{ $loop->index % 4 + 1 }}"><span><img src="/assets/images/reales/{{ $ageCards[$age][0] }}.webp" alt="" width="150" height="150" loading="lazy"></span><strong>{{ $ageLabel }}</strong><small>{{ $ageCards[$age][1] }}</small></a>
+        @endforeach
         <a href="/catalogo" class="age-circle a4"><span><img src="/assets/images/reales/tienda-isablue.webp" alt="" width="150" height="150" loading="lazy"></span><strong>Todos</strong><small>Ver catálogo completo</small></a>
     </div>
 </section>

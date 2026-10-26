@@ -144,10 +144,10 @@ class StoreTest extends TestCase
         $this->assertDatabaseHas('shipping_methods', ['name' => 'Entrega configurada', 'price' => 12]);
     }
 
-    public function test_ages_require_source_and_invalid_upload_is_rejected(): void
+    public function test_unknown_age_stage_and_invalid_upload_are_rejected(): void
     {
         $c = Category::create(['name' => 'Puzzle', 'slug' => 'puzzle']);
-        $this->actingAs($this->admin())->post('/admin/productos', ['name' => 'Mal dato', 'sku' => 'X', 'description' => 'x', 'price' => 30, 'categories' => [$c->id], 'age_min_months' => 36, 'age_max_months' => 59])->assertSessionHasErrors('age_source');
+        $this->actingAs($this->admin())->post('/admin/productos', ['name' => 'Mal dato', 'sku' => 'X', 'description' => 'x', 'price' => 30, 'categories' => [$c->id], 'age_from' => '9'])->assertSessionHasErrors('age_from');
         $this->post('/admin/banners', ['title' => 'X', 'button' => 'x', 'link' => '//evil.test', 'theme' => 'main', 'sort_order' => 0, 'photo' => UploadedFile::fake()->create('code.php', 10, 'application/x-php')])->assertSessionHasErrors(['link', 'photo']);
     }
 
@@ -371,5 +371,28 @@ class StoreTest extends TestCase
         $this->get('/mi-cuenta')->assertOk()->assertSee(Order::firstOrFail()->reference);
         $this->flushSession();
         $this->actingAs($this->admin())->getJson('/admin/pedidos/ultimo')->assertOk()->assertJsonPath('awaiting', 1);
+    }
+
+    public function test_age_stages_and_specifications_are_saved_and_shown(): void
+    {
+        $c = Category::create(['name' => 'Bebés', 'slug' => 'bebes', 'active' => true]);
+        $this->actingAs($this->admin())->post('/admin/productos', ['name' => 'Sonajero suave', 'sku' => 'SON', 'description' => 'Sonajero de tela', 'specifications' => "Material: algodón
+Medidas: 12 cm", 'price' => 30, 'stock' => 3, 'active' => '1', 'catalog_visible' => '1', 'categories' => [$c->id], 'age_from' => '3-11m', 'age_to' => '1'])->assertSessionHasNoErrors();
+        $p = Product::where('sku', 'SON')->firstOrFail();
+        $this->assertSame([3, 23], [$p->age_min_months, $p->age_max_months]);
+        $this->assertSame('3 meses a 1 año', $p->age_label);
+        $this->get('/juguete/'.$p->slug)->assertOk()->assertSee('Especificaciones')->assertSee('algodón')->assertSee('12 cm');
+        $this->get('/catalogo?age=1')->assertOk()->assertSee('Sonajero suave');
+        $this->get('/catalogo?age=0-3m')->assertOk()->assertDontSee('Sonajero suave');
+        $this->get('/catalogo?age=3')->assertOk()->assertDontSee('Sonajero suave');
+        $this->assertSame('2 años', $this->product(['age_min_months' => 24, 'age_max_months' => 35])->age_label);
+    }
+
+    public function test_google_account_gets_clear_message_when_using_password(): void
+    {
+        $u = User::factory()->create(['email' => 'cliente@example.test']);
+        $u->forceFill(['google_id' => 'g-123'])->save();
+        $this->post('/ingresar', ['email' => 'cliente@example.test', 'password' => 'otra-clave-123'])->assertSessionHasErrors(['email' => 'Esta cuenta se creó con Google. Entra con «Continuar con Google» o usa «¿Olvidaste tu contraseña?» para crear una contraseña.']);
+        $this->post('/registro', ['name' => 'Otro', 'email' => 'cliente@example.test', 'password' => 'clave-segura', 'password_confirmation' => 'clave-segura'])->assertSessionHasErrors(['email' => 'Ese correo ya tiene una cuenta creada con Google. Entra con «Continuar con Google».']);
     }
 }

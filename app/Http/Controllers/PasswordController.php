@@ -33,7 +33,7 @@ class PasswordController extends Controller
 
     public function reset(Request $r)
     {
-        $d = $r->validate(['token' => 'required', 'email' => 'required|email', 'password' => 'required|string|min:12|max:72|confirmed']);
+        $d = $r->validate(['token' => 'required', 'email' => 'required|email', 'password' => 'required|string|min:8|max:72|confirmed']);
         $result = Password::reset($d, function ($u, $password) {
             $u->forceFill(['password' => Hash::make($password), 'remember_token' => Str::random(60)])->save();
         });

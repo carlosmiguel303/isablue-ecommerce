@@ -394,6 +394,10 @@ label { font-weight: 700; }
 .detail-facts span { display: block; font-size: .8rem; color: var(--muted); font-weight: 700; }
 details.info { background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 0 16px; margin-bottom: 10px; }
 details.info summary { padding: 14px 0; font-weight: 800; cursor: pointer; }
+.specs { margin: 0 0 14px; }
+.specs div { display: flex; gap: 12px; padding: 8px 0; border-top: 1px solid #f0e8ef; }
+.specs dt { flex: 0 0 38%; color: var(--muted); font-weight: 700; }
+.specs dd { margin: 0; overflow-wrap: anywhere; }
 .sticky-buy { display: none; }
 
 /* ---------- Carrito y checkout ---------- */
