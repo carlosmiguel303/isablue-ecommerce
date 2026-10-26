@@ -14,18 +14,20 @@
         <p>¿Tienes dudas sobre un juguete, tu pedido o un regalo? Estamos para ayudarte.</p>
     </section>
     <section class="section contact-grid">
+        @if($wa)
         <div class="contact-card">
             <span class="qt-ico c-green">@include('partials.icon',['name'=>'whatsapp'])</span>
             <h3>WhatsApp</h3>
             <p class="muted">La forma más rápida de hablar con nosotros.</p>
-            @if($wa)<a class="btn green" href="https://wa.me/{{ $wa }}" target="_blank" rel="noopener">Escribir ahora</a>@else<p>Próximamente.</p>@endif
+            <a class="btn green" href="https://wa.me/{{ $wa }}" target="_blank" rel="noopener">Escribir ahora</a>
         </div>
+        @endif
         <div class="contact-card">
             <span class="qt-ico c-purple">@include('partials.icon',['name'=>'phone'])</span>
             <h3>Teléfono y correo</h3>
             @if($phone)<p><strong>{{ $phone }}</strong></p>@endif
             @if($email)<a class="text-link" href="mailto:{{ $email }}">{{ $email }}</a>@endif
-            @if(!$phone && !$email)<p class="muted">Escríbenos por WhatsApp.</p>@endif
+            @if(!$phone && !$email)<p class="muted">Escríbenos por nuestras redes sociales.</p>@endif
         </div>
         <div class="contact-card">
             <span class="qt-ico c-teal">@include('partials.icon',['name'=>'pin'])</span>
