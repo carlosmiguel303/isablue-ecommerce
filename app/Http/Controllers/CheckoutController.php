@@ -90,6 +90,9 @@ class CheckoutController extends Controller
     {
         $user = User::where('email', $d['email'])->first();
         if ($user) {
+            if (! $user->hasLocalPassword()) {
+                throw ValidationException::withMessages(['password' => 'Esta cuenta utiliza Google para iniciar sesión. Selecciona «Continuar con Google» para comprar con ella.']);
+            }
             if (! password_verify($d['password'], $user->password)) {
                 throw ValidationException::withMessages(['password' => 'Este correo ya tiene una cuenta en IsaBlue. Escribe tu contraseña o usa otro correo.']);
             }

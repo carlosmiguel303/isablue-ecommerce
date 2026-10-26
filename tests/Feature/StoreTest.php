@@ -391,8 +391,12 @@ Medidas: 12 cm", 'price' => 30, 'stock' => 3, 'active' => '1', 'catalog_visible'
     public function test_google_account_gets_clear_message_when_using_password(): void
     {
         $u = User::factory()->create(['email' => 'cliente@example.test']);
-        $u->forceFill(['google_id' => 'g-123'])->save();
-        $this->post('/ingresar', ['email' => 'cliente@example.test', 'password' => 'otra-clave-123'])->assertSessionHasErrors(['email' => 'Esta cuenta se creó con Google. Entra con «Continuar con Google» o usa «¿Olvidaste tu contraseña?» para crear una contraseña.']);
-        $this->post('/registro', ['name' => 'Otro', 'email' => 'cliente@example.test', 'password' => 'clave-segura', 'password_confirmation' => 'clave-segura'])->assertSessionHasErrors(['email' => 'Ese correo ya tiene una cuenta creada con Google. Entra con «Continuar con Google».']);
+        $u->forceFill(['password' => null, 'google_id' => 'g-123', 'auth_provider' => 'google'])->save();
+        $this->post('/ingresar', ['email' => 'cliente@example.test', 'password' => 'otra-clave-123'])->assertSessionHasErrors(['email' => 'Esta cuenta utiliza Google para iniciar sesión. Selecciona «Continuar con Google» en la parte inferior.']);
+        $this->post('/registro', ['name' => 'Otro', 'email' => 'Cliente@Example.test', 'password' => 'clave-segura', 'password_confirmation' => 'clave-segura'])->assertSessionHasErrors('email');
+        $this->assertSame(1, User::where('email', 'cliente@example.test')->count());
+        $linked = User::factory()->create(['email' => 'mixto@example.test', 'password' => Hash::make('clave-local-1')]);
+        $linked->forceFill(['google_id' => 'g-456'])->save();
+        $this->post('/ingresar', ['email' => 'mixto@example.test', 'password' => 'clave-local-1'])->assertRedirect('/mi-cuenta');
     }
 }

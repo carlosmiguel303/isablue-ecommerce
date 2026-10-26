@@ -75,8 +75,58 @@ class AccessOperationsTest extends TestCase
         $u = User::where('google_id', 'google123')->firstOrFail();
         $this->assertSame('customer', $u->role);
         $this->assertNotNull($u->email_verified_at);
+        $this->assertNull($u->password);
+        $this->assertSame('google', $u->auth_provider);
         $this->assertAuthenticatedAs($u);
         $this->assertSame(1, OutboundMail::where('kind', 'login')->count());
+    }
+
+    public function test_google_only_account_cannot_use_password_and_gets_clear_message()
+    {
+        $this->google();
+        $this->get('/auth/google/callback');
+        $this->post('/salir');
+        $this->post('/ingresar', ['email' => 'google@example.test', 'password' => 'cualquier-clave'])->assertSessionHasErrors(['email' => 'Esta cuenta utiliza Google para iniciar sesión. Selecciona «Continuar con Google» en la parte inferior.']);
+        $this->assertGuest();
+    }
+
+    public function test_google_login_again_reuses_the_same_account()
+    {
+        $u = User::factory()->create(['email' => 'google@example.test']);
+        $u->forceFill(['password' => null, 'google_id' => 'google123', 'auth_provider' => 'google'])->save();
+        $this->google();
+        $this->get('/auth/google/callback')->assertRedirect('/mi-cuenta');
+        $this->assertAuthenticatedAs($u);
+        $this->assertSame(1, User::where('email', 'google@example.test')->count());
+    }
+
+    public function test_logged_user_cannot_link_google_with_a_different_email()
+    {
+        $u = User::factory()->create(['email' => 'cliente@example.test']);
+        $this->actingAs($u);
+        $this->google(email: 'otra@example.test');
+        $this->get('/auth/google/callback')->assertRedirect('/mi-cuenta')->assertSessionHasErrors('google');
+        $this->assertNull($u->fresh()->google_id);
+        $this->assertSame(1, User::count());
+    }
+
+    public function test_google_only_account_can_set_password_through_reset()
+    {
+        $u = User::factory()->create(['email' => 'g2@example.test']);
+        $u->forceFill(['password' => null, 'google_id' => 'g-2', 'auth_provider' => 'google'])->save();
+        $token = \Illuminate\Support\Facades\Password::broker()->createToken($u);
+        $this->post('/restablecer-contrasena', ['token' => $token, 'email' => 'g2@example.test', 'password' => 'nueva-clave', 'password_confirmation' => 'nueva-clave'])->assertRedirect('/ingresar');
+        $this->post('/ingresar', ['email' => 'g2@example.test', 'password' => 'nueva-clave'])->assertRedirect();
+        $this->assertAuthenticatedAs($u->fresh());
+    }
+
+    public function test_login_and_register_show_google_below_the_form()
+    {
+        config(['services.google.enabled' => true, 'services.google.client_id' => 'client', 'services.google.client_secret' => 'secret']);
+        foreach (['/ingresar' => 'Iniciar sesión</button>', '/registro' => 'Crear cuenta</button>'] as $url => $submit) {
+            $html = $this->get($url)->assertOk()->assertSee('O continúa con')->getContent();
+            $this->assertLessThan(strpos($html, 'href="/auth/google'), strpos($html, $submit), $url);
+        }
     }
 
     public function test_google_rejects_unverified_email()

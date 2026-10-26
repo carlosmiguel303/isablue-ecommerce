@@ -646,3 +646,13 @@ details.info summary { padding: 14px 0; font-weight: 800; cursor: pointer; }
   .side-card img { width: 78px; height: 78px; right: 8px; bottom: 8px; }
   .side-card strong, .side-card .side-link { max-width: 100%; }
 }
+
+/* ---------- Acceso: Google debajo del formulario ---------- */
+.auth-forgot { margin: -4px 0 0; text-align: right; font-size: .9rem; }
+.auth-alt { display: grid; gap: 12px; margin-top: 4px; }
+.auth-sep { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .85rem; font-weight: 700; }
+.auth-sep::before, .auth-sep::after { content: ""; flex: 1; height: 1px; background: #eadfe8; }
+.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 48px; padding: 10px 16px; border: 1.5px solid #dadce0; border-radius: 999px; background: #fff; color: #3c4043; font-weight: 700; text-decoration: none; transition: background .2s, box-shadow .2s; }
+.btn-google:hover { background: #f8f9fa; box-shadow: 0 1px 3px rgba(60,64,67,.25); }
+.btn-google:focus-visible { outline: 3px solid #4285f4; outline-offset: 2px; }
+@media (max-width: 560px) { .auth-form { padding: 28px 20px; } }

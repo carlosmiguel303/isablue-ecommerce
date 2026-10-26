@@ -23,7 +23,7 @@
 
             <section class="panel co-block">
                 <h2><b>1</b> Tus datos</h2>
-                @guest @if(\App\Services\Integrations::googleReady())<a class="btn ghost" href="/auth/google?volver=checkout">Continuar con Google</a>@endif <p class="hint">Con tu correo y una contraseña creamos tu cuenta al confirmar, para que veas tus pedidos cuando quieras. <a class="text-link" href="/ingresar?volver=checkout">¿Ya tienes cuenta? Ingresa</a></p>@endguest
+                @guest <p class="hint">Con tu correo y una contraseña creamos tu cuenta al confirmar, para que veas tus pedidos cuando quieras. <a class="text-link" href="/ingresar?volver=checkout">¿Ya tienes cuenta? Ingresa</a></p>@endguest
                 @auth<p class="hint">Comprando como <strong>{{ $u->email }}</strong>. Verás este pedido en <a class="text-link" href="/mi-cuenta">Mi cuenta</a>.</p>@endauth
                 <div class="form-grid">
                     <label>Nombre y apellido<input name="name" value="{{ old('name',$u?->name) }}" required autocomplete="name"></label>
@@ -37,6 +37,7 @@
                     <label class="span-all">Dirección, distrito y referencia<input name="address" value="{{ old('address',$u?->address) }}" required autocomplete="street-address" placeholder="Av. ..., Distrito, referencia"></label>
                     <label class="span-all">Nota para tu pedido (opcional)<input name="note" value="{{ old('note') }}" maxlength="500" placeholder="Ej.: es para regalo, horario de entrega…"></label>
                 </div>
+                @guest @include('auth.google-button', ['volver' => 'checkout']) @endguest
             </section>
 
             <section class="panel co-block">

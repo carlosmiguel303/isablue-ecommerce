@@ -25,6 +25,12 @@ class User extends Authenticatable
         MailOutbox::enqueue('reset:'.hash('sha256', $token), 'reset', $this->email, ['subject' => 'Restablece tu contraseña de IsaBlue', 'name' => $this->name, 'message' => 'Recibimos una solicitud para cambiar tu contraseña.', 'url' => url('/restablecer-contrasena/'.$token).'?'.http_build_query(['email' => $this->email]), 'action' => 'Elegir contraseña nueva'], now()->addMinutes(60));
     }
 
+    /** Las cuentas creadas con Google no tienen contraseña local hasta que la recuperan por correo. */
+    public function hasLocalPassword(): bool
+    {
+        return filled($this->password);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

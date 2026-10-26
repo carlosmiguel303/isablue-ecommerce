@@ -8,7 +8,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -39,19 +38,22 @@ class GoogleAuthController extends Controller
             return redirect('/ingresar')->withErrors(['google' => 'Google no confirmó el correo de esta cuenta.']);
         }
         $user = User::where('google_id', $g->getId())->first();
+        if ($r->user() && (! $user || $user->id !== $r->user()->id) && mb_strtolower($r->user()->email) !== $email) {
+            return redirect('/mi-cuenta')->withErrors(['google' => 'Esa cuenta de Google usa otro correo. Para vincularla, usa la cuenta de Google de '.$r->user()->email.'.']);
+        }
         if (! $user) {
             $existing = User::where('email', $email)->first();
             if ($existing) {
                 if (! $r->user() || $r->user()->id !== $existing->id || $existing->isAdmin() || $existing->google_id) {
-                    return redirect('/ingresar')->withErrors(['google' => 'Este correo ya tiene una cuenta creada con contraseña. Ingresa con tu correo y contraseña. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».']);
+                    return redirect('/ingresar')->withErrors(['google' => 'Ya existe una cuenta con este correo. Inicia sesión con tu correo y contraseña; luego podrás vincular Google desde «Mi cuenta». Si no recuerdas tu contraseña, usa «¿Olvidaste tu contraseña?».']);
                 }
                 $existing->forceFill(['google_id' => $g->getId(), 'email_verified_at' => now()])->save();
                 $user = $existing;
             } else {
                 try {
                     $user = DB::transaction(function () use ($g, $email) {
-                        $u = new User(['name' => Str::limit($g->getName() ?: 'Cliente IsaBlue', 120, ''), 'email' => $email, 'password' => Hash::make(Str::random(64))]);
-                        $u->forceFill(['google_id' => $g->getId(), 'email_verified_at' => now(), 'role' => 'customer'])->save();
+                        $u = new User(['name' => Str::limit($g->getName() ?: 'Cliente IsaBlue', 120, ''), 'email' => $email]);
+                        $u->forceFill(['password' => null, 'google_id' => $g->getId(), 'auth_provider' => 'google', 'email_verified_at' => now(), 'role' => 'customer'])->save();
 
                         return $u;
                     });

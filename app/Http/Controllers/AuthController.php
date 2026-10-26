@@ -12,6 +12,9 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    /** Hash de relleno: iguala el tiempo de respuesta cuando el correo no existe. */
+    private const DUMMY_HASH = '$2y$12$rRCpRLdIbp08FM7FAgVCgOhKksmgt9kYAYNkwOLTQTiioWB9XEXyK';
+
     public function loginForm()
     {
         return view('auth.login');
@@ -23,11 +26,13 @@ class AuthController extends Controller
         $key = 'login:'.mb_strtolower($data['email']).'|'.$r->ip();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             throw ValidationException::withMessages(['email' => 'Demasiados intentos. Espera un minuto.']);
-        }$user = User::where('email', $data['email'])->first();
-        if (! $user || ! password_verify($data['password'], $user->password)) {
+        }$user = User::where('email', mb_strtolower(trim($data['email'])))->first();
+        // Se compara siempre contra un hash para no revelar por tiempo si el correo existe.
+        $valid = password_verify($data['password'], $user?->hasLocalPassword() ? $user->password : self::DUMMY_HASH);
+        if (! $user || ! $user->hasLocalPassword() || ! $valid) {
             RateLimiter::hit($key, 60);
-            if ($user?->google_id && ! $user->isAdmin()) {
-                throw ValidationException::withMessages(['email' => 'Esta cuenta se creó con Google. Entra con «Continuar con Google» o usa «¿Olvidaste tu contraseña?» para crear una contraseña.']);
+            if ($user && ! $user->hasLocalPassword() && $user->google_id && ! $user->isAdmin()) {
+                throw ValidationException::withMessages(['email' => 'Esta cuenta utiliza Google para iniciar sesión. Selecciona «Continuar con Google» en la parte inferior.']);
             }
             throw ValidationException::withMessages(['email' => 'El correo o la contraseña no son correctos.']);
         }RateLimiter::clear($key);
@@ -51,7 +56,8 @@ class AuthController extends Controller
 
     public function register(Request $r)
     {
-        $d = $r->validate(['name' => 'required|string|max:120', 'email' => 'required|email|max:255|unique:users', 'password' => 'required|string|min:8|max:72|confirmed'], ['email.unique' => User::where('email', $r->input('email'))->whereNotNull('google_id')->exists() ? 'Ese correo ya tiene una cuenta creada con Google. Entra con «Continuar con Google».' : 'Ese correo ya tiene una cuenta. Ingresa con tu contraseña o usa «¿Olvidaste tu contraseña?».']);
+        $r->merge(['email' => mb_strtolower(trim((string) $r->input('email')))]);
+        $d = $r->validate(['name' => 'required|string|max:120', 'email' => 'required|email|max:255|unique:users', 'password' => 'required|string|min:8|max:72|confirmed'], ['email.unique' => 'Ese correo ya tiene una cuenta. Inicia sesión con tu contraseña o con «Continuar con Google», o usa «¿Olvidaste tu contraseña?».']);
         $d['password'] = Hash::make($d['password']);
         $u = User::create($d);
         Auth::login($u);
