@@ -410,7 +410,7 @@ class AdminController extends Controller
     public function savePost(Request $r, ?Post $post = null)
     {
         $post ??= new Post;
-        $d = $r->validate(['title' => 'required|string|max:200', 'slug' => ['nullable', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'max:220', Rule::unique('posts')->ignore($post->id)], 'excerpt' => 'nullable|string|max:300', 'body' => 'required|string|max:60000', 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120']);
+        $d = $r->validate(['title' => 'required|string|max:200', 'slug' => ['nullable', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'max:220', Rule::unique('posts')->ignore($post->id)], 'category' => ['required', Rule::in(array_keys(Post::CATEGORIES))], 'excerpt' => 'nullable|string|max:300', 'body' => 'required|string|max:60000', 'video_url' => 'nullable|url:https|max:500', 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120']);
         unset($d['photo']);
         $d['slug'] = ($d['slug'] ?? null) ?: Str::slug($d['title']).($post->exists ? '' : '-'.Str::lower(Str::random(4)));
         $d['published'] = $r->boolean('published');
@@ -532,7 +532,8 @@ class AdminController extends Controller
             'promo_ends_at' => 'nullable|date',
             'promo_cta_text' => 'nullable|string|max:40',
             'promo_cta_link' => ['nullable', 'string', 'max:255', 'regex:~^/(?!/)[a-zA-Z0-9/_?=&%.-]*$~'],
-            'shipping_bar_text' => 'nullable|string|max:1000',
+            'announcements' => 'nullable|array|max:'.Setting::MAX_ANNOUNCEMENTS,
+            'announcements.*' => 'nullable|string|max:120',
             'season_theme' => ['nullable', Rule::in(array_keys(Setting::SEASON_THEMES))],
             'free_shipping_from' => 'nullable|numeric|min:0|max:100000',
             'popup_title' => 'nullable|string|max:120',
@@ -544,6 +545,10 @@ class AdminController extends Controller
             throw ValidationException::withMessages(['demo_mode' => 'Reemplaza o desactiva primero todos los productos y envíos de prueba.']);
         }
         unset($d['yape_qr']);
+        if (array_key_exists('announcements', $d)) {
+            $d['shipping_bar_text'] = implode("\n", array_filter(array_map(fn ($t) => trim((string) $t), $d['announcements'])));
+            unset($d['announcements']);
+        }
         if ($r->hasFile('yape_qr')) {
             $d['yape_qr'] = $this->upload($r->file('yape_qr'));
         }

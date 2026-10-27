@@ -196,17 +196,20 @@
     }));
   });
 
-  /* Barra superior: anuncios que rotan cada 4 segundos */
+  /* Barra superior: las frases pasan como un carril cada 5 segundos */
   $$('[data-announcements]').forEach(bar => {
     const items = $$('.announce', bar);
-    if (items.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (items.length < 2) return;
     let i = 0;
     setInterval(() => {
       if (document.hidden) return;
-      items[i].hidden = true;
+      const current = items[i];
       i = (i + 1) % items.length;
-      items[i].hidden = false;
-    }, 4000);
+      current.classList.remove('is-active');
+      current.classList.add('is-leaving');
+      items[i].classList.add('is-active');
+      setTimeout(() => current.classList.remove('is-leaving'), 800);
+    }, 5000);
   });
 
   /* Galería de producto */

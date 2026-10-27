@@ -2,9 +2,7 @@
     $s = $shopSettings;
     $whatsapp = $s['whatsapp'] ?? '';
     $cartCount = array_sum(session('cart', []));
-    $shippingBar = $s['shipping_bar_text'] ?? '';
-    $shippingBar = $shippingBar !== '' ? $shippingBar : 'Envíos a todo Lima y provincias · Paga fácil y seguro con Yape';
-    $announcements = array_values(array_filter(array_map('trim', preg_split('/\R/', $shippingBar))));
+    $announcements = \App\Models\Setting::announcements($s['shipping_bar_text'] ?? '');
     $season = array_key_exists($s['season_theme'] ?? '', \App\Models\Setting::SEASON_THEMES) ? $s['season_theme'] : 'normal';
     $seasonIcon = \App\Models\Setting::SEASON_THEMES[$season][1];
 @endphp
@@ -53,8 +51,8 @@
 </div>
 @endif
 <div class="ship-bar" data-announcements><div class="wrap">@if($seasonIcon)<span class="season-icon" aria-hidden="true">{{ $seasonIcon }}</span>@else @include('partials.icon',['name'=>'truck','size'=>18])@endif
-    @foreach($announcements as $text)<span class="announce" @if(!$loop->first) hidden @endif>{{ $text }}</span>@endforeach
-    @if((float)($s['free_shipping_from'] ?? 0) > 0)<span class="announce" @if(count($announcements)) hidden @endif><strong>Envío gratis desde S/ {{ number_format($s['free_shipping_from'],0) }}</strong></span>@endif
+    <div class="announce-lane">@foreach($announcements as $text)<span @class(['announce', 'is-active' => $loop->first])>{{ $text }}</span>@endforeach
+    @if((float)($s['free_shipping_from'] ?? 0) > 0)<span class="announce"><strong>Envío gratis desde S/ {{ number_format($s['free_shipping_from'],0) }}</strong></span>@endif</div>
     @if($seasonIcon)<span class="season-icon" aria-hidden="true">{{ $seasonIcon }}</span>@endif</div></div>
 
 <header class="header" data-header>

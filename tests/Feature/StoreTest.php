@@ -424,14 +424,33 @@ Medidas: 12 cm", 'price' => 30, 'stock' => 3, 'active' => '1', 'catalog_visible'
 
     public function test_blog_shows_only_published_posts_and_admin_can_publish(): void
     {
-        $this->actingAs($this->admin())->post('/admin/blog', ['title' => 'Juegos para 1 año', 'excerpt' => 'Ideas simples', 'body' => "Primer párrafo.\n\nSegundo párrafo.", 'published' => '1'])->assertRedirect('/admin/blog');
-        $this->post('/admin/blog', ['title' => 'Borrador secreto', 'body' => 'Aún no'])->assertRedirect('/admin/blog');
+        $this->actingAs($this->admin())->post('/admin/blog', ['title' => 'Juegos para 1 año', 'category' => 'recomendados', 'excerpt' => 'Ideas simples', 'body' => "Primer párrafo.\n\nSegundo párrafo.", 'published' => '1'])->assertRedirect('/admin/blog');
+        $this->post('/admin/blog', ['title' => 'Borrador secreto', 'category' => 'historias', 'body' => 'Aún no'])->assertRedirect('/admin/blog');
         $post = \App\Models\Post::where('title', 'Juegos para 1 año')->firstOrFail();
         $this->get('/blog')->assertOk()->assertSee('Juegos para 1 año')->assertDontSee('Borrador secreto');
         $this->get('/blog/'.$post->slug)->assertOk()->assertSee('Segundo párrafo.');
         $draft = \App\Models\Post::where('title', 'Borrador secreto')->firstOrFail();
         $this->get('/blog/'.$draft->slug)->assertNotFound();
         $this->get('/')->assertSee('href="/blog"', false);
+        $this->get('/blog?seccion=recomendados')->assertOk()->assertSee('Juegos para 1 año');
+        $this->get('/blog?seccion=historias')->assertOk()->assertDontSee('Juegos para 1 año')->assertSee('Aún no hay publicaciones en esta sección.');
+    }
+
+    public function test_blog_post_embeds_video_links(): void
+    {
+        $this->actingAs($this->admin())->post('/admin/blog', ['title' => 'Reseña de Sofía', 'category' => 'resenas', 'body' => 'Le encantó.', 'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'published' => '1'])->assertSessionHasNoErrors();
+        $post = \App\Models\Post::where('title', 'Reseña de Sofía')->firstOrFail();
+        $this->get('/blog/'.$post->slug)->assertOk()->assertSee('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ', false)->assertSee('Reseñas de clientes');
+        $this->get('/blog')->assertSee('blog-play', false);
+
+        $this->post('/admin/blog', ['title' => 'Video malo', 'category' => 'resenas', 'body' => 'x', 'video_url' => 'javascript:alert(1)'])->assertSessionHasErrors('video_url');
+        $this->post('/admin/blog', ['title' => 'Sección mala', 'category' => 'inventada', 'body' => 'x'])->assertSessionHasErrors('category');
+
+        $tiktok = new \App\Models\Post(['video_url' => 'https://www.tiktok.com/@isablue/video/7234567890123456789']);
+        $this->assertSame('https://www.tiktok.com/embed/v2/7234567890123456789', $tiktok->video_embed);
+        $this->assertTrue($tiktok->video_vertical);
+        $this->assertSame('https://www.instagram.com/p/C1aB2cD3eF4/embed', (new \App\Models\Post(['video_url' => 'https://www.instagram.com/reel/C1aB2cD3eF4/']))->video_embed);
+        $this->assertNull((new \App\Models\Post(['video_url' => 'https://ejemplo.com/video.mp4']))->video_embed);
     }
 
     public function test_admin_sets_season_theme_and_rotating_announcements(): void
@@ -441,6 +460,19 @@ Medidas: 12 cm", 'price' => 30, 'stock' => 3, 'active' => '1', 'catalog_visible'
         $this->get('/')->assertOk()->assertSee('theme-navidad')->assertSee('Envíos a todo Lima')->assertSee('Paga con Yape')->assertSee('🎄');
         Setting::updateOrCreate(['key' => 'season_theme'], ['value' => 'inventado']);
         $this->get('/')->assertOk()->assertSee('theme-normal');
-        $this->actingAs($this->admin())->get('/admin/configuracion')->assertOk()->assertSee('Tema de temporada');
+        $this->actingAs($this->admin())->get('/admin/configuracion')->assertOk()->assertSee('Tema de temporada')->assertSee('Frase 5');
+
+        $this->post('/admin/configuracion', ['demo_mode' => 0, 'announcements' => ['Navidad feliz', '', '  Envío gratis hoy  ', '', 'Yapea y listo']])->assertSessionHasNoErrors();
+        $this->assertSame("Navidad feliz\nEnvío gratis hoy\nYapea y listo", Setting::valueOf('shipping_bar_text'));
+        $this->get('/')->assertSee('Navidad feliz')->assertSee('Yapea y listo')->assertDontSee('">Paga con Yape</span>', false);
+        $this->post('/admin/configuracion', ['demo_mode' => 0, 'announcements' => ['1', '2', '3', '4', '5', '6']])->assertSessionHasErrors('announcements');
+    }
+
+    public function test_announcement_bar_shows_five_default_phrases(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+        $this->assertSame(5, substr_count($html, '<span class="announce'));
+        $this->assertStringContainsString('Envíos a todo Lima y provincias', $html);
+        $this->assertSame(1, substr_count($html, 'announce is-active'));
     }
 }

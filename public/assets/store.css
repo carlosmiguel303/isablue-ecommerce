@@ -539,7 +539,8 @@ details.info summary { padding: 14px 0; font-weight: 800; cursor: pointer; }
   .countdown b { font-size: 1.15rem; min-width: 36px; padding: 5px 4px 2px; }
   .countdown i { display: none; }
   .ship-bar { font-size: .76rem; }
-  .ship-bar .wrap { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-block: 6px; }
+  .ship-bar .wrap { flex-wrap: nowrap; padding-block: 6px; }
+  .ship-bar .season-icon { font-size: .9rem; }
   .ship-bar .icon { display: none; }
   .header-main { padding-block: 8px; }
   .brand img { width: 36px; height: 36px; }
@@ -672,12 +673,25 @@ details.info summary { padding: 14px 0; font-weight: 800; cursor: pointer; }
 .blog-body { white-space: pre-line; line-height: 1.75; font-size: 1.05rem; }
 @media (max-width: 900px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .blog-grid { grid-template-columns: 1fr; } }
+.blog-tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 22px; }
+.blog-tabs a { padding: 8px 16px; border-radius: 999px; background: #fff; box-shadow: var(--shadow); color: var(--ink); font-weight: 700; text-decoration: none; font-size: .92rem; }
+.blog-tabs a.active, .blog-tabs a:hover { background: var(--teal); color: #fff; }
+.blog-media { position: relative; }
+.blog-play { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: 58px; height: 58px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; display: grid; place-items: center; font-size: 1.4rem; padding-left: 4px; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.blog-cat { color: var(--muted); font-weight: 700; }
+.blog-cat a { color: var(--teal); text-decoration: none; }
+.blog-video { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: #000; margin-bottom: 18px; }
+.blog-video.vertical { aspect-ratio: 9 / 16; max-width: 360px; margin-inline: auto; }
+.blog-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
 /* ---------- Temas de temporada (Admin → Configuración) ---------- */
-.ship-bar .announce { animation: announce-in .45s ease; }
+/* Carril de frases: la actual sale por la izquierda y la siguiente entra por la derecha */
+.ship-bar .announce-lane { display: grid; overflow: hidden; min-width: 0; max-width: 100%; }
+.ship-bar .announce { grid-area: 1 / 1; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transform: translateX(105%); opacity: 0; transition: transform .75s cubic-bezier(.4,0,.2,1), opacity .75s; }
+.ship-bar .announce.is-active { transform: none; opacity: 1; }
+.ship-bar .announce.is-leaving { transform: translateX(-105%); opacity: 0; }
 .ship-bar .season-icon { font-size: 1.05rem; line-height: 1; }
-@keyframes announce-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .ship-bar .announce { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ship-bar .announce { transition: none; } }
 body.theme-navidad { --pink: #C8102E; --pink-600: #A00D25; --pink-50: #FDECEF; --teal: #16794A; }
 body.theme-navidad .ship-bar { background: repeating-linear-gradient(135deg, #16794A 0 22px, #136B41 22px 44px); }
 body.theme-halloween { --pink: #E8630A; --pink-600: #C55208; --pink-50: #FFF1E6; --purple: #5B2A86; }

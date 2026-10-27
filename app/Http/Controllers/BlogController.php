@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('blog.index', ['posts' => Post::public()->paginate(9)]);
+        $category = array_key_exists((string) $request->query('seccion'), Post::CATEGORIES) ? $request->query('seccion') : null;
+        $posts = Post::public()->when($category, fn ($q) => $q->where('category', $category))->paginate(9)->withQueryString();
+
+        return view('blog.index', ['posts' => $posts, 'category' => $category]);
     }
 
     public function show(string $slug)

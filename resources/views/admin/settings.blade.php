@@ -54,7 +54,9 @@
         <h3>Barra de anuncios y tema de temporada</h3>
         <div class="form-grid">
             <label>Tema de temporada<select name="season_theme">@foreach(\App\Models\Setting::SEASON_THEMES as $key => [$label])<option value="{{ $key }}" @selected($v('season_theme','normal')===$key)>{{ $label }}</option>@endforeach</select><small class="muted">Cambia el color de la barra superior y los botones de toda la tienda.</small></label>
-            <label class="span-all">Anuncios (uno por línea; van cambiando cada 4 segundos)<textarea name="shipping_bar_text" rows="4" maxlength="1000" placeholder="Envíos a todo Lima y provincias&#10;Paga fácil y seguro con Yape&#10;Entregas en estaciones del Metropolitano por S/ 5">{{ $v('shipping_bar_text') }}</textarea></label>
+            <div class="span-all"><b>Frases de la barra superior</b> <small class="muted">Pasan una tras otra cada 5 segundos, como un carril. Cámbialas según la temporada; deja vacías las que no uses.</small></div>
+            @php($frases = \App\Models\Setting::announcements($v('shipping_bar_text')))
+            @for($n = 0; $n < \App\Models\Setting::MAX_ANNOUNCEMENTS; $n++)<label>Frase {{ $n + 1 }}<input name="announcements[]" value="{{ old('announcements.'.$n, $frases[$n] ?? '') }}" maxlength="120" placeholder="{{ \App\Models\Setting::DEFAULT_ANNOUNCEMENTS[$n] }}"></label>@endfor
             <label>Envío gratis desde (S/) · 0 = desactivado<input type="number" name="free_shipping_from" min="0" step="1" value="{{ $v('free_shipping_from','0') }}"></label>
         </div>
 
