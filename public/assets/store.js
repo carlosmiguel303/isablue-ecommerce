@@ -219,6 +219,23 @@
     $$('[data-photo]').forEach(b => b.setAttribute('aria-current', String(b === button)));
   }));
 
+  /* Zoom de la foto del producto al pasar el mouse (solo computadoras con mouse) */
+  const zoomBox = $('.detail-image');
+  const zoomImg = $('#detail-photo');
+  if (zoomBox && zoomImg && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    zoomBox.classList.add('can-zoom');
+    zoomBox.insertAdjacentHTML('beforeend', '<span class="zoom-hint" aria-hidden="true">🔍 Pasa el mouse para ver de cerca</span>');
+    const follow = e => {
+      const r = zoomBox.getBoundingClientRect();
+      const x = Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
+      const y = Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100));
+      zoomImg.style.transformOrigin = `${x}% ${y}%`;
+    };
+    zoomBox.addEventListener('mouseenter', e => { follow(e); zoomBox.classList.add('zooming'); });
+    zoomBox.addEventListener('mousemove', follow);
+    zoomBox.addEventListener('mouseleave', () => { zoomBox.classList.remove('zooming'); zoomImg.style.transformOrigin = ''; });
+  }
+
   /* Checkout: total según la entrega elegida */
   $$('[data-shipping]').forEach(radio => radio.addEventListener('change', () => {
     const total = $('#checkout-total');

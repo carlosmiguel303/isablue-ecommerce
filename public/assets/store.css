@@ -732,3 +732,12 @@ body.theme-verano .ship-bar { background: linear-gradient(90deg, #0FB5BA, #FFC93
 @media (max-width: 560px) { .review-grid { grid-template-columns: 1fr; } .review-todo-item { grid-template-columns: 48px 1fr; } .review-todo-item > :last-child { grid-column: 1 / -1; } }
 .form-grid label.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; }
 .form-grid label.check input { margin-top: 4px; }
+
+/* ---------- Zoom de la foto del producto (al pasar el mouse) ---------- */
+.detail-image.can-zoom { cursor: zoom-in; }
+.detail-image.can-zoom img { transition: transform .2s ease-out; will-change: transform; }
+.detail-image.zooming img { transform: scale(2.2); }
+.detail-image.zooming .badges, .detail-image.zooming .zoom-hint { opacity: 0; }
+.zoom-hint { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: rgba(42,35,70,.72); color: #fff; font-size: .8rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; pointer-events: none; transition: opacity .2s; white-space: nowrap; z-index: 2; }
+.detail-image .badges { z-index: 2; transition: opacity .2s; }
+@media (prefers-reduced-motion: reduce) { .detail-image.can-zoom img { transition: none; } }
