@@ -77,6 +77,14 @@ class AuthController extends Controller
 
     public function account(Request $r)
     {
-        return view('auth.account', ['orders' => Order::where('user_id', $r->user()->id)->latest()->paginate(10)]);
+        $reviewable = \App\Models\OrderItem::with('product')
+            ->whereHas('order', fn ($q) => $q->where('user_id', $r->user()->id)->whereIn('status', \App\Models\Review::REVIEWABLE_ORDER_STATUSES))
+            ->whereNotNull('product_id')->get()->pluck('product')->filter()->unique('id')->values();
+
+        return view('auth.account', [
+            'orders' => Order::where('user_id', $r->user()->id)->latest()->paginate(10),
+            'reviewable' => $reviewable,
+            'myReviews' => \App\Models\Review::where('user_id', $r->user()->id)->pluck('status', 'product_id'),
+        ]);
     }
 }

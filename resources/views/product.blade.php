@@ -73,6 +73,21 @@
         </div>
     </div>
 
+    <section class="section reviews" id="resenas">
+        <div class="section-head"><div><span class="eyebrow">Opiniones de compradores</span><h2>Reseñas de clientes</h2></div>
+            @if($reviews->isNotEmpty())<div class="reviews-avg"><strong>{{ number_format($reviews->avg('rating'), 1) }}</strong><span class="stars" aria-label="{{ number_format($reviews->avg('rating'), 1) }} de 5 estrellas">{{ str_repeat('★', (int) round($reviews->avg('rating'))).str_repeat('☆', 5 - (int) round($reviews->avg('rating'))) }}</span><small class="muted">{{ $reviews->count() }} {{ $reviews->count() === 1 ? 'reseña' : 'reseñas' }}</small></div>@endif
+        </div>
+        @if(session('status') && str_contains(session('status'), 'reseña'))<p class="notice">{{ session('status') }}</p>@endif
+        @if($reviews->isNotEmpty())
+            <div class="review-grid">@foreach($reviews->take(12) as $review)@include('partials.review-card', ['showProduct' => false])@endforeach</div>
+        @endif
+        @if($canReview)
+            <p><a class="btn" href="/juguete/{{ $product->slug }}/resena">⭐ Dejar mi reseña</a></p>
+        @else
+            <p class="muted">{{ $reviews->isEmpty() ? 'Aún no hay reseñas de este juguete.' : '' }} Solo quienes compraron este juguete pueden dejar su reseña desde <a class="text-link" href="/mi-cuenta#mis-resenas">Mi cuenta</a> cuando su pedido ya fue enviado.</p>
+        @endif
+    </section>
+
     @if($related->count())
     <section class="section">
         <div class="section-head"><div><span class="eyebrow">Combínalo con</span><h2>También te puede gustar</h2></div></div>
@@ -88,4 +103,4 @@
 </div>
 @endif
 @endsection
-@push('head')<script type="application/ld+json">{!! json_encode(['@context'=>'https://schema.org','@type'=>'Product','name'=>$product->name,'description'=>$product->description,'sku'=>$product->sku,'image'=>url($product->image),'offers'=>['@type'=>'Offer','price'=>$product->price,'priceCurrency'=>'PEN','url'=>url('/juguete/'.$product->slug)]+($product->stock!==null?['availability'=>$product->sellable_stock>0?'https://schema.org/InStock':'https://schema.org/OutOfStock']:[])],JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>@endpush
+@push('head')<script type="application/ld+json">{!! json_encode(['@context'=>'https://schema.org','@type'=>'Product','name'=>$product->name,'description'=>$product->description,'sku'=>$product->sku,'image'=>url($product->image),'offers'=>['@type'=>'Offer','price'=>$product->price,'priceCurrency'=>'PEN','url'=>url('/juguete/'.$product->slug)]+($product->stock!==null?['availability'=>$product->sellable_stock>0?'https://schema.org/InStock':'https://schema.org/OutOfStock']:[])]+($reviews->isNotEmpty()?['aggregateRating'=>['@type'=>'AggregateRating','ratingValue'=>round($reviews->avg('rating'),1),'reviewCount'=>$reviews->count()]]:[]),JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>@endpush

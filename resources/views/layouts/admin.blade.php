@@ -9,6 +9,7 @@
         ['/admin/categorias', 'Categorías', 'menu'],
         ['/admin/banners', 'Banners', 'image'],
         ['/admin/blog', 'Blog', 'menu'],
+        ['/admin/resenas', 'Reseñas de clientes', 'star'],
         ['/admin/configuracion', 'Configuración', 'settings'],
         ['/admin/integraciones', 'Google, correos y respaldo', 'shield'],
     ];
@@ -35,7 +36,7 @@
         <nav>
             @foreach($menu as [$url, $name, $icon])
                 @php($active = $url === '/admin' ? $path === '/admin' : str_starts_with($path, $url))
-                <a class="nav-item {{ $active ? 'active' : '' }}" href="{{ $url }}">@include('partials.icon',['name'=>$icon,'size'=>20]) <span>{{ $name }}</span>@if($url==='/admin/pedidos' && $awaitingYape)<em class="nav-badge" title="Pedidos esperando Yape">{{ $awaitingYape }}</em>@endif</a>
+                <a class="nav-item {{ $active ? 'active' : '' }}" href="{{ $url }}">@include('partials.icon',['name'=>$icon,'size'=>20]) <span>{{ $name }}</span>@if($url==='/admin/pedidos' && $awaitingYape)<em class="nav-badge" title="Pedidos esperando Yape">{{ $awaitingYape }}</em>@endif @if($url==='/admin/resenas' && ($pendingReviews ?? 0))<em class="nav-badge" title="Reseñas por revisar">{{ $pendingReviews }}</em>@endif</a>
             @endforeach
         </nav>
         <div class="sidebar-foot">

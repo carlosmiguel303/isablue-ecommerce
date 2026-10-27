@@ -48,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.admin', function ($view) {
             $view->with('awaitingYape', Order::where('status', 'pending')->whereIn('payment_status', ['pending', 'review'])->count());
+            $view->with('pendingReviews', \App\Models\Review::where('status', 'pending')->count());
         });
     }
 }

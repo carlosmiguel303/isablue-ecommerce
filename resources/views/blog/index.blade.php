@@ -12,9 +12,18 @@
         <a href="/blog" @class(['active' => ! $category])>Todo</a>
         @foreach(\App\Models\Post::CATEGORIES as $key => [$label, $icon])<a href="/blog?seccion={{ $key }}" @class(['active' => $category === $key])>{{ $icon }} {{ $label }}</a>@endforeach
     </nav>
+    @if($category === 'resenas')
+    <section class="section">
+        <div class="section-head"><div><span class="eyebrow">Compras verificadas</span><h2>Lo que dicen las familias Isablue</h2></div></div>
+        @if($reviews->isNotEmpty())
+            <div class="review-grid">@foreach($reviews as $review)@include('partials.review-card', ['showProduct' => true])@endforeach</div>
+        @endif
+        <p class="muted">¿Compraste en Isablue? Deja tu reseña desde <a class="text-link" href="/mi-cuenta#mis-resenas">Mi cuenta</a> cuando tu pedido ya fue enviado.</p>
+    </section>
+    @endif
     <section class="section">
         @if($posts->isEmpty())
-            <p class="notice">{{ $category ? 'Aún no hay publicaciones en esta sección.' : 'Muy pronto compartiremos nuestras primeras publicaciones.' }}</p>
+            @if(! ($category === 'resenas' && $reviews->isNotEmpty()))<p class="notice">{{ $category ? 'Aún no hay publicaciones en esta sección.' : 'Muy pronto compartiremos nuestras primeras publicaciones.' }}</p>@endif
         @else
         <div class="blog-grid">
             @foreach($posts as $post)

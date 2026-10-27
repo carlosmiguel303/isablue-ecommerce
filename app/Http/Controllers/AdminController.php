@@ -6,6 +6,7 @@ use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Post;
+use App\Models\Review;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\ShippingMethod;
@@ -430,6 +431,32 @@ class AdminController extends Controller
         $post->delete();
 
         return redirect('/admin/blog')->with('status', 'Artículo eliminado.');
+    }
+
+    public function reviews(Request $r)
+    {
+        $tab = array_key_exists((string) $r->query('ver'), Review::STATUSES) ? $r->query('ver') : 'pending';
+
+        return view('admin.reviews', [
+            'tab' => $tab,
+            'counts' => Review::selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status'),
+            'reviews' => Review::with('product', 'user', 'order')->where('status', $tab)->latest()->paginate(20)->withQueryString(),
+        ]);
+    }
+
+    public function reviewState(Request $r, Review $review)
+    {
+        $d = $r->validate(['status' => ['required', Rule::in(['approved', 'rejected'])]]);
+        $review->update(['status' => $d['status'], 'approved_at' => $d['status'] === 'approved' ? ($review->approved_at ?? now()) : null]);
+
+        return back()->with('status', $d['status'] === 'approved' ? 'Reseña publicada en la tienda.' : 'Reseña rechazada: no se mostrará en la tienda.');
+    }
+
+    public function deleteReview(Review $review)
+    {
+        $review->delete();
+
+        return back()->with('status', 'Reseña eliminada. El cliente podrá escribir una nueva.');
     }
 
     public function banners()

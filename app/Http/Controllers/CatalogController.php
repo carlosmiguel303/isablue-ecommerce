@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
@@ -71,7 +72,10 @@ class CatalogController extends Controller
         $ids = $product->categories->pluck('id');
         $related = Product::publicCatalog()->with('images', 'categories')->where('id', '!=', $product->id)->whereHas('categories', fn ($q) => $q->whereIn('categories.id', $ids))->take(4)->get();
 
-        return view('product', compact('product', 'related'));
+        $reviews = $product->reviews()->approved()->get();
+        $canReview = Review::purchaseOrder(request()->user(), $product) && ! $product->reviews()->where('user_id', request()->user()->id)->exists();
+
+        return view('product', compact('product', 'related', 'reviews', 'canReview'));
     }
 
     public function suggestions(Request $r)
